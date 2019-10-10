@@ -1,0 +1,56 @@
+---
+title: "Luciferase_Standard_Curve"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(dplyr)
+library(data.table)
+library(ggplot2)
+```
+
+```{r}
+ggplotRegression <- function (fit) {
+
+require(ggplot2)
+
+ggplot(fit$model, aes_string(x = names(fit$model)[2], y = names(fit$model)[1])) + 
+  geom_point() +
+  stat_smooth(method = "lm", col = "red") +
+  labs(title = paste("Adj R2 = ",signif(summary(fit)$adj.r.squared, 5),
+                     "Intercept =",signif(fit$coef[[1]],5 ),
+                     " Slope =",signif(fit$coef[[2]], 5),
+                     " P =",signif(summary(fit)$coef[2,4], 5)))
+}
+```
+
+```{r}
+
+convertAMP <- function (fit, value) {
+
+intercept = signif(fit$coef[[1]],5 )
+slope = signif(fit$coef[[2]], 5)
+AMP = (value - intercept)/slope
+
+
+return(AMP)
+}
+```
+
+
+```{r DETECTR 029}
+DETECTR_029 <- read.csv("../tidy_data/DETECTR_029_tidy_metadata.csv")
+standard_029 <- subset(DETECTR_029, DETECTR_029$time=="01:00:00" & DETECTR_029$sample_set=="standard")
+standard_029$input_conc <- as.numeric(as.character(standard_029$input_conc))
+ggplotRegression(lm(standard_029$rfu_value~standard_029$input_conc))
+DETECTR_029$AMP <- convertAMP(lm(standard_029$rfu_value~standard_029$input_conc), DETECTR_029$rfu_value)
+
+
+```
+
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+

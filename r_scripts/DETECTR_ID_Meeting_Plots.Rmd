@@ -1,0 +1,456 @@
+---
+title: "Luciferase_Standard_Curve"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(dplyr)
+library(data.table)
+library(ggplot2)
+```
+
+```{r}
+ggplotRegression <- function (fit) {
+
+require(ggplot2)
+
+ggplot(fit$model, aes_string(x = names(fit$model)[2], y = names(fit$model)[1])) + 
+  geom_point() +
+  stat_smooth(method = "lm", col = "red") +
+  labs(title = paste("Adj R2 = ",signif(summary(fit)$adj.r.squared, 5),
+                     "Intercept =",signif(fit$coef[[1]],5 ),
+                     " Slope =",signif(fit$coef[[2]], 5),
+                     " P =",signif(summary(fit)$coef[2,4], 5)))
+}
+```
+
+```{r}
+convertAMP <- function (fit, value) {
+
+intercept = signif(fit$coef[[1]],5 )
+slope = signif(fit$coef[[2]], 5)
+AMP = (value - intercept)/slope
+return(AMP)
+}
+```
+
+```{r DETECTR 018}
+
+DETECTR_018 <- read.csv("../tidy_data/DETECTR_018_tidy_metadata.csv")
+
+#get samples only
+
+samples_018 <- subset(DETECTR_018, DETECTR_018$time=="02:00:00")
+
+#plot
+samples_018$rfu_value <- as.numeric(as.character(samples_018$rfu_value))
+samples_018$stock_conc <- as.factor(samples_018$stock_conc)
+samples_018$replicate_sample <- paste(as.character(samples_018$stock_conc), as.character(samples_018$replicate))
+  
+ggplot(samples_018, aes(x = stock_conc, y = rfu_value, fill = target_DNA)) +
+  facet_wrap(~target_DNA,scales = "free_x")+
+  geom_bar(stat = "identity",position = 'dodge') +
+  scale_fill_manual(values = c("orchid4", "orange","yellow","blue"))+
+  theme(axis.text.x = element_text(angle = 45, hjust = 1), 
+        panel.background = element_rect(fill = "white"),
+        panel.grid = element_line(color = "grey"),
+        panel.border = element_rect(fill = NA, color = "black"), 
+        strip.background = element_rect(color="black", fill="grey", size=1.5, linetype="solid")
+) 
+
+```
+
+
+```{r DETECTR 020}
+
+DETECTR_020 <- read.csv("../tidy_data/DETECTR_020_tidy_metadata.csv")
+
+  
+standard_020 <- subset(DETECTR_020, DETECTR_020$time=="01:00:00" & DETECTR_020$sample_set=="standard_in_buffer")
+standard_020$standard_conc <- as.numeric(as.character(standard_020$standard_conc))
+ggplotRegression(lm(standard_020$rfu_value~standard_020$standard_conc))
+
+#convert rfu_value to AMP
+DETECTR_020$AMP <- convertAMP(lm(standard_020$rfu_value~standard_020$standard_conc), DETECTR_020$rfu_value)
+#get samples only
+samples_020 <- subset(DETECTR_020, DETECTR_020$time=="01:00:00" & DETECTR_020$gRNA_used!="standard" & DETECTR_020$sample_set!="no_sample")
+
+#RPA_samples_020$target_added <- factor(RPA_samples_020$target_added, levels = c("RPA_2_B1_16srRNA_10ng","RPA_2_B1_16srRNA_0.1ng","RPA_2_B1_16srRNA_0ng", "RPA_48_H6_IS1081_10ng", "RPA_48_H6_IS1081_0.1ng", "RPA_48_H6_IS1081_0ng","synthetic_B1","synthetic_H6","no_target"))
+
+#plot
+samples_020$AMP <- as.numeric(as.character(samples_020$AMP))
+ggplot(samples_020, aes(x = sample_set, y = AMP, fill = replicate)) +
+  facet_wrap(~gRNA_used,ncol=4,scales = "free_x")+
+  geom_bar(stat = 'identity', position = 'dodge') +
+  scale_fill_manual(values = c("orchid4", "orange","yellow","blue"))+
+  theme(axis.text.x = element_text(angle = 45, hjust = 1), 
+        panel.background = element_rect(fill = "white"),
+        panel.grid = element_line(color = "grey"),
+        panel.border = element_rect(fill = NA, color = "black"), 
+        strip.background = element_rect(color="black", fill="grey", size=1.5, linetype="solid"),
+        axis.title.x=element_blank()
+) 
+
+```
+```{r DETECTR 021}
+
+DETECTR_021 <- read.csv("../tidy_data/DETECTR_021_tidy_metadata.csv")
+
+  
+standard_021 <- subset(DETECTR_021, DETECTR_021$time=="01:00:00" & DETECTR_021$sample_set=="standard")
+standard_021$standard_conc <- as.numeric(as.character(standard_021$standard_conc))
+ggplotRegression(lm(standard_021$rfu_value~standard_021$standard_conc))
+
+#convert rfu_value to AMP
+DETECTR_021$AMP <- convertAMP(lm(standard_021$rfu_value~standard_021$standard_conc), DETECTR_021$rfu_value)
+#get samples only
+samples_021 <- subset(DETECTR_021, DETECTR_021$time=="01:00:00" & DETECTR_021$gRNA_used!="standard" & DETECTR_021$sample_set!="no_sample"& DETECTR_021$sample_set!="degraded_target")
+
+#RPA_samples_021$target_added <- factor(RPA_samples_021$target_added, levels = c("RPA_2_B1_16srRNA_10ng","RPA_2_B1_16srRNA_0.1ng","RPA_2_B1_16srRNA_0ng", "RPA_48_H6_IS1081_10ng", "RPA_48_H6_IS1081_0.1ng", "RPA_48_H6_IS1081_0ng","synthetic_B1","synthetic_H6","no_target"))
+
+#plot
+samples_021$AMP <- as.numeric(as.character(samples_021$AMP))
+ggplot(samples_021, aes(x = sample_set, y = AMP, fill = replicate)) +
+  facet_wrap(~gRNA_description,ncol=3,scales = "free_x")+
+  geom_bar(stat = 'identity', position = 'dodge') +
+  scale_fill_manual(values = c("orchid4", "orange","yellow","blue"))+
+  ylab("AMP (uM)")+
+  theme(axis.text.x = element_text(angle = 45, hjust = 1), 
+        panel.background = element_rect(fill = "white"),
+        panel.grid = element_line(color = "grey"),
+        panel.border = element_rect(fill = NA, color = "black"), 
+        strip.background = element_rect(color="black", fill="grey", size=1.5, linetype="solid"),
+        axis.title.x=element_blank()
+) 
+
+```
+
+```{r DETECTR 024}
+
+DETECTR_024 <- read.csv("../tidy_data/DETECTR_024_Luciferase_tidy_metadata.csv")
+
+  
+standard_024 <- subset(DETECTR_024, DETECTR_024$time=="01:00:00" & DETECTR_024$sample_set=="standard")
+standard_024$standard_conc <- as.numeric(as.character(standard_024$standard_conc))
+ggplotRegression(lm(standard_024$rfu_value~standard_024$standard_conc))
+
+#convert rfu_value to AMP
+DETECTR_024$AMP <- convertAMP(lm(standard_024$rfu_value~standard_024$standard_conc), DETECTR_024$rfu_value)
+#get samples only
+samples_024 <- subset(DETECTR_024, DETECTR_024$time=="01:00:00" & DETECTR_024$sample_set!="standard")
+
+DETECTR_024$
+#RPA_samples_024$target_added <- factor(RPA_samples_024$target_added, levels = c("RPA_2_B1_16srRNA_10ng","RPA_2_B1_16srRNA_0.1ng","RPA_2_B1_16srRNA_0ng", "RPA_48_H6_IS1081_10ng", "RPA_48_H6_IS1081_0.1ng", "RPA_48_H6_IS1081_0ng","synthetic_B1","synthetic_H6","no_target"))
+
+#plot
+samples_024$AMP <- as.numeric(as.character(samples_024$AMP))
+ggplot(samples_024, aes(x = sample_set, y = rfu_value, fill = replicate)) +
+  facet_wrap(~gRNA_used,ncol=4,scales = "free_x")+
+  geom_bar(stat = 'identity', position = 'dodge') +
+  scale_fill_manual(values = c("orchid4", "orange","yellow","blue"))+
+  theme(axis.text.x = element_text(angle = 45, hjust = 1), 
+        panel.background = element_rect(fill = "white"),
+        panel.grid = element_line(color = "grey"),
+        panel.border = element_rect(fill = NA, color = "black"), 
+        strip.background = element_rect(color="black", fill="grey", size=1.5, linetype="solid"),
+        axis.title.x=element_blank()
+) 
+
+```
+
+
+```{r DETECTR 024}
+
+DETECTR_024 <- read.csv("../tidy_data/DETECTR_024_FAM_tidy_metadata.csv")
+
+#get samples only
+
+samples_024 <- subset(DETECTR_024, DETECTR_024$time=="01:00:00")
+#plot
+samples_024$rfu_value <- as.numeric(as.character(samples_024$rfu_value))
+ggplot(samples_024, aes(x = sample_set, y = rfu_value, fill = replicate)) +
+  facet_wrap(~gRNA_used,ncol=4,scales = "free_x")+
+  geom_bar(stat = 'identity', position = 'dodge') +
+  scale_fill_manual(values = c("darkslategray3", "mediumpurple3"))+
+  ggtitle("DETECTR control for NANCY DREW, 1 hour timepoint")+
+  theme(axis.text.x = element_text(angle = 45, hjust = 1), 
+        panel.background = element_rect(fill = "white"),
+        panel.grid = element_line(color = "grey"),
+        panel.border = element_rect(fill = NA, color = "black"), 
+        axis.title.x=element_blank(),
+        title = element_text(face = "bold"),
+        strip.background = element_rect(fill = NA, color = "black"),
+        strip.text = element_text(size = 10)
+) 
+
+```
+
+```{r DETECTR 025}
+
+DETECTR_025 <- read.csv("../tidy_data/DETECTR_025_tidy_metadata.csv")
+
+  
+standard_025 <- subset(DETECTR_025, DETECTR_025$time=="01:00:00" & DETECTR_025$reporter=="standard")
+standard_025$standard_conc <- as.numeric(as.character(standard_025$standard_conc))
+ggplotRegression(lm(standard_025$rfu_value~standard_025$standard_conc))
+
+#convert rfu_value to AMP
+DETECTR_025$AMP <- convertAMP(lm(standard_025$rfu_value~standard_025$standard_conc), DETECTR_025$rfu_value)
+#get samples only
+samples_025 <- subset(DETECTR_025, DETECTR_025$time=="01:00:00" & DETECTR_025$reporter!="standard")
+
+#RPA_samples_025$target_added <- factor(RPA_samples_025$target_added, levels = c("RPA_2_B1_16srRNA_10ng","RPA_2_B1_16srRNA_0.1ng","RPA_2_B1_16srRNA_0ng", "RPA_48_H6_IS1081_10ng", "RPA_48_H6_IS1081_0.1ng", "RPA_48_H6_IS1081_0ng","synthetic_B1","synthetic_H6","no_target"))
+
+#plot
+samples_025$AMP <- as.numeric(as.character(samples_025$AMP))
+ggplot(samples_025, aes(x = reporter, y = AMP, fill = replicate)) +
+  facet_grid(RNAseT~degradation_method,scales = "free_x")+
+  geom_bar(stat = 'identity', position = 'dodge') +
+  scale_fill_manual(values = c("orchid4", "orange","yellow","blue"))+
+    scale_y_continuous(breaks=seq(0,4,2), limits=c(0,4), expand = c(0,0))+
+
+  theme(axis.text.x = element_text(angle = 45, hjust = 1), 
+        panel.background = element_rect(fill = "white"),
+        panel.grid = element_line(color = "grey"),
+        panel.border = element_rect(fill = NA, color = "black"), 
+        strip.background = element_rect(color="black", fill="grey", size=1.5, linetype="solid"),
+        axis.title.x=element_blank()
+) 
+
+```
+
+
+
+```{r DETECTR 026}
+DETECTR_026 <- read.csv("../tidy_data/DETECTR_026_tidy_metadata.csv")
+
+  
+standard_026 <- subset(DETECTR_026, DETECTR_026$time=="01:00:00" & DETECTR_026$reporter=="standard")
+standard_026$standard_conc <- as.numeric(as.character(standard_026$standard_conc))
+ggplotRegression(lm(standard_026$rfu_value~standard_026$standard_conc))
+
+#convert rfu_value to AMP
+DETECTR_026$AMP <- convertAMP(lm(standard_026$rfu_value~standard_026$standard_conc), DETECTR_026$rfu_value)
+#get samples only
+samples_026 <- subset(DETECTR_026, DETECTR_026$time=="01:00:00" & DETECTR_026$reporter!="standard"& DETECTR_026$reporter!=""& DETECTR_026$sample_set!="DNAse1")
+
+#RPA_samples_026$target_added <- factor(RPA_samples_026$target_added, levels = c("RPA_2_B1_16srRNA_10ng","RPA_2_B1_16srRNA_0.1ng","RPA_2_B1_16srRNA_0ng", "RPA_48_H6_IS1081_10ng", "RPA_48_H6_IS1081_0.1ng", "RPA_48_H6_IS1081_0ng","synthetic_B1","synthetic_H6","no_target"))
+
+#plot
+samples_026$AMP <- as.numeric(as.character(samples_026$AMP))
+samples_026$sample_name <- paste(samples_026$reporter,"_", samples_026$RNAseT,"_",samples_026$reporter_conc,samples_026$replicate)
+samples_026$sample_name <- factor(samples_026$sample_name, levels = c("DNA-RNA _ RNAseT_added _ 45 a","DNA-RNA _ RNAseT_added _ 45 b","DNA-RNA _ RNAseT_added _ 15 a","DNA-RNA _ RNAseT_added _ 15 b","DNA-RNA _ RNAseT_added _ 5 a","DNA-RNA _ RNAseT_added _ 5 b","DNA-RNA _ RNAseT_added _ 1.66 a" , "DNA-RNA _ RNAseT_added _ 1.66 b","DNA-RNA _ RNAseT_added _ 0.833 a", "DNA-RNA _ RNAseT_added _ 0.833 b","DNA-RNA _ RNAseT_added _ 0 a","DNA-RNA _ RNAseT_added _ 0 b","DNA-RNA _ no_RNAseT _ 45 a" ,"DNA-RNA _ no_RNAseT _ 45 b","RNA _ RNAseT_added _ 45 a" , "RNA _ RNAseT_added _ 45 b"   ))
+pdf("../DETECTR_026_DNA-RNAdigestion_differentbuffers.pdf", width = 6, height = 5)
+ggplot(samples_026, aes(x = sample_name, y = AMP, fill = sample_set)) +
+  geom_bar(stat = 'identity', position = 'dodge') +
+  scale_fill_manual(values = c("coral2", "goldenrod2"))+
+  scale_y_continuous(breaks=seq(0,10,2), limits=c(-0.5,10), expand = c(0,0))+
+  ggtitle("Digestion of DNA-RNA reporter in different buffers")+
+  theme(axis.text.x = element_text(angle = 90, hjust = 1), 
+        panel.background = element_rect(fill = "white"),
+        panel.grid = element_line(color = "grey"),
+        panel.border = element_rect(fill = NA, color = "black"), 
+        axis.title.x=element_blank(),
+        title = element_text(face = "bold"),
+        strip.background = element_rect(fill = NA, color = "black"),
+        strip.text = element_text(size = 10)
+) 
+dev.off()
+
+```
+
+
+```{r DETECTR 027}
+#read in DETECTR data
+DETECTR_027 <- read.csv("../tidy_data/DETECTR_027_tidy_metadata.csv")
+
+#get samples only
+RPA_samples_027 <- subset(DETECTR_027, DETECTR_027$time=="01:00:00" & DETECTR_027$sample_set!="2XBB"& DETECTR_027$sample_set!="NEB2.1")
+
+
+RPA_samples_027$target_added <- factor(RPA_samples_027$target_added, levels = c("RPA_2_B1_16srRNA_10ng","RPA_2_B1_16srRNA_0.1ng","RPA_2_B1_16srRNA_0ng", "RPA_48_H6_IS1081_10ng", "RPA_48_H6_IS1081_0.1ng", "RPA_48_H6_IS1081_0ng","synthetic_B1","synthetic_H6","no_target"))
+
+#plot
+RPA_samples_027$rfu_value <- as.numeric(as.character(RPA_samples_027$rfu_value))
+pdf("DETECTR_027_RPAproducts.pdf", width = 6, height = 4)
+ggplot(RPA_samples_027, aes(x = target_added, y = rfu_value, fill = replicate)) +
+  facet_wrap(~sample_set,scales = "free_x")+
+  geom_bar(stat = 'identity', position = 'dodge') +
+  ggtitle("DETECTR, 1 hour timepoint")+
+  scale_fill_manual(values = c("darkslategray3", "mediumpurple3","yellow","blue"))+
+  theme(axis.text.x = element_text(angle = 45, hjust = 1), 
+        panel.background = element_rect(fill = "white"),
+        panel.grid = element_line(color = "grey"),
+        panel.border = element_rect(fill = NA, color = "black"), 
+        axis.title.x=element_blank(),
+        title = element_text(face = "bold"),
+        strip.background = element_rect(fill = NA, color = "black"),
+        strip.text = element_text(size = 10)
+) 
+dev.off()
+        
+```
+
+
+
+```{r DETECTR 028}
+#read in DETECTR data
+DETECTR_028 <- read.csv("../tidy_data/DETECTR_028_Luciferase_tidy_metadata.csv")
+
+#calculate standard curve based on 1hr mark
+standard_028 <- subset(DETECTR_028, DETECTR_028$time=="01:00:00" & DETECTR_028$sample_set=="standard")
+standard_028$standard_conc <- as.numeric(as.character(standard_028$standard_conc))
+ggplotRegression(lm(standard_028$rfu_value~standard_028$standard_conc))
+
+#convert rfu_value to AMP
+DETECTR_028$AMP <- convertAMP(lm(standard_028$rfu_value~standard_028$standard_conc), DETECTR_028$rfu_value)
+
+#get samples only
+samples_028 <- subset(DETECTR_028, DETECTR_028$time=="01:00:00" & DETECTR_028$sample_set!="standard"& DETECTR_028$sample_set!=""& DETECTR_028$reporter!="DNA-RNA/r17A-TTATT-r3C"& DETECTR_028$reporter!="RNA/r17Ar3C")
+#plot
+samples_028
+
+pdf("../DETECTR_028_phos_reporter.pdf", width = 6, height = 4)
+ggplot(samples_028, aes(x = sample_set, y = AMP, fill = replicate)) +
+  facet_wrap(~reporter,ncol=4,drop = TRUE,scales = "free_x")+
+  geom_bar(stat = 'identity', position = 'dodge') +
+  scale_y_continuous(breaks=seq(0,10,2), limits=c(0,10), expand = c(0,0))+
+  scale_fill_manual(values = c("coral2", "goldenrod2"))+
+  ylab("AMP (uM)")+
+  theme(axis.text.x = element_text(angle = 60, hjust = 1), 
+        panel.background = element_rect(fill = "white"),
+        panel.grid = element_line(color = "grey"),
+        panel.border = element_rect(fill = NA, color = "black"), 
+        #strip.background = element_rect(color="black", fill="grey", size=1.5, linetype="solid"),
+        axis.title.x=element_blank(),
+        title = element_text(face = "bold"),
+        strip.background = element_rect(fill = NA, color = "black"),
+        strip.text = element_text(size = 10)
+) 
+dev.off()
+        
+
+#get samples only
+samples_028 <- subset(DETECTR_028, DETECTR_028$time=="01:00:00" & DETECTR_028$sample_set!="standard"& DETECTR_028$sample_set!=""& DETECTR_028$reporter!="DNA-RNA/r17A-TTATT-r3C"& DETECTR_028$reporte=="RNA/r17Ar3C")
+#plot
+samples_028
+
+pdf("../DETECTR_028_NANCEYDREW_firsttime.pdf", width = 6, height = 4)
+ggplot(samples_028, aes(x = sample_set, y = AMP, fill = replicate)) +
+  #facet_wrap(~reporter,ncol=4,drop = TRUE,scales = "free_x")+
+  geom_bar(stat = 'identity', position = 'dodge') +
+  scale_y_continuous(breaks=seq(0,10,2), limits=c(0,10), expand = c(0,0))+
+  scale_fill_manual(values = c("coral2", "goldenrod2"))+
+  ylab("AMP (uM)")+
+  ggtitle("NANCEY DREW, 3 hour timepoint, 500nM input")+
+  theme(axis.text.x = element_text(angle = 60, hjust = 1), 
+        panel.background = element_rect(fill = "white"),
+        panel.grid = element_line(color = "grey"),
+        panel.border = element_rect(fill = NA, color = "black"), 
+        #strip.background = element_rect(color="black", fill="grey", size=1.5, linetype="solid"),
+        axis.title.x=element_blank(),
+        title = element_text(face = "bold"),
+        strip.background = element_rect(fill = NA, color = "black"),
+        strip.text = element_text(size = 10)
+) 
+dev.off()
+```
+
+```{r DETECTR 029}
+#read in DETECTR data
+DETECTR_029 <- read.csv("../tidy_data/DETECTR_029_tidy_metadata.csv")
+
+#calculate standard curve based on 1hr mark
+standard_029 <- subset(DETECTR_029, DETECTR_029$time=="01:00:00" & DETECTR_029$sample_set=="standard")
+standard_029$input_conc <- as.numeric(as.character(standard_029$input_conc))
+ggplotRegression(lm(standard_029$rfu_value~standard_029$input_conc))
+
+#convert rfu_value to AMP
+DETECTR_029$AMP <- convertAMP(lm(standard_029$rfu_value~standard_029$input_conc), DETECTR_029$rfu_value)
+
+#get samples only
+samples_029 <- subset(DETECTR_029, DETECTR_029$time=="01:00:00" & DETECTR_029$sample_set!="standard")
+#plot
+samples_029$input_conc <-droplevels(samples_029$input_conc)
+samples_029$input_conc <- factor(samples_029$input_conc, levels=c("5uM","500nM","50nM","5nM","500pM","50pM","5pM","500fM","50fM","5fM","no_target","no_cas12a"))
+
+pdf("../DETECTR_029_NANCYDREW_LOD.pdf", width = 6, height = 4)
+ggplot(samples_029, aes(x = input_conc, y = AMP, fill = replicate)) +
+  geom_bar(stat = 'identity', position = 'dodge') +
+  scale_y_continuous(breaks=seq(0,10,2), limits=c(0,10), expand = c(0,0))+
+  scale_fill_manual(values = c("coral2", "goldenrod2"))+
+  ggtitle("NANCY DREW, Limit of Detection\n10X Dilution Series, 3 hour timepoint")+
+  ylab("AMP (uM)")+
+  theme(axis.text.x = element_text(angle = 90), 
+        panel.background = element_rect(fill = "white"),
+        panel.grid = element_line(color = "grey"),
+        panel.border = element_rect(fill = NA, color = "black"),
+        title = element_text(face = "bold"),
+        strip.background = element_rect(fill = NA, color = "black"),
+        strip.text = element_text(size = 10)
+)
+
+dev.off()
+        
+```
+
+
+```{r DETECTR 030}
+#read in DETECTR data
+DETECTR_030 <- read.csv("../tidy_data/DETECTR_030_tidy_metadata.csv")
+
+#get 3 hour samples only
+samples_030 <- subset(DETECTR_030, DETECTR_030$time=="03:00:00")
+#plot
+samples_030$input_conc <-droplevels(samples_030$input_conc)
+samples_030$input_conc <- factor(samples_030$input_conc, levels=c("5uM","500nM","50nM","5nM","500pM","50pM","5pM","500fM","50fM","5fM","no_target","no_cas12a"))
+
+ggplot(samples_030, aes(x = input_conc, y = rfu_value, fill = replicate)) +
+  facet_wrap(~reporter)+
+  geom_bar(stat = 'identity', position = 'dodge') +
+  scale_y_continuous(expand = c(0,0))+
+  scale_fill_manual(values = c("darkslategray3", "mediumpurple3"))+
+  theme(axis.text.x = element_text(angle = 90), 
+        panel.background = element_rect(fill = "white"),
+        panel.grid = element_line(color = "grey"),
+        panel.border = element_rect(fill = NA, color = "black")
+)
+
+RNA_average <- samples_030 %>% filter(reporter == "RNA-FAM" & input_conc %in% c("no_target","no_cas12a")) %>% summarize (mean = mean(rfu_value))
+
+DNA_average <- samples_030 %>% filter(reporter == "DNA-FAM" & input_conc %in% c("no_target","no_cas12a")) %>% summarize (mean = mean(rfu_value))
+
+
+
+DNA_030 <- samples_030 %>% filter (reporter == "DNA-FAM") %>% plyr::mutate(bckground_sub_rfu = rfu_value - as.numeric(DNA_average))
+
+RNA_030 <- samples_030 %>% filter (reporter == "RNA-FAM") %>% plyr::mutate(bckground_sub_rfu = rfu_value - as.numeric(RNA_average))
+
+samples_030 <- merge(DNA_030,RNA_030, all = TRUE)
+
+pdf("../DETECTR_030_RNA_DNA_LOD.pdf", width = 6, height = 4)
+ggplot(samples_030, aes(x = input_conc, y = bckground_sub_rfu, fill = replicate)) +
+  facet_wrap(~reporter)+
+  geom_bar(stat = 'identity', position = 'dodge') +
+  scale_y_continuous(expand = c(0,0))+
+  ggtitle("DETECTR (no RPA), Limit of Detection\n10X Dilution Series, 3 hour timepoint")+
+  scale_fill_manual(values = c("darkslategray3", "mediumpurple3"))+
+  ylab("background subtracted RFU (AU)") +
+  theme(axis.text.x = element_text(angle = 60, hjust = 1), 
+        panel.background = element_rect(fill = "white"),
+        panel.grid = element_line(color = "grey"),
+        panel.border = element_rect(fill = NA, color = "black"),
+
+        title = element_text(face = "bold"),
+        strip.background = element_rect(fill = NA, color = "black"),
+        strip.text = element_text(size = 10)
+          
+        
+)
+dev.off()
+        
+```
+
+
+
+
