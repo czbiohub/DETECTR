@@ -34,6 +34,173 @@ return(AMP)
 }
 ```
 
+```{r DETECTR 011}
+
+DETECTR_011 <- read.csv("../tidy_data/DETECTR_011_2hr_reporter_tidy.csv")
+
+#get samples only
+
+samples_011 <- subset(DETECTR_011, DETECTR_011$time=="02:00:00")
+
+#plot
+samples_011$rfu_value <- as.numeric(as.character(samples_011$rfu_value))
+
+#avg_samples_011 <- samples_011 %>% group_by(gRNA, stock_conc, target_added) %>% summarize (mean_rfu_value = mean(rfu_value)) %>% mutate (final_conc = round(as.numeric(as.character(stock_conc))*1.5/(20*13)))
+
+samples_011 <- samples_011 %>% mutate (final_conc = round(as.numeric(as.character(stock_conc))*5/(20),2))
+
+pdf("../DETECTR_011_reporter_concentration.pdf", width = 6, height = 4)
+ggplot(samples_011, aes(x = as.factor(final_conc), y = rfu_value, color= target_added, group = interaction(gRNA,target_added))) +
+  #facet_wrap(~target_DNA,scales = "free_x")+
+  geom_line(stat = "identity") +
+  geom_point()+
+  scale_color_manual(values = c("darkslategray3", "mediumpurple3","olivedrab4","darkseagreen3"))+
+  ggtitle("DETECTR, 2 hour timepoint, reporter concentrations")+
+  xlab("final concentration of reporter (uM) ")+
+  ylab("RFU value (AU) ")+
+  theme(axis.text.x = element_text(angle = 45, hjust = 1), 
+        panel.background = element_rect(fill = "white"),
+        panel.grid = element_line(color = "grey"),
+        panel.border = element_rect(fill = NA, color = "black"), 
+        title = element_text(face = "bold")
+        #strip.background = element_rect(fill = NA, color = "black"),
+        #strip.text = element_text(size = 10)
+) 
+dev.off()
+
+pdf("../DETECTR_011_signal_to_noise_concentration.pdf", width = 6, height = 4)
+ggplot(samples_011, aes(x = as.factor(final_conc), y = signal_to_noise, color= target_added, group = interaction(gRNA,target_added))) +
+  #facet_wrap(~target_DNA,scales = "free_x")+
+  geom_line(stat = "identity") +
+  geom_point()+
+  scale_color_manual(values = c("darkslategray3", "mediumpurple3","olivedrab4","darkseagreen3"))+
+  ggtitle("DETECTR, 2 hour timepoint, reporter concentrations")+
+  xlab("final concentration of reporter (uM) ")+
+  ylab("signal to noise (target added/no target added) ")+
+  theme(axis.text.x = element_text(angle = 45, hjust = 1), 
+        panel.background = element_rect(fill = "white"),
+        panel.grid = element_line(color = "grey"),
+        panel.border = element_rect(fill = NA, color = "black"), 
+        title = element_text(face = "bold")
+        #strip.background = element_rect(fill = NA, color = "black"),
+        #strip.text = element_text(size = 10)
+) 
+dev.off()
+
+
+```
+
+```{r DETECTR 014}
+DETECTR_014 <- read.csv("../tidy_data/DETECTR_014_qPCR_temp_endpoint_tidy.csv")
+
+#get samples only
+#plot
+DETECTR_014$rfu_value <- as.numeric(as.character(DETECTR_014$End.RFU))
+
+
+pdf("../DETECTR_014_temperature.pdf", width = 6, height = 4)
+ggplot(DETECTR_014, aes(x = temp, y = End.RFU, color= gRNA, group =  gRNA)) +
+  #facet_wrap(~target_DNA,scales = "free_x")+
+  geom_line(stat = "identity") +
+  geom_point()+
+  scale_color_manual(values = c("darkslategray3", "mediumpurple3","olivedrab4","darkseagreen3"))+
+  ggtitle("DETECTR, 4 hour timepoint, temperature")+
+  xlab("temperature of reaction (deg C)")+
+  ylab("RFU value (AU) ")+
+  scale_x_continuous(breaks=seq(30,45,1))+
+  theme(axis.text.x = element_text(angle = 45, hjust = 1), 
+        panel.background = element_rect(fill = "white"),
+        panel.grid = element_line(color = "grey"),
+        panel.border = element_rect(fill = NA, color = "black"), 
+        title = element_text(face = "bold")
+        #strip.background = element_rect(fill = NA, color = "black"),
+        #strip.text = element_text(size = 10)
+) 
+dev.off()
+
+
+```
+
+```{r DETECTR 016}
+DETECTR_016 <- read.csv("../tidy_data/DETECTR_016_2hr_tidy.csv")
+
+#get samples only
+
+samples_016 <- subset(DETECTR_016, DETECTR_016$time=="02:00:00")
+
+#plot
+samples_016$rfu_value <- as.numeric(as.character(samples_016$rfu_value))
+
+avg_samples_016 <- samples_016 %>% group_by(gRNA, stock_conc) %>% summarize (mean_rfu_value = mean(rfu_value)) %>% mutate (final_conc = round(as.numeric(as.character(stock_conc))*1.5/(20*13)))
+
+samples_016 <- samples_016 %>% mutate (final_conc = round(as.numeric(as.character(stock_conc))*1.5*1000/(20*13)))
+
+pdf("../DETECTR_016_crRNA_concentration.pdf", width = 6, height = 4)
+ggplot(samples_016, aes(x = as.factor(final_conc), y = rfu_value, color= gRNA, group = gRNA)) +
+  #facet_wrap(~target_DNA,scales = "free_x")+
+  geom_line(stat = "identity") +
+  geom_point()+
+  scale_color_manual(values = c("darkslategray3", "mediumpurple3","olivedrab4","darkseagreen3"))+
+  ggtitle("DETECTR, 2 hour timepoint, IVT guide RNAs")+
+  xlab("final concentration of guide RNA (nM) ")+
+  ylab("RFU value (AU) ")+
+  theme(axis.text.x = element_text(angle = 45, hjust = 1), 
+        panel.background = element_rect(fill = "white"),
+        panel.grid = element_line(color = "grey"),
+        panel.border = element_rect(fill = NA, color = "black"), 
+        title = element_text(face = "bold")
+        #strip.background = element_rect(fill = NA, color = "black"),
+        #strip.text = element_text(size = 10)
+) 
+dev.off()
+
+
+```
+
+
+
+
+
+```{r DETECTR 017}
+
+
+DETECTR_017 <- read.csv("../tidy_data/DETECTR_017_2hr_tidy.csv")
+
+#get samples only
+
+samples_017 <- subset(DETECTR_017, DETECTR_017$time=="02:00:00")
+
+#plot
+samples_017$rfu_value <- as.numeric(as.character(samples_017$rfu_value))
+
+avg_samples_017 <- samples_017 %>% group_by(gRNA, stock_conc) %>% summarize (mean_rfu_value = mean(rfu_value)) %>% mutate (final_conc = round(as.numeric(as.character(stock_conc))*1.5/(20*13)))
+
+samples_017 <- samples_017 %>% mutate (final_conc = round(as.numeric(as.character(stock_conc))*1.5*1000/(20*13)))
+
+pdf("../DETECTR_017_IVT_vs_synthetic.pdf", width = 6, height = 4)
+ggplot(samples_017, aes(x = as.factor(final_conc), y = rfu_value, color= gRNA, group = interaction(gRNA, row_384))) +
+  #facet_wrap(~target_DNA,scales = "free_x")+
+  geom_point(stat = "identity") +
+  geom_line()+
+  scale_color_manual(values = c("darkslategray3", "mediumpurple3","yellow","blue"))+
+  ggtitle("DETECTR, 2 hour timepoint, IVT vs Synthetic")+
+  xlab("final concentration of guide RNA (nM) ")+
+  ylab("average RFU value (AU) ")+
+  theme(axis.text.x = element_text(angle = 45, hjust = 1), 
+        panel.background = element_rect(fill = "white"),
+        panel.grid = element_line(color = "grey"),
+        panel.border = element_rect(fill = NA, color = "black"), 
+        title = element_text(face = "bold"),
+        legend.title = element_blank()
+        #strip.background = element_rect(fill = NA, color = "black"),
+        #strip.text = element_text(size = 10)
+) 
+dev.off()
+
+
+```
+
+
 ```{r DETECTR 018}
 
 DETECTR_018 <- read.csv("../tidy_data/DETECTR_018_tidy_metadata.csv")
@@ -46,17 +213,27 @@ samples_018 <- subset(DETECTR_018, DETECTR_018$time=="02:00:00")
 samples_018$rfu_value <- as.numeric(as.character(samples_018$rfu_value))
 samples_018$stock_conc <- as.factor(samples_018$stock_conc)
 samples_018$replicate_sample <- paste(as.character(samples_018$stock_conc), as.character(samples_018$replicate))
-  
-ggplot(samples_018, aes(x = stock_conc, y = rfu_value, fill = target_DNA)) +
-  facet_wrap(~target_DNA,scales = "free_x")+
+
+avg_samples_018 <- samples_018 %>% group_by(stock_conc, target_DNA) %>% summarize (mean_rfu_value = mean(rfu_value)) %>% mutate (final_conc = as.numeric(as.character(stock_conc))/20)
+
+pdf("../DETECTR_018_gDNA_contamination.pdf", width = 6, height = 4)
+ggplot(avg_samples_018, aes(x = stock_conc, y = mean_rfu_value, fill = target_DNA)) +
+  #facet_wrap(~target_DNA,scales = "free_x")+
   geom_bar(stat = "identity",position = 'dodge') +
-  scale_fill_manual(values = c("orchid4", "orange","yellow","blue"))+
+  scale_fill_manual(values = c("darkslategray3", "mediumpurple3","yellow","blue"))+
+  ggtitle("DETECTR, 2 hour timepoint, gDNA contamination")+
+  xlab("input mass of HEK 293 gDNA (ng) ")+
+  ylab("average RFU value (AU) ")+
   theme(axis.text.x = element_text(angle = 45, hjust = 1), 
         panel.background = element_rect(fill = "white"),
         panel.grid = element_line(color = "grey"),
         panel.border = element_rect(fill = NA, color = "black"), 
-        strip.background = element_rect(color="black", fill="grey", size=1.5, linetype="solid")
+        title = element_text(face = "bold"),
+        legend.title = element_blank()
+        #strip.background = element_rect(fill = NA, color = "black"),
+        #strip.text = element_text(size = 10)
 ) 
+dev.off()
 
 ```
 
@@ -79,19 +256,46 @@ samples_020 <- subset(DETECTR_020, DETECTR_020$time=="01:00:00" & DETECTR_020$gR
 
 #plot
 samples_020$AMP <- as.numeric(as.character(samples_020$AMP))
+
+pdf("../DETECTR_020_NANCYDREW_firsttest.pdf", width = 6, height = 4)
 ggplot(samples_020, aes(x = sample_set, y = AMP, fill = replicate)) +
   facet_wrap(~gRNA_used,ncol=4,scales = "free_x")+
   geom_bar(stat = 'identity', position = 'dodge') +
-  scale_fill_manual(values = c("orchid4", "orange","yellow","blue"))+
+  scale_fill_manual(values = c("coral2", "goldenrod2","hotpink3","blue"))+
   theme(axis.text.x = element_text(angle = 45, hjust = 1), 
         panel.background = element_rect(fill = "white"),
         panel.grid = element_line(color = "grey"),
         panel.border = element_rect(fill = NA, color = "black"), 
-        strip.background = element_rect(color="black", fill="grey", size=1.5, linetype="solid"),
-        axis.title.x=element_blank()
+        axis.title.x=element_blank(),
+        title = element_text(face = "bold"),
+        strip.background = element_rect(fill = NA, color = "black"),
+        strip.text = element_text(size = 10)
 ) 
+dev.off()
+
+
+samples_020_avg <- samples_020  %>% group_by(sample_set, gRNA_used) %>% summarize (mean_AMP_value = mean(AMP)) 
+pdf("../DETECTR_020_NANCYDREW_firsttest_average.pdf", width = 6, height = 4)
+ggplot(samples_020_avg, aes(x = gRNA_used, y = mean_AMP_value, fill = sample_set)) +
+  geom_bar(stat = 'identity', position = 'dodge') +
+  scale_fill_manual(values = c("coral2", "goldenrod2","hotpink3","blue"))+
+  scale_y_continuous(breaks=seq(0,10,2), limits=c(-0.5,10), expand = c(0,0))+
+  ylab("average AMP (uM)")+
+  xlab("guide RNA/target DNA")+
+  ggtitle("NANCY DREW, 12 hour timepoint, 25nM target concentration")+
+  theme(axis.text.x = element_text(angle = 45, hjust = 1), 
+        panel.background = element_rect(fill = "white"),
+        panel.grid = element_line(color = "grey"),
+        panel.border = element_rect(fill = NA, color = "black"), 
+        title = element_text(face = "bold"),
+        strip.background = element_rect(fill = NA, color = "black"),
+        strip.text = element_text(size = 10),
+        legend.title = element_blank()
+) 
+dev.off()
 
 ```
+
 ```{r DETECTR 021}
 
 DETECTR_021 <- read.csv("../tidy_data/DETECTR_021_tidy_metadata.csv")
@@ -110,18 +314,74 @@ samples_021 <- subset(DETECTR_021, DETECTR_021$time=="01:00:00" & DETECTR_021$gR
 
 #plot
 samples_021$AMP <- as.numeric(as.character(samples_021$AMP))
+pdf("../DETECTR_021_crRNAtests.pdf",width = 6, height = 6)
 ggplot(samples_021, aes(x = sample_set, y = AMP, fill = replicate)) +
   facet_wrap(~gRNA_description,ncol=3,scales = "free_x")+
   geom_bar(stat = 'identity', position = 'dodge') +
-  scale_fill_manual(values = c("orchid4", "orange","yellow","blue"))+
+  scale_fill_manual(values = c("coral2", "goldenrod2","hotpink3","mediumorchid4"))+
+  scale_y_continuous(breaks=seq(0,10,2), limits=c(-0.5,10), expand = c(0,0))+
+
   ylab("AMP (uM)")+
-  theme(axis.text.x = element_text(angle = 45, hjust = 1), 
+  ggtitle("NANCY DREW, 12 hour timepoint, crRNA tests")+
+  theme(#axis.text.x = element_text(angle = 45, hjust = 1), 
         panel.background = element_rect(fill = "white"),
         panel.grid = element_line(color = "grey"),
         panel.border = element_rect(fill = NA, color = "black"), 
-        strip.background = element_rect(color="black", fill="grey", size=1.5, linetype="solid"),
-        axis.title.x=element_blank()
+        axis.title.x=element_blank(),
+        axis.text.x = element_blank(),
+        title = element_text(face = "bold"),
+        
+        strip.background = element_rect(fill = NA, color = "black"),
+        strip.text = element_text(size = 8)
 ) 
+dev.off()
+
+samples_021_avg <- samples_021  %>% group_by(sample_set, gRNA_description) %>% summarize (mean_AMP_value = mean(AMP)) 
+samples_021_avg_1 <- subset(samples_021_avg, gRNA_description %in% c("guide with 2Cs","guide with 3Cs", "guide with 5As before 2Cs"))
+pdf("../DETECTR_021_crRNAtests_average_1.pdf",width = 6, height = 3)
+ggplot(samples_021_avg_1, aes(x = sample_set, y = mean_AMP_value, fill = sample_set)) +
+  facet_wrap(~gRNA_description,ncol=3,scales = "free_x")+
+  geom_bar(stat = 'identity', position = 'dodge') +
+  scale_fill_manual(values = c("coral2", "goldenrod2","hotpink3","mediumorchid4"))+
+  scale_y_continuous(breaks=seq(0,10,2), limits=c(-0.5,10), expand = c(0,0))+
+
+  ylab("average AMP (uM)")+
+  ggtitle("NANCY DREW, 12 hour timepoint, crRNA tests")+
+  theme(#axis.text.x = element_text(angle = 45, hjust = 1), 
+        panel.background = element_rect(fill = "white"),
+        panel.grid = element_line(color = "grey"),
+        panel.border = element_rect(fill = NA, color = "black"), 
+        axis.title.x=element_blank(),
+        axis.text.x = element_blank(),
+        title = element_text(face = "bold"),
+        
+        strip.background = element_rect(fill = NA, color = "black"),
+        strip.text = element_text(size = 8)
+) 
+dev.off()
+
+samples_021_avg_2 <- subset(samples_021_avg, gRNA_description %in% c("IVT guide","synthetic guide"))
+pdf("../DETECTR_021_crRNAtests_average_2.pdf",width = 6, height = 3)
+ggplot(samples_021_avg_2, aes(x = sample_set, y = mean_AMP_value, fill = sample_set)) +
+  facet_wrap(~gRNA_description,ncol=3,scales = "free_x")+
+  geom_bar(stat = 'identity', position = 'dodge') +
+  scale_fill_manual(values = c("coral2", "goldenrod2","hotpink3","mediumorchid4"))+
+  scale_y_continuous(breaks=seq(0,10,2), limits=c(-0.5,10), expand = c(0,0))+
+
+  ylab("average AMP (uM)")+
+  theme(
+        panel.background = element_rect(fill = "white"),
+        panel.grid = element_line(color = "grey"),
+        panel.border = element_rect(fill = NA, color = "black"), 
+        axis.title.x=element_blank(),
+        axis.text.x = element_blank(),
+        title = element_text(face = "bold"),
+        
+        strip.background = element_rect(fill = NA, color = "black"),
+        strip.text = element_text(size = 8)
+) 
+dev.off()
+
 
 ```
 
@@ -139,22 +399,54 @@ DETECTR_024$AMP <- convertAMP(lm(standard_024$rfu_value~standard_024$standard_co
 #get samples only
 samples_024 <- subset(DETECTR_024, DETECTR_024$time=="01:00:00" & DETECTR_024$sample_set!="standard")
 
-DETECTR_024$
 #RPA_samples_024$target_added <- factor(RPA_samples_024$target_added, levels = c("RPA_2_B1_16srRNA_10ng","RPA_2_B1_16srRNA_0.1ng","RPA_2_B1_16srRNA_0ng", "RPA_48_H6_IS1081_10ng", "RPA_48_H6_IS1081_0.1ng", "RPA_48_H6_IS1081_0ng","synthetic_B1","synthetic_H6","no_target"))
 
 #plot
 samples_024$AMP <- as.numeric(as.character(samples_024$AMP))
+pdf("../DETECTR_024_DNA-RNA_12hour.pdf", width = 6, height = 4)
 ggplot(samples_024, aes(x = sample_set, y = rfu_value, fill = replicate)) +
   facet_wrap(~gRNA_used,ncol=4,scales = "free_x")+
   geom_bar(stat = 'identity', position = 'dodge') +
-  scale_fill_manual(values = c("orchid4", "orange","yellow","blue"))+
+  scale_fill_manual(values = c("coral2", "goldenrod2","yellow","blue"))+
+  ggtitle("NANCY DREW, 12 hour timepoint, DNA-RNA hybrid reporter")+
   theme(axis.text.x = element_text(angle = 45, hjust = 1), 
         panel.background = element_rect(fill = "white"),
         panel.grid = element_line(color = "grey"),
         panel.border = element_rect(fill = NA, color = "black"), 
-        strip.background = element_rect(color="black", fill="grey", size=1.5, linetype="solid"),
-        axis.title.x=element_blank()
+        axis.title.x=element_blank(),
+        title = element_text(face = "bold"),
+        strip.background = element_rect(fill = NA, color = "black"),
+        strip.text = element_text(size = 10)
 ) 
+
+dev.off()
+
+samples_024$AMP <- as.numeric(as.character(samples_024$AMP))
+
+samples_024_average <- samples_024 %>% group_by(sample_set, gRNA_used) %>% summarize (mean_AMP_value=mean(AMP))
+samples_024_average_subset <- subset(samples_024_average, gRNA_used %in% c("IVT_11C","syn_11C"))
+
+pdf("../DETECTR_024_DNA-RNA_12hour_average.pdf", width = 6, height = 4)
+ggplot(samples_024_average_subset, aes(x = sample_set, y = mean_AMP_value, fill = sample_set)) +
+  facet_wrap(~gRNA_used,ncol=4,scales = "free_x")+
+  geom_bar(stat = 'identity', position = 'dodge') +
+  scale_fill_manual(values = c("coral2", "goldenrod2","hotpink3","blue"))+
+  ggtitle("NANCY DREW, 12 hour timepoint, DNA-RNA hybrid reporter")+
+  ylab("average AMP (uM)")+
+  scale_y_continuous(breaks=seq(0,10,2), limits=c(-0.5,10), expand = c(0,0))+
+
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        panel.background = element_rect(fill = "white"),
+        panel.grid = element_line(color = "grey"),
+        panel.border = element_rect(fill = NA, color = "black"), 
+
+        title = element_text(face = "bold"),
+        strip.background = element_rect(fill = NA, color = "black"),
+        strip.text = element_text(size = 10),
+        legend.title = element_blank()
+) 
+
+dev.off()
 
 ```
 
@@ -165,14 +457,17 @@ DETECTR_024 <- read.csv("../tidy_data/DETECTR_024_FAM_tidy_metadata.csv")
 
 #get samples only
 
-samples_024 <- subset(DETECTR_024, DETECTR_024$time=="01:00:00")
+samples_024 <- subset(DETECTR_024, DETECTR_024$time=="12:00:00")
 #plot
+
+
 samples_024$rfu_value <- as.numeric(as.character(samples_024$rfu_value))
+pdf("../DETECTR_024_DNA-FAM_Control_12hour.pdf", width = 6, height = 4)
 ggplot(samples_024, aes(x = sample_set, y = rfu_value, fill = replicate)) +
   facet_wrap(~gRNA_used,ncol=4,scales = "free_x")+
   geom_bar(stat = 'identity', position = 'dodge') +
-  scale_fill_manual(values = c("darkslategray3", "mediumpurple3"))+
-  ggtitle("DETECTR control for NANCY DREW, 1 hour timepoint")+
+  scale_fill_manual(values = c("darkslategray3", "mediumpurple3","darkseagreen3"))+
+  ggtitle("DETECTR control for NANCY DREW, 12 hour timepoint")+
   theme(axis.text.x = element_text(angle = 45, hjust = 1), 
         panel.background = element_rect(fill = "white"),
         panel.grid = element_line(color = "grey"),
@@ -182,6 +477,31 @@ ggplot(samples_024, aes(x = sample_set, y = rfu_value, fill = replicate)) +
         strip.background = element_rect(fill = NA, color = "black"),
         strip.text = element_text(size = 10)
 ) 
+dev.off()
+
+samples_024$rfu_value <- as.numeric(as.character(samples_024$rfu_value))
+
+samples_024_average <- samples_024 %>% group_by(sample_set, gRNA_used) %>% summarize (mean_rfu_value = mean (rfu_value))
+samples_024_average_subset <- subset(samples_024_average, gRNA_used %in% c("IVT_11C","syn_11C"))
+
+pdf("../DETECTR_024_DNA-FAM_Control_12hour_average.pdf", width = 6, height = 4)
+ggplot(samples_024_average_subset, aes(x = sample_set, y = mean_rfu_value, fill = sample_set)) +
+  facet_wrap(~gRNA_used,ncol=4,scales = "free_x")+
+  geom_bar(stat = 'identity', position = 'dodge') +
+  scale_fill_manual(values = c("darkslategray3", "mediumpurple3","darkseagreen3"))+
+  ggtitle("DETECTR control for NANCY DREW, 12 hour timepoint")+
+  ylab("average RFU value (AU)")+
+  theme(axis.text.x = element_text(angle = 45, hjust = 1), 
+        panel.background = element_rect(fill = "white"),
+        panel.grid = element_line(color = "grey"),
+        panel.border = element_rect(fill = NA, color = "black"), 
+        axis.title.x=element_blank(),
+        title = element_text(face = "bold"),
+        strip.background = element_rect(fill = NA, color = "black"),
+        strip.text = element_text(size = 10),
+        legend.title = element_blank()
+) 
+dev.off()
 
 ```
 
@@ -203,19 +523,25 @@ samples_025 <- subset(DETECTR_025, DETECTR_025$time=="01:00:00" & DETECTR_025$re
 
 #plot
 samples_025$AMP <- as.numeric(as.character(samples_025$AMP))
+samples_025 <- subset(samples_025,degradation_method %in% c("DNAse1","none","RNAseH"))
+
+pdf("../DETECTR_025_DNAse1_RNAseH_Experiment.pdf",width = 6, height = 4)
 ggplot(samples_025, aes(x = reporter, y = AMP, fill = replicate)) +
   facet_grid(RNAseT~degradation_method,scales = "free_x")+
   geom_bar(stat = 'identity', position = 'dodge') +
-  scale_fill_manual(values = c("orchid4", "orange","yellow","blue"))+
-    scale_y_continuous(breaks=seq(0,4,2), limits=c(0,4), expand = c(0,0))+
-
+  scale_fill_manual(values = c("coral2", "goldenrod2","yellow","blue"))+
+    scale_y_continuous(breaks=seq(0,10,2), limits=c(-0.5,10), expand = c(0,0))+
   theme(axis.text.x = element_text(angle = 45, hjust = 1), 
         panel.background = element_rect(fill = "white"),
         panel.grid = element_line(color = "grey"),
         panel.border = element_rect(fill = NA, color = "black"), 
-        strip.background = element_rect(color="black", fill="grey", size=1.5, linetype="solid"),
-        axis.title.x=element_blank()
+        axis.title.x=element_blank(),
+        title = element_text(face = "bold"),
+        strip.background = element_rect(fill = NA, color = "black"),
+        strip.text = element_text(size = 10)
 ) 
+
+dev.off()
 
 ```
 
@@ -257,6 +583,33 @@ ggplot(samples_026, aes(x = sample_name, y = AMP, fill = sample_set)) +
 ) 
 dev.off()
 
+
+
+
+
+samples_026_avg <- samples_026 %>% group_by(sample_set, RNAseT, reporter, reporter_conc) %>% summarize (mean_AMP_value = mean(AMP))
+
+samples_026_avg$sample_set <- plyr::revalue(samples_026_avg$sample_set, c("2XBB"="Doudna Buffer","H20"="NEB Buffer"))
+samples_026_avg$RNAseT <- factor(samples_026_avg$RNAseT, levels = c("RNAseT_added","no_RNAseT"))
+pdf("../DETECTR_026_DNA-RNAdigestion_differentbuffers_average.pdf", width = 7, height = 4)
+ggplot(samples_026_avg, aes(x = as.factor(reporter_conc), y = mean_AMP_value, fill = sample_set)) +
+  geom_bar(stat = 'identity', position = 'dodge') +
+  facet_wrap(reporter~RNAseT,drop = TRUE, scale = "free_x")+
+  scale_fill_manual(values = c("coral2", "goldenrod2"))+
+  scale_y_continuous(breaks=seq(0,10,2), limits=c(-0.5,10), expand = c(0,0))+
+  ggtitle("Digestion of DNA-RNA reporter in different buffers")+
+  ylab("average AMP (uM)")+
+  xlab("reporter concentration (uM)")+
+  theme(axis.text.x = element_text(angle = 45, hjust = 1), 
+        panel.background = element_rect(fill = "white"),
+        panel.grid = element_line(color = "grey"),
+        panel.border = element_rect(fill = NA, color = "black"), 
+        title = element_text(face = "bold"),
+        strip.background = element_rect(fill = NA, color = "black"),
+        strip.text = element_text(size = 10)
+) 
+dev.off()
+
 ```
 
 
@@ -288,6 +641,30 @@ ggplot(RPA_samples_027, aes(x = target_added, y = rfu_value, fill = replicate)) 
         strip.text = element_text(size = 10)
 ) 
 dev.off()
+
+RPA_samples_027_unpurified <- subset(RPA_samples_027, sample_set == "unpurified")
+
+RPA_samples_027_unpurified_avg <- RPA_samples_027_unpurified %>% group_by(target_added, gRNA_used) %>% summarize (mean_rfu_value = mean(rfu_value)) 
+
+RPA_samples_027_unpurified_avg$input_conc <- factor(c("10ng","0.1ng","0ng","10ng","0.1ng","0ng"), levels = c("10ng","0.1ng","0ng"))
+
+pdf("DETECTR_027_RPAproducts_template_conc.pdf", width = 6, height = 4)
+
+ggplot(RPA_samples_027_unpurified_avg, aes(x = gRNA_used, y = mean_rfu_value, fill = input_conc)) +
+  geom_bar(stat = 'identity', position = 'dodge') +
+  ggtitle("DETECTR, 1 hour timepoint")+
+  scale_fill_manual(name = "input mass",values = c("darkslategray3", "mediumpurple3","darkseagreen3","blue"))+
+  ylab("average RFU value (AU)")+
+  xlab("guide RNA/target DNA")+
+  theme(axis.text.x = element_text(angle = 45, hjust = 1), 
+        panel.background = element_rect(fill = "white"),
+        panel.grid = element_line(color = "grey"),
+        panel.border = element_rect(fill = NA, color = "black"), 
+        title = element_text(face = "bold"),
+        strip.background = element_rect(fill = NA, color = "black"),
+        strip.text = element_text(size = 10)
+) 
+dev.off()
         
 ```
 
@@ -308,7 +685,7 @@ DETECTR_028$AMP <- convertAMP(lm(standard_028$rfu_value~standard_028$standard_co
 #get samples only
 samples_028 <- subset(DETECTR_028, DETECTR_028$time=="01:00:00" & DETECTR_028$sample_set!="standard"& DETECTR_028$sample_set!=""& DETECTR_028$reporter!="DNA-RNA/r17A-TTATT-r3C"& DETECTR_028$reporter!="RNA/r17Ar3C")
 #plot
-samples_028
+
 
 pdf("../DETECTR_028_phos_reporter.pdf", width = 6, height = 4)
 ggplot(samples_028, aes(x = sample_set, y = AMP, fill = replicate)) +
@@ -328,21 +705,47 @@ ggplot(samples_028, aes(x = sample_set, y = AMP, fill = replicate)) +
         strip.text = element_text(size = 10)
 ) 
 dev.off()
-        
+
+
 
 #get samples only
-samples_028 <- subset(DETECTR_028, DETECTR_028$time=="01:00:00" & DETECTR_028$sample_set!="standard"& DETECTR_028$sample_set!=""& DETECTR_028$reporter!="DNA-RNA/r17A-TTATT-r3C"& DETECTR_028$reporte=="RNA/r17Ar3C")
+samples_028 <- subset(DETECTR_028, DETECTR_028$time=="01:00:00" & DETECTR_028$sample_set!="standard"& DETECTR_028$sample_set!=""& DETECTR_028$reporter!="DNA-RNA/r17A-TTATT-r3C"& DETECTR_028$reporter=="RNA/r17Ar3C")
 #plot
 samples_028
 
-pdf("../DETECTR_028_NANCEYDREW_firsttime.pdf", width = 6, height = 4)
+pdf("../DETECTR_028_NANCYDREW_firsttime.pdf", width = 6, height = 4)
 ggplot(samples_028, aes(x = sample_set, y = AMP, fill = replicate)) +
   #facet_wrap(~reporter,ncol=4,drop = TRUE,scales = "free_x")+
   geom_bar(stat = 'identity', position = 'dodge') +
   scale_y_continuous(breaks=seq(0,10,2), limits=c(0,10), expand = c(0,0))+
   scale_fill_manual(values = c("coral2", "goldenrod2"))+
   ylab("AMP (uM)")+
-  ggtitle("NANCEY DREW, 3 hour timepoint, 500nM input")+
+  ggtitle("NANCY DREW, 3 hour timepoint, 500nM input")+
+  theme(axis.text.x = element_text(angle = 60, hjust = 1), 
+        panel.background = element_rect(fill = "white"),
+        panel.grid = element_line(color = "grey"),
+        panel.border = element_rect(fill = NA, color = "black"), 
+        #strip.background = element_rect(color="black", fill="grey", size=1.5, linetype="solid"),
+        axis.title.x=element_blank(),
+        title = element_text(face = "bold"),
+        strip.background = element_rect(fill = NA, color = "black"),
+        strip.text = element_text(size = 10)
+) 
+dev.off()
+
+samples_028_average <- samples_028 %>% group_by(sample_set) %>% summarize (mean_AMP_value = mean(AMP))
+samples_028_average$sample_set<-as.character(samples_028_average$sample_set)
+
+samples_028_average$sample_set <- plyr::revalue(samples_028_average$sample_set , c("synthetic-11C"="target_added"))
+pdf("../DETECTR_028_NANCYDREW_firsttime_average.pdf", width = 6, height = 4)
+ggplot(samples_028_average, aes(x = sample_set, y = mean_AMP_value)) +
+  #facet_wrap(~reporter,ncol=4,drop = TRUE,scales = "free_x")+
+  geom_bar(stat = 'identity', position = 'dodge', fill = "coral2") +
+  scale_y_continuous(breaks=seq(0,10,2), limits=c(0,10), expand = c(0,0))+
+  scale_fill_manual(values = c("coral2"))+
+  ylab("average AMP (uM)")+
+  ggtitle("NANCY DREW, 3 hour timepoint, 25nM target concentration")+
+  scale_y_continuous(breaks=seq(0,10,2), limits=c(-0.5,10), expand = c(0,0))+
   theme(axis.text.x = element_text(angle = 60, hjust = 1), 
         panel.background = element_rect(fill = "white"),
         panel.grid = element_line(color = "grey"),
@@ -391,6 +794,29 @@ ggplot(samples_029, aes(x = input_conc, y = AMP, fill = replicate)) +
 )
 
 dev.off()
+
+samples_029_average <- samples_029 %>% group_by(input_conc) %>% summarize (mean_AMP_value = mean(AMP))
+samples_029_average$final_conc <- factor(c("500nM","50nM","5nM","500pM","50pM","5pM","500fM","50fM","5fM","500aM","no_target","no_cas12a"), levels=c("500nM","50nM","5nM","500pM","50pM","5pM","500fM","50fM","5fM","500aM","no_target","no_cas12a"))
+
+pdf("../DETECTR_029_NANCYDREW_LOD_average.pdf", width = 6, height = 4)
+ggplot(samples_029_average, aes(x = final_conc, y = mean_AMP_value)) +
+  geom_bar(stat = 'identity', position = 'dodge', fill = "coral2") +
+  scale_y_continuous(breaks=seq(0,10,2), limits=c(0,10), expand = c(0,0))+
+  scale_fill_manual(values = c("coral2", "goldenrod2"))+
+  ggtitle("NANCY DREW, Limit of Detection\n10X Dilution Series, 3 hour timepoint")+
+  ylab("average AMP (uM)")+
+  xlab("target DNA final concentration")+
+ 
+  theme(axis.text.x = element_text(angle = 60, hjust=1), 
+        panel.background = element_rect(fill = "white"),
+        panel.grid = element_line(color = "grey"),
+        panel.border = element_rect(fill = NA, color = "black"),
+        title = element_text(face = "bold"),
+        strip.background = element_rect(fill = NA, color = "black"),
+        strip.text = element_text(size = 10)
+)
+
+dev.off()
         
 ```
 
@@ -428,28 +854,92 @@ RNA_030 <- samples_030 %>% filter (reporter == "RNA-FAM") %>% plyr::mutate(bckgr
 
 samples_030 <- merge(DNA_030,RNA_030, all = TRUE)
 
-pdf("../DETECTR_030_RNA_DNA_LOD.pdf", width = 6, height = 4)
-ggplot(samples_030, aes(x = input_conc, y = bckground_sub_rfu, fill = replicate)) +
+
+samples_030_average <- samples_030 %>% group_by(input_conc,reporter) %>% summarize (mean_rfu_value = mean(bckground_sub_rfu))
+samples_030_average$final_conc <- factor(c("500nM","500nM","50nM","50nM","5nM","5nM","500pM","500pM","50pM","50pM","5pM","5pM","500fM","500fM","50fM","50fM","5fM","5fM","500aM","500aM","no_target","no_target","no_cas12a","no_cas12a"), levels=c("500nM","50nM","5nM","500pM","50pM","5pM","500fM","50fM","5fM","500aM","no_target","no_cas12a"))
+
+pdf("../DETECTR_030_RNA_DNA_LOD_average.pdf", width = 6, height = 4)
+ggplot(samples_030_average, aes(x = final_conc, y = mean_rfu_value, fill = reporter)) +
   facet_wrap(~reporter)+
   geom_bar(stat = 'identity', position = 'dodge') +
   scale_y_continuous(expand = c(0,0))+
   ggtitle("DETECTR (no RPA), Limit of Detection\n10X Dilution Series, 3 hour timepoint")+
   scale_fill_manual(values = c("darkslategray3", "mediumpurple3"))+
-  ylab("background subtracted RFU (AU)") +
+  ylab("average background subtracted RFU (AU)") +
+    xlab("target DNA final concentration")+
   theme(axis.text.x = element_text(angle = 60, hjust = 1), 
         panel.background = element_rect(fill = "white"),
         panel.grid = element_line(color = "grey"),
         panel.border = element_rect(fill = NA, color = "black"),
-
         title = element_text(face = "bold"),
         strip.background = element_rect(fill = NA, color = "black"),
-        strip.text = element_text(size = 10)
+        strip.text = element_text(size = 10),
+        legend.position = "none"
           
         
 )
 dev.off()
         
 ```
+
+```{r DETECTR 031}
+#read in DETECTR data
+DETECTR_031 <- read.csv("../tidy_data/DETECTR_031_tidy_metadata.csv")
+
+#calculate standard curve based on 1hr mark
+standard_031 <- subset(DETECTR_031, DETECTR_031$time=="00:50:00" & DETECTR_031$reporter=="standard")
+standard_031$standard_conc <- as.numeric(as.character(standard_031$standard_conc))
+ggplotRegression(lm(standard_031$rfu_value~standard_031$standard_conc))
+
+#convert rfu_value to AMP
+DETECTR_031$AMP <- convertAMP(lm(standard_031$rfu_value~standard_031$standard_conc), DETECTR_031$rfu_value)
+
+#get samples only
+samples_031 <- subset(DETECTR_031, DETECTR_031$time=="00:50:00" & DETECTR_031$reporter!="standard"& DETECTR_031$reporter!=""& DETECTR_031$reporter!="H20")
+samples_031$sample_set <- samples_031$standard_conc
+#plot
+samples_028 <- subset(DETECTR_028, DETECTR_028$time=="01:00:00" & DETECTR_028$sample_set!="standard"& DETECTR_028$sample_set!=""& DETECTR_028$reporter!="DNA-RNA/r17A-TTATT-r3C"& DETECTR_028$reporter!="RNA/r17Ar3C"& DETECTR_028$sample_set!="no_target")
+samples_028$reporter_nickname <- samples_028$reporter
+
+samples_028_031 <- merge(samples_031,samples_028, all = TRUE)
+samples_028_031$RNAseT <- plyr::revalue(samples_028_031$RNAseT , c("no_RNAse_T_added"="no_RNAseT"))
+samples_028_031$RNAseT <- plyr::revalue(samples_028_031$RNAseT , c("no_RNAseT_added"="no_RNAseT"))
+
+samples_028_031$RNAseT <- plyr::revalue(samples_028_031$RNAseT , c("RNAse_T_added"="RNAseT_added"))
+samples_028_031$RNAseT <- plyr::revalue(samples_028_031$RNAseT , c("RNAse_T"="RNAseT_added"))
+samples_028_031$sample_set <- plyr::revalue(samples_028_031$sample_set , c("no_RNAseT"="45uM"))
+
+
+samples_028_031$reporter_nickname <- plyr::revalue(samples_028_031$reporter_nickname , c("r5A-GGAGG-nophos"="r5A-DNA-nophos"))
+samples_028_031$reporter_nickname <- plyr::revalue(samples_028_031$reporter_nickname , c("r5A-GGAGG-phos"="r5A-DNA-phos"))
+
+samples_028_031$reporter_nickname <- factor(samples_028_031$reporter_nickname, levels = c("r5A-DNA-Gs","r5A-DNA-Cs","r5A-DNA-PT","r5A-DNA-ddC","r5A-DNA-nophos","r5A-DNA-phos"))
+
+samples_028_031_avg <- samples_028_031 %>% group_by(RNAseT,reporter_nickname,sample_set) %>% summarize (mean_AMP_value = mean (AMP))
+
+pdf("../DETECTR_031_028_modified_reporter_avg.pdf", width = 8, height = 4)
+ggplot(samples_028_031_avg, aes(x = sample_set, y = mean_AMP_value, fill = sample_set)) +
+  facet_grid(RNAseT~reporter_nickname,drop = TRUE,scales = "free_x")+
+  geom_bar(stat = 'identity', position = 'dodge') +
+  scale_y_continuous(breaks=seq(0,12,2), limits=c(-1,13), expand = c(0,0))+
+  scale_fill_manual(values = c("coral2", "goldenrod2"))+
+  ylab("average AMP (uM)")+
+  xlab("reporter concentration")+
+  ggtitle("3' blocked reporters, varying concentrations")+
+  theme(axis.text.x = element_text(angle = 60, hjust = 1), 
+        panel.background = element_rect(fill = "white"),
+        panel.grid = element_line(color = "grey"),
+        panel.border = element_rect(fill = NA, color = "black"), 
+        #strip.background = element_rect(color="black", fill="grey", size=1.5, linetype="solid"),
+   
+        title = element_text(face = "bold"),
+        strip.background = element_rect(fill = NA, color = "black"),
+        strip.text = element_text(size = 9),
+        legend.position = "none"
+) 
+dev.off()
+```
+
 
 
 

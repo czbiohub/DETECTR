@@ -1,0 +1,81 @@
+---
+title: "RPA_DETECTR_plots"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(dplyr)
+library(data.table)
+library(ggplot2)
+```
+
+```{r}
+
+#read in DETECTR data
+DETECTR_032 <- read.csv("../tidy_data/DETECTR_032_tidy_metadata.csv")
+
+#get 3 hour samples only
+samples_032 <- subset(DETECTR_032, DETECTR_032$time=="00:20:00")
+
+bck_average <- samples_032 %>% filter(input_conc == "H20_cas12a" ) %>% summarize (mean = mean(rfu_value))
+
+samples_032 <- samples_032 %>% plyr::mutate(bckground_sub_rfu = rfu_value - as.numeric(bck_average))
+
+samples_032$input_conc <- factor(samples_032$input_conc, levels = c("1ng", "100pg", "10pg","1pg", "100fg","10fg", "H20_RPA","H20_cas12a"))
+
+samples_032_average <- samples_032 %>% group_by(input_conc, strain, reaction_volume) %>% summarize (mean_rfu_value = mean(bckground_sub_rfu), sd_rfu_value = sd(bckground_sub_rfu))
+
+samples_032_average <- subset(samples_032_average, input_conc != "H20_cas12a")
+
+pdf("../DETECTR_032_RPA_LOD.pdf", width = 6, height = 4)
+ggplot(samples_032_average, aes(x = input_conc, y = mean_rfu_value, fill = strain)) +
+  facet_wrap(~reaction_volume, scale = "free_x")+
+  geom_bar(stat = 'identity', position = 'dodge', color = "black") +
+  geom_errorbar(aes(ymin=mean_rfu_value-sd_rfu_value, ymax=mean_rfu_value+sd_rfu_value), width=.2,
+                 position=position_dodge(.9)) +
+  scale_y_continuous(expand = c(0,0))+
+  ggtitle("DETECTR with RPA (IS1081 target)\nLimit of Detection, 10X Dilution Series")+
+  scale_fill_manual(values = c("darkslategray3", "mediumpurple3","darkseagreen3","olivedrab4"
+                              ))+
+  ylab("average background subtracted RFU (AU)") +
+  xlab("input mass to RPA")+
+  theme(axis.text.x = element_text(angle = 60, hjust = 1), 
+        panel.background = element_rect(fill = "white"),
+        panel.grid = element_line(color = "grey"),
+        panel.border = element_rect(fill = NA, color = "black"),
+        title = element_text(face = "bold"),
+        strip.background = element_rect(fill = NA, color = "black"),
+        strip.text = element_text(size = 10)
+          
+        
+)
+dev.off()
+
+samples_032_average_full <- subset(samples_032_average, reaction_volume != "quarter" & strain != "Clinical_041a")
+
+
+pdf("../DETECTR_032_RPA_LOD_full.pdf", width = 6, height = 4)
+ggplot(samples_032_average_full, aes(x = input_conc, y = mean_rfu_value, fill = strain)) +
+  geom_bar(stat = 'identity', position = 'dodge', color = "black") +
+  geom_errorbar(aes(ymin=mean_rfu_value-sd_rfu_value, ymax=mean_rfu_value+sd_rfu_value), width=.2,
+                 position=position_dodge(.9)) +
+  scale_y_continuous(expand = c(0,0))+
+  ggtitle("DETECTR with RPA (IS1081 target)\nLimit of Detection, 10X Dilution Series")+
+  scale_fill_manual(values = c("darkslategray3", "mediumpurple3","darkseagreen3","olivedrab4"
+                              ))+
+  ylab("average background subtracted RFU (AU)") +
+  xlab("input mass to RPA")+
+  theme(axis.text.x = element_text(angle = 60, hjust = 1), 
+        panel.background = element_rect(fill = "white"),
+        panel.grid = element_line(color = "grey"),
+        panel.border = element_rect(fill = NA, color = "black"),
+        title = element_text(face = "bold"),
+        strip.background = element_rect(fill = NA, color = "black"),
+        strip.text = element_text(size = 10),
+        legend.title = element_blank()
+          
+        
+)
+dev.off()
+```
+
