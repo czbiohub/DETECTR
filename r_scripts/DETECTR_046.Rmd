@@ -1,0 +1,539 @@
+---
+title: "DETECTR 046 AMP GLO w/o Reagent 1 and w/ larger volumes"
+output:
+  html_document:
+    df_print: paged
+---
+
+Main takeaways: Reagent 1 is necessary for sensitive luciferase reaction. However  a small level of luminescence is visible in a concentration dependent manner without it. Larger volume reactions seem to be more sensitive and give larger signal than smaller volumes - this is likely due to more molecules (in retrospect, I should have done the same molecules in a smaller volume...).
+
+```{r setup, include=FALSE}
+library(dplyr)
+library(data.table)
+library(ggplot2)
+```
+
+
+```{r include=FALSE}
+ggplotRegression <- function (fit) {
+
+require(ggplot2)
+
+ggplot(fit$model, aes_string(x = names(fit$model)[2], y = names(fit$model)[1])) + 
+  geom_point() +
+  stat_smooth(method = "lm", col = "red") +
+  labs(title = paste("Adj R2 = ",signif(summary(fit)$adj.r.squared, 5),
+                     "Intercept =",signif(fit$coef[[1]],5 ),
+                     " Slope =",signif(fit$coef[[2]], 5),
+                     " P =",signif(summary(fit)$coef[2,4], 5)))
+}
+```
+
+```{r include=FALSE}
+
+convertAMP <- function (fit, value) {
+
+intercept = signif(fit$coef[[1]],5 )
+slope = signif(fit$coef[[2]], 5)
+AMP = (value - intercept)/slope
+
+
+return(AMP)
+}
+```
+
+```{r include=FALSE}
+sumBelowTime <- function (DETECTR_037, hour) {
+
+DETECTR_037 = subset(DETECTR_037, (hours < hour) | (hours == hour & minutes == 0 & seconds == 0))
+DETECTR_037_sum = DETECTR_037 %>% group_by(standard_conc, replicate, sample_set) %>% summarize (total_rfu=sum(rfu_value))
+return(DETECTR_037_sum)
+}
+```
+
+# Reagent 1 Test
+This experiment was to test if Reagent 1 was necessary for the luciferase reaction. Reagent 1 was replaced with NEBuffer 2.1. Duplicates were performed.
+
+## AMP NEBuffer 4 + 2.1 Thawed Standard Curves for concentrations from 0.01uM to 10uM, including 0uM
++ 0hr and 1hr single time points are first two plots
++ Summation of all data points below 1hr is next plot
++ 1.5 second integration time
++ Used DETECTR_042 no ATP AMP standards
+
+### Conclusion 
+The R2 on these look worse than usual.
+
+```{r echo=FALSE}
+
+DETECTR_046 <- read.csv("../tidy_data/DETECTR_046_Reagent1_tidy_metadata.csv")
+standard_046 <- subset(DETECTR_046, !(is.na(DETECTR_046$standard_conc)) & DETECTR_046$sample_set == "Reagent1")
+standard_046$standard_conc <- as.numeric(as.character(standard_046$standard_conc))
+
+standard_046_0hr_single_point = subset(standard_046,time =="00:00:00")
+standard_046_1hr_single_point = subset(standard_046,time =="01:00:00")
+#standard_046_30min = sumBelowTime(standard_046,0,30,0)
+
+standard_046_1hr = sumBelowTime(standard_046,1)
+
+ggplotRegression(lm(standard_046_0hr_single_point$rfu_value~standard_046_0hr_single_point$standard_conc))
+ggplotRegression(lm(standard_046_1hr_single_point$rfu_value~standard_046_1hr_single_point$standard_conc))
+#ggplotRegression(lm(standard_046_30min$total_rfu~standard_046_30min$standard_conc))
+
+ggplotRegression(lm(standard_046_1hr$total_rfu~standard_046_1hr$standard_conc)) 
+
+```
+
+## AMP NEBuffer 4+ 2.1 Thawed Standard Curves for concentrations from 0.01uM to 0.625uM, including 0uM
++ 0hr and 1hr single time points are first two plots
++ Summation of all data points below 1hr is next plot
++ 1.5 second integration time
++ Used DETECTR_042 no ATP AMP standards
+
+### Conclusion 
+I would trust down to 0.08uM. Summing helps a little, but data is still very noisy.
+
+```{r echo=FALSE}
+
+DETECTR_046 <- read.csv("../tidy_data/DETECTR_046_Reagent1_tidy_metadata.csv")
+standard_046 <- subset(DETECTR_046, !(is.na(DETECTR_046$standard_conc)) & DETECTR_046$sample_set == "Reagent1")
+standard_046$standard_conc <- as.numeric(as.character(standard_046$standard_conc))
+standard_046 = subset(standard_046,standard_conc<=1)
+
+standard_046_0hr_single_point = subset(standard_046,time =="00:00:00")
+standard_046_1hr_single_point = subset(standard_046,time =="01:00:00")
+#standard_046_30min = sumBelowTime(standard_046,0,30,0)
+
+standard_046_1hr = sumBelowTime(standard_046,1)
+
+ggplotRegression(lm(standard_046_0hr_single_point$rfu_value~standard_046_0hr_single_point$standard_conc))
+ggplotRegression(lm(standard_046_1hr_single_point$rfu_value~standard_046_1hr_single_point$standard_conc))
+#ggplotRegression(lm(standard_046_30min$total_rfu~standard_046_30min$standard_conc))
+
+ggplotRegression(lm(standard_046_1hr$total_rfu~standard_046_1hr$standard_conc)) 
+
+
+```
+
+
+## No Reagent 1 AMP NEBuffer 4 + 2.1 Thawed Standard Curves for concentrations from 0.01uM to 10uM, including 0uM
++ 0hr and 1hr single time points are first two plots
++ Summation of all data points below 1hr is next plot
++ 1.5 second integration time
++ Used DETECTR_042 no ATP AMP standards
+
+### Conclusion 
+Looks like luciferase reaction still occurs, but on a much lower level and with less sensitivity. Makes sense as pyruvate kinase will probably have some activity AMP->ADP->ATP but is more efficient at ADP->ATP. Summing helps (usually does in lower regimes, which is what this essentially is)
+
+```{r echo=FALSE}
+
+DETECTR_046 <- read.csv("../tidy_data/DETECTR_046_Reagent1_tidy_metadata.csv")
+standard_046 <- subset(DETECTR_046, !(is.na(DETECTR_046$standard_conc)) & DETECTR_046$sample_set == "NEBuffer2.1")
+standard_046$standard_conc <- as.numeric(as.character(standard_046$standard_conc))
+
+standard_046_0hr_single_point = subset(standard_046,time =="00:00:00")
+standard_046_1hr_single_point = subset(standard_046,time =="01:00:00")
+#standard_046_30min = sumBelowTime(standard_046,0,30,0)
+
+standard_046_1hr = sumBelowTime(standard_046,1)
+
+ggplotRegression(lm(standard_046_0hr_single_point$rfu_value~standard_046_0hr_single_point$standard_conc))
+ggplotRegression(lm(standard_046_1hr_single_point$rfu_value~standard_046_1hr_single_point$standard_conc))
+#ggplotRegression(lm(standard_046_30min$total_rfu~standard_046_30min$standard_conc))
+
+ggplotRegression(lm(standard_046_1hr$total_rfu~standard_046_1hr$standard_conc)) 
+
+```
+
+## No Reagent 1 AMP NEBuffer 4+ 2.1 Thawed Standard Curves for concentrations from 0.01uM to 0.625uM, including 0uM
++ 0hr and 1hr single time points are first two plots
++ Summation of all data points below 1hr is next plot
++ 1.5 second integration time
++ Used DETECTR_042 no ATP AMP standards
+
+### Conclusion 
+Lower concentrations are just noisy.
+
+```{r echo=FALSE}
+
+DETECTR_046 <- read.csv("../tidy_data/DETECTR_046_Reagent1_tidy_metadata.csv")
+standard_046 <- subset(DETECTR_046, !(is.na(DETECTR_046$standard_conc)) & DETECTR_046$sample_set == "NEBuffer2.1")
+standard_046$standard_conc <- as.numeric(as.character(standard_046$standard_conc))
+standard_046 = subset(standard_046,standard_conc<=1)
+
+standard_046_0hr_single_point = subset(standard_046,time =="00:00:00")
+standard_046_1hr_single_point = subset(standard_046,time =="01:00:00")
+#standard_046_30min = sumBelowTime(standard_046,0,30,0)
+
+standard_046_1hr = sumBelowTime(standard_046,1)
+
+ggplotRegression(lm(standard_046_0hr_single_point$rfu_value~standard_046_0hr_single_point$standard_conc))
+ggplotRegression(lm(standard_046_1hr_single_point$rfu_value~standard_046_1hr_single_point$standard_conc))
+#ggplotRegression(lm(standard_046_30min$total_rfu~standard_046_30min$standard_conc))
+
+ggplotRegression(lm(standard_046_1hr$total_rfu~standard_046_1hr$standard_conc)) 
+
+
+```
+
+
+
+
+## Comparison of Reagent 1 vs NEBuffer 2.1 AMP Thawed Standard Curves for concentrations from 0.01uM to 10uM, including 0uM
++ Summation of all data points below 1hr is used
++ Used DETECTR_042 no ATP AMP standards
+
+### Conclusion 
+Signal is much higher for those with Reagent 1 instead of NEBuffer 2.1
+
+```{r echo=FALSE}
+
+DETECTR_046 <- read.csv("../tidy_data/DETECTR_046_Reagent1_tidy_metadata.csv")
+standard_046 <- DETECTR_046
+standard_046$standard_conc <- as.numeric(as.character(standard_046$standard_conc))
+
+standard_046_1hr = sumBelowTime(standard_046,1)
+
+ggplot(standard_046_1hr, aes(x = standard_conc, y = total_rfu, color = sample_set)) +
+  geom_point(stat = 'identity', size = 1) +
+  scale_y_continuous(expand = c(0,0))+
+  scale_color_manual(values = c("darkslategray3", "mediumpurple3","darkseagreen3","olivedrab4","orange","yellow","blue","red","green","brown","black","purple","olivedrab2","grey","pink","orchid3"))+
+  ylab("rfu_value") +
+  xlab("concentration (uM)")+
+  ggtitle("AMP Plots")+
+  theme(
+        panel.background = element_rect(fill = "white"),
+        panel.grid = element_line(color = "grey"),
+        panel.border = element_rect(fill = NA, color = "black"),
+        title = element_text(face = "bold"),
+        strip.background = element_rect(fill = NA, color = "black"),
+        strip.text = element_text(size = 10),
+        legend.title = element_blank())
+
+standard_046_1hr = subset(standard_046_1hr,standard_conc<=1)
+
+ggplot(standard_046_1hr, aes(x = standard_conc, y = total_rfu, color = sample_set)) +
+  geom_point(stat = 'identity', size = 1) +
+  scale_y_continuous(expand = c(0,0))+
+  scale_color_manual(values = c("darkslategray3", "mediumpurple3","darkseagreen3","olivedrab4","orange","yellow","blue","red","green","brown","black","purple","olivedrab2","grey","pink","orchid3"))+
+  ylab("rfu_value") +
+  xlab("concentration (uM)")+
+  ggtitle("AMP Plots, low concentrations")+
+  theme(
+        panel.background = element_rect(fill = "white"),
+        panel.grid = element_line(color = "grey"),
+        panel.border = element_rect(fill = NA, color = "black"),
+        title = element_text(face = "bold"),
+        strip.background = element_rect(fill = NA, color = "black"),
+        strip.text = element_text(size = 10),
+        legend.title = element_blank())
+
+
+
+```
+
+
+## Kinetics over time
+Signal seems to be much lower than usual - 300 rfu? It also looks less stable.
+
+```{r echo=FALSE, warning=FALSE}
+
+DETECTR_046 <- read.csv("../tidy_data/DETECTR_046_Reagent1_tidy_metadata.csv")
+DETECTR_046$standard_conc <- as.numeric(as.character(DETECTR_046$standard_conc))
+DETECTR_046$standard_conc <- factor(DETECTR_046$standard_conc)
+
+ggplot(DETECTR_046, aes(x = time, y = rfu_value, color = standard_conc)) +
+  facet_wrap(~sample_set, scale = "free_y")+
+  #geom_line(stat = 'identity') +
+  geom_point(stat = 'identity', size = 0.5) +
+  scale_y_continuous(expand = c(0,0))+
+ # scale_x_continuous(breaks = seq(0,24,2))+
+  #scale_color_discrete(face = "concentration(uM)")+
+  scale_color_manual(name = "concentration(uM)", values = c("darkslategray3", "mediumpurple3","darkseagreen3","olivedrab4","orange","yellow","blue","red","green","brown","black","purple","olivedrab2","grey","pink","orchid3"))+
+  ylab("rfu_value") +
+  xlab("time from 0 hr to 1 hr")+
+  theme(axis.text.x = element_blank(), 
+        panel.background = element_rect(fill = "white"),
+        panel.grid = element_line(color = "grey"),
+        panel.border = element_rect(fill = NA, color = "black"),
+        title = element_text(face = "bold"),
+        strip.background = element_rect(fill = NA, color = "black"),
+        strip.text = element_text(size = 10)
+          
+        
+)
+```
+
+
+
+# Larger Volume Test
+100uL reaction was compared to 20uL reaction with same input concentration (NOT moles). This was done in a normal volume black/black 384 well plate.
+
+
+## 20uL AMP NEBuffer 4 + 2.1 Fresh Standard Curves for concentrations from 0.01uM to 10uM, including 0uM
++ 0hr and 1hr single time points are first two plots
++ Summation of all data points below 1hr is next plot
++ 1.5 second integration time
+
+### Conclusion 
+I used fresh Kinase and fresh standards for this experiment so the values are a lot higher. 
+
+```{r echo=FALSE}
+
+DETECTR_046 <- read.csv("../tidy_data/DETECTR_046_LargerVolumes_tidy_metadata.csv")
+standard_046 <- subset(DETECTR_046, !(is.na(DETECTR_046$standard_conc)) & DETECTR_046$sample_set == "20uL")
+standard_046$standard_conc <- as.numeric(as.character(standard_046$standard_conc))
+
+standard_046_0hr_single_point = subset(standard_046,time =="00:00:00")
+standard_046_1hr_single_point = subset(standard_046,time =="01:00:00")
+#standard_046_30min = sumBelowTime(standard_046,0,30,0)
+
+standard_046_1hr = sumBelowTime(standard_046,1)
+
+ggplotRegression(lm(standard_046_0hr_single_point$rfu_value~standard_046_0hr_single_point$standard_conc))
+ggplotRegression(lm(standard_046_1hr_single_point$rfu_value~standard_046_1hr_single_point$standard_conc))
+#ggplotRegression(lm(standard_046_30min$total_rfu~standard_046_30min$standard_conc))
+
+ggplotRegression(lm(standard_046_1hr$total_rfu~standard_046_1hr$standard_conc)) 
+
+```
+
+
+## 20uL AMP NEBuffer 4+ 2.1 Fresh Standard Curves for concentrations from 0.01uM to 0.625uM, including 0uM
++ 0hr and 1hr single time points are first two plots
++ Summation of all data points below 1hr is next plot
++ 1.5 second integration time
+
+### Conclusion 
+Noisy below 0.01uM. Hard to make a direct comparison about integration time on this one because the plates are different (black vs white)
+
+```{r echo=FALSE}
+
+DETECTR_046 <- read.csv("../tidy_data/DETECTR_046_LargerVolumes_tidy_metadata.csv")
+standard_046 <- subset(DETECTR_046, !(is.na(DETECTR_046$standard_conc)) & DETECTR_046$sample_set == "20uL")
+standard_046$standard_conc <- as.numeric(as.character(standard_046$standard_conc))
+standard_046 = subset(standard_046,standard_conc<=1)
+
+standard_046_0hr_single_point = subset(standard_046,time =="00:00:00")
+standard_046_1hr_single_point = subset(standard_046,time =="01:00:00")
+#standard_046_30min = sumBelowTime(standard_046,0,30,0)
+
+standard_046_1hr = sumBelowTime(standard_046,1)
+
+ggplotRegression(lm(standard_046_0hr_single_point$rfu_value~standard_046_0hr_single_point$standard_conc))
+ggplotRegression(lm(standard_046_1hr_single_point$rfu_value~standard_046_1hr_single_point$standard_conc))
+#ggplotRegression(lm(standard_046_30min$total_rfu~standard_046_30min$standard_conc))
+
+ggplotRegression(lm(standard_046_1hr$total_rfu~standard_046_1hr$standard_conc)) 
+
+
+```
+
+
+## 20uL AMP NEBuffer 4+ 2.1 Fresh Standard Curves for concentrations from 0.01uM to 0.08uM, including 0uM
++ 0hr and 1hr single time points are first two plots
++ Summation of all data points below 1hr is next plot
++ 1.5 second integration time
+
+### Conclusion 
+For the 20uL volume, I don't trust below 0.08uM. 
+
+```{r echo=FALSE}
+
+DETECTR_046 <- read.csv("../tidy_data/DETECTR_046_LargerVolumes_tidy_metadata.csv")
+standard_046 <- subset(DETECTR_046, !(is.na(DETECTR_046$standard_conc)) & DETECTR_046$sample_set == "20uL")
+standard_046$standard_conc <- as.numeric(as.character(standard_046$standard_conc))
+standard_046 = subset(standard_046,standard_conc<=0.1)
+
+standard_046_0hr_single_point = subset(standard_046,time =="00:00:00")
+standard_046_1hr_single_point = subset(standard_046,time =="01:00:00")
+#standard_046_30min = sumBelowTime(standard_046,0,30,0)
+
+standard_046_1hr = sumBelowTime(standard_046,1)
+
+ggplotRegression(lm(standard_046_0hr_single_point$rfu_value~standard_046_0hr_single_point$standard_conc))
+ggplotRegression(lm(standard_046_1hr_single_point$rfu_value~standard_046_1hr_single_point$standard_conc))
+#ggplotRegression(lm(standard_046_30min$total_rfu~standard_046_30min$standard_conc))
+
+ggplotRegression(lm(standard_046_1hr$total_rfu~standard_046_1hr$standard_conc)) 
+
+
+```
+
+## 100uL AMP NEBuffer 4 + 2.1 Fresh Standard Curves for concentrations from 0.01uM to 10uM, including 0uM
++ 0hr and 1hr single time points are first two plots
++ Summation of all data points below 1hr is next plot
++ 1.5 second integration time
+
+### Conclusion 
+The overall regression looks better for the 20uL volume, maybe because the 10uM point was saturated on 100uL. Summing also doesn't seem to help. 
+
+```{r echo=FALSE}
+
+DETECTR_046 <- read.csv("../tidy_data/DETECTR_046_LargerVolumes_tidy_metadata.csv")
+standard_046 <- subset(DETECTR_046, !(is.na(DETECTR_046$standard_conc)) & DETECTR_046$sample_set == "100uL")
+standard_046$standard_conc <- as.numeric(as.character(standard_046$standard_conc))
+
+standard_046_0hr_single_point = subset(standard_046,time =="00:00:00")
+standard_046_1hr_single_point = subset(standard_046,time =="01:00:00")
+#standard_046_30min = sumBelowTime(standard_046,0,30,0)
+
+standard_046_1hr = sumBelowTime(standard_046,1)
+
+ggplotRegression(lm(standard_046_0hr_single_point$rfu_value~standard_046_0hr_single_point$standard_conc))
+ggplotRegression(lm(standard_046_1hr_single_point$rfu_value~standard_046_1hr_single_point$standard_conc))
+#ggplotRegression(lm(standard_046_30min$total_rfu~standard_046_30min$standard_conc))
+
+ggplotRegression(lm(standard_046_1hr$total_rfu~standard_046_1hr$standard_conc)) 
+
+```
+
+
+## 100uL AMP NEBuffer 4+ 2.1 Fresh Standard Curves for concentrations from 0.01uM to 0.625uM, including 0uM
++ 0hr and 1hr single time points are first two plots
++ Summation of all data points below 1hr is next plot
++ 1.5 second integration time
+
+### Conclusion 
+As before with 20uL, non linear in the lower regimes.
+
+```{r echo=FALSE}
+
+DETECTR_046 <- read.csv("../tidy_data/DETECTR_046_LargerVolumes_tidy_metadata.csv")
+standard_046 <- subset(DETECTR_046, !(is.na(DETECTR_046$standard_conc)) & DETECTR_046$sample_set == "100uL")
+standard_046$standard_conc <- as.numeric(as.character(standard_046$standard_conc))
+standard_046 = subset(standard_046,standard_conc<=1)
+
+standard_046_0hr_single_point = subset(standard_046,time =="00:00:00")
+standard_046_1hr_single_point = subset(standard_046,time =="01:00:00")
+#standard_046_30min = sumBelowTime(standard_046,0,30,0)
+
+standard_046_1hr = sumBelowTime(standard_046,1)
+
+ggplotRegression(lm(standard_046_0hr_single_point$rfu_value~standard_046_0hr_single_point$standard_conc))
+ggplotRegression(lm(standard_046_1hr_single_point$rfu_value~standard_046_1hr_single_point$standard_conc))
+#ggplotRegression(lm(standard_046_30min$total_rfu~standard_046_30min$standard_conc))
+
+ggplotRegression(lm(standard_046_1hr$total_rfu~standard_046_1hr$standard_conc)) 
+
+
+```
+
+
+
+## 100uL AMP NEBuffer 4+ 2.1 Fresh Standard Curves for concentrations from 0.01uM to 0.08uM, including 0uM
++ 0hr and 1hr single time points are first two plots
++ Summation of all data points below 1hr is next plot
++ 1.5 second integration time
+
+### Conclusion 
+When zooming in, I would trust down to 0.018uM, which is better than before. This makes sense - 5X the volume would be 5X the molecules, translating to the 4X more concentration sensitivity.
+
+```{r echo=FALSE}
+
+DETECTR_046 <- read.csv("../tidy_data/DETECTR_046_LargerVolumes_tidy_metadata.csv")
+standard_046 <- subset(DETECTR_046, !(is.na(DETECTR_046$standard_conc)) & DETECTR_046$sample_set == "100uL")
+standard_046$standard_conc <- as.numeric(as.character(standard_046$standard_conc))
+standard_046 = subset(standard_046,standard_conc<=0.1)
+
+standard_046_0hr_single_point = subset(standard_046,time =="00:00:00")
+standard_046_1hr_single_point = subset(standard_046,time =="01:00:00")
+#standard_046_30min = sumBelowTime(standard_046,0,30,0)
+
+standard_046_1hr = sumBelowTime(standard_046,1)
+
+ggplotRegression(lm(standard_046_0hr_single_point$rfu_value~standard_046_0hr_single_point$standard_conc))
+ggplotRegression(lm(standard_046_1hr_single_point$rfu_value~standard_046_1hr_single_point$standard_conc))
+#ggplotRegression(lm(standard_046_30min$total_rfu~standard_046_30min$standard_conc))
+
+ggplotRegression(lm(standard_046_1hr$total_rfu~standard_046_1hr$standard_conc)) 
+
+
+```
+
+
+
+
+
+## 20uL vs 100uL AMP NEBuffer 4 + 2.1 Fresh Standard Curves
++ Single 1hr timepoint is used
+
+### Conclusion 
+Illustrates the much higher rfu values for 100uL.
+
+```{r echo=FALSE}
+
+DETECTR_046 <- read.csv("../tidy_data/DETECTR_046_LargerVolumes_tidy_metadata.csv")
+standard_046 <- DETECTR_046
+standard_046$standard_conc <- as.numeric(as.character(standard_046$standard_conc))
+standard_046_1hr <- subset(standard_046, time == "01:00:00")
+
+ggplot(standard_046_1hr, aes(x = standard_conc, y = rfu_value, color = sample_set)) +
+  geom_point(stat = 'identity', size = 2) +
+  scale_y_continuous(expand = c(0,0))+
+  scale_color_manual(values = c("darkslategray3", "mediumpurple3","darkseagreen3","olivedrab4","orange","yellow","blue","red","green","brown","black","purple","olivedrab2","grey","pink","orchid3"))+
+  ylab("rfu_value") +
+  xlab("concentration (uM)")+
+  ggtitle("AMP Plots")+
+  theme(
+        panel.background = element_rect(fill = "white"),
+        panel.grid = element_line(color = "grey"),
+        panel.border = element_rect(fill = NA, color = "black"),
+        title = element_text(face = "bold"),
+        strip.background = element_rect(fill = NA, color = "black"),
+        strip.text = element_text(size = 10),
+        legend.title = element_blank())
+
+standard_046_1hr = subset(standard_046_1hr,standard_conc<=1)
+
+ggplot(standard_046_1hr, aes(x = standard_conc, y = rfu_value, color = sample_set)) +
+  geom_point(stat = 'identity', size = 1.5) +
+  scale_y_continuous(expand = c(0,0))+
+  scale_color_manual(values = c("darkslategray3", "mediumpurple3","darkseagreen3","olivedrab4","orange","yellow","blue","red","green","brown","black","purple","olivedrab2","grey","pink","orchid3"))+
+  ylab("rfu_value") +
+  xlab("concentration (uM)")+
+  ggtitle("AMP Plots, low concentrations")+
+  theme(
+        panel.background = element_rect(fill = "white"),
+        panel.grid = element_line(color = "grey"),
+        panel.border = element_rect(fill = NA, color = "black"),
+        title = element_text(face = "bold"),
+        strip.background = element_rect(fill = NA, color = "black"),
+        strip.text = element_text(size = 10),
+        legend.title = element_blank())
+
+
+
+```
+
+
+
+## Kinetics over time
+There is an outlier in the 10uM standard. Kinetics look similar. 20uL might be saturating faster.
+
+```{r echo=FALSE, warning=FALSE}
+
+DETECTR_046 <- read.csv("../tidy_data/DETECTR_046_LargerVolumes_tidy_metadata.csv")
+DETECTR_046$standard_conc <- as.numeric(as.character(DETECTR_046$standard_conc))
+DETECTR_046$standard_conc <- factor(DETECTR_046$standard_conc)
+
+ggplot(DETECTR_046, aes(x = time, y = rfu_value, color = standard_conc)) +
+  facet_wrap(~sample_set, scale = "free_y")+
+  #geom_line(stat = 'identity') +
+  geom_point(stat = 'identity', size = 0.5) +
+  scale_y_continuous(expand = c(0,0))+
+ # scale_x_continuous(breaks = seq(0,24,2))+
+  #scale_color_discrete(face = "concentration(uM)")+
+  scale_color_manual(name = "concentration(uM)", values = c("darkslategray3", "mediumpurple3","darkseagreen3","olivedrab4","orange","yellow","blue","red","green","brown","black","purple","olivedrab2","grey","pink","orchid3"))+
+  ylab("rfu_value") +
+  xlab("time from 0 hr to 1 hr")+
+  theme(axis.text.x = element_blank(), 
+        panel.background = element_rect(fill = "white"),
+        panel.grid = element_line(color = "grey"),
+        panel.border = element_rect(fill = NA, color = "black"),
+        title = element_text(face = "bold"),
+        strip.background = element_rect(fill = NA, color = "black"),
+        strip.text = element_text(size = 10)
+          
+        
+)
+```

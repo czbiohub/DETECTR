@@ -1,0 +1,310 @@
+---
+title: "DETECTR 048 Luminometer Data"
+output:
+  html_document:
+    df_print: paged
+---
+
+Note that everything is plotted on a log10(x) and flexible log10(y) scale, meaning the axis changes with every plot. In addition, 240 kinetic reads for ENLITEN Standard kinetics experiment and 6 kinetic reads for UMP/AMP no kinase experiments were performed at unknown integration time - attempted 10s, but could have also been 0.5s.
+
+# Experiments performed
+1. ENLITEN Standard Kinetics - 40 minutes
+2. No Kinase Experiment - UMP and AMP in triplicate
+3. Integration Time Tests - ENLITEN injection and UMP/AMP no kinase endpoint read
+
+
+```{r setup, include=FALSE}
+library(dplyr)
+library(data.table)
+library(ggplot2)
+library(scales)
+```
+
+
+```{r include=FALSE}
+ggplotRegression <- function (fit) {
+
+require(ggplot2)
+
+p = ggplot(fit$model, aes_string(x = names(fit$model)[2], y = names(fit$model)[1])) + 
+  geom_point() +
+  stat_smooth(method = "lm", col = "red") +
+  labs(title = paste("Adj R2 = ",signif(summary(fit)$adj.r.squared, 5),
+                     "Intercept =",signif(fit$coef[[1]],5 ),
+                     " Slope =",signif(fit$coef[[2]], 5),
+                     " P =",signif(summary(fit)$coef[2,4], 5))) +
+  scale_x_log10(breaks = c(1e-10,1e-11,1e-12,1e-13,1e-14,1e-15,1e-16,1e-17))+
+  scale_y_log10()
+
+
+return (p)
+
+}
+
+
+
+
+
+```
+
+
+```{r include=FALSE}
+sumBelowTime <- function (DETECTR_037, hour) {
+
+DETECTR_037 = subset(DETECTR_037, (hours < hour) | (hours == hour & minutes == 0 & seconds == 0))
+DETECTR_037_sum = DETECTR_037 %>% group_by(standard_conc, replicate) %>% summarize (total_rfu=sum(rfu_value))
+return(DETECTR_037_sum)
+}
+```
+
+## ENLITEN ATP Standards from 1E-11 to 1E-17 moles, first read only
++ First of 240 kinetic reads plotted (2s delay, 10s integration time??)
++ 0 moles rfu value excluded from regression
++ 100uL of ATP standard diluted in water
+
+### Conclusion 
+The 1e-17 value is higher than the 0 value, which is consistent with prior results done in triplicate. The fit is not linear.
+
+```{r echo=FALSE, message=TRUE, warning=FALSE}
+
+DETECTR_048 <- read.csv("../tidy_data/DETECTR_048_tidy.csv")
+standard_044 <- subset(DETECTR_048, DETECTR_048$kit == "ENLITEN_kinetics" &  DETECTR_048$read_number == 1)
+
+
+standard_044_add_small_value = standard_044 %>% mutate(concentration_moles = ifelse(concentration_moles == 0, 1e-18, concentration_moles))
+
+ggplot(data = standard_044_add_small_value, aes(x= concentration_moles, y = rfu_value)) + 
+  geom_point() +
+  scale_x_log10(breaks = c(1e-10,1e-11,1e-12,1e-13,1e-14,1e-15,1e-16,1e-17)) +
+  scale_y_log10() +
+  ggtitle("ENLITEN Standards Read 1, Log Scale Plot") + theme_bw()
+
+standard_044_add_small_value <- subset (standard_044_add_small_value, (concentration_moles < 1e-13) & (concentration_moles > 1e-19))
+ggplot(data = standard_044_add_small_value, aes(x= concentration_moles, y = rfu_value)) + 
+  geom_point() +
+  scale_x_log10(breaks = c(1e-10,1e-11,1e-12,1e-13,1e-14,1e-15,1e-16,1e-17))+
+  scale_y_log10()+
+  ggtitle("ENLITEN Standards Read 1, Log Scale Plot, low concentrations") + theme_bw()
+
+
+#calculate and plot regression without 0 on log scale
+standard_044 <- subset(standard_044, concentration_moles != 0)
+ggplotRegression(lm(standard_044$rfu_value~standard_044$concentration_moles))
+
+
+```
+
+## ENLITEN Kinetics - ATP Standards from 1E-11 to 1E-17 moles
++ 240 reads, 2s delay after injection, 10s or 0.5s integration time [unknown], 10s spacing
++ Total of 40 minutes per well
++ 1e-11 moles saturated the reading and did not continue collecting data after the first few reads; all reads after are 5e7 (tried this multiple times with different wells and the same thing happened)
++ First three plots show the summation of all 240 reads for a single well. 1 = all concentrations, 2 = low concentrations and 3 = regression.
++ Last plot is kinetics over time
+
+### Conclusion 
+Drop-off is barely exponential for the higher concentrations and looks linear at lower concentrations, including the 0 moles. It is unclear if the dropoff for 0 is due to ATP contamination or bleaching of some kind. 1e-17 is consistently higher than 0 moles over time but not by much. Summation, obviously, increases the difference between 0 and 1e-17 because it is consistently higher.
+
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+DETECTR_048 <- read.csv("../tidy_data/DETECTR_048_tidy.csv")
+standard_044 <- subset(DETECTR_048, DETECTR_048$kit == "ENLITEN_kinetics")
+
+standard_044_sum = standard_044 %>% group_by(concentration, concentration_moles, row, column, well, kit, experiment) %>% summarize (rfu_value=sum(rfu_value))
+
+
+#add a small value to 0 plot to allow log-scale plotting
+
+standard_044_add_small_value = standard_044_sum %>% mutate(concentration_moles_small = ifelse(concentration_moles == 0, 1e-18, concentration_moles))
+
+ggplot(data = standard_044_add_small_value, aes(x= concentration_moles_small, y = rfu_value)) + 
+  geom_point() +
+  scale_x_log10(breaks = c(1e-10,1e-11,1e-12,1e-13,1e-14,1e-15,1e-16,1e-17)) +
+  scale_y_log10() +
+  ggtitle("ENLITEN 240 Read Sum, Log Scale Plot") + theme_bw()
+
+standard_044_add_small_value <- subset (standard_044_add_small_value, (concentration_moles_small < 1e-13) & (concentration_moles_small > 1e-19))
+ggplot(data = standard_044_add_small_value, aes(x= concentration_moles_small, y = rfu_value)) + 
+  geom_point() +
+  scale_x_log10(breaks = c(1e-10,1e-11,1e-12,1e-13,1e-14,1e-15,1e-16,1e-17))+
+  scale_y_log10()+
+  ggtitle("ENLITEN 240 Read Sum, Log Scale Plot, low concentrations") + theme_bw()
+
+#calculate and plot regression without 0 on log scale
+standard_044_sum <- subset(standard_044_sum, concentration_moles != 0)
+ggplotRegression(lm(standard_044_sum$rfu_value~standard_044_sum$concentration_moles))
+
+
+#plot kinetics of plate reads
+ggplot(data = standard_044, aes(x= read_number, y = rfu_value, color = factor(standard_044$concentration_moles))) + 
+  #facet_wrap(~factor(standard_044$column))+
+  geom_point(size = 0.5) +
+  scale_x_continuous(breaks = seq(0,240,20)) +
+  scale_y_log10() +
+  scale_color_discrete(name = "concentration_moles")+
+  ggtitle("ENLITEN Kinetic Standards, Log Scale Plot") + theme_bw()
+
+
+ggplot(data = standard_044, aes(x= read_number, y = rfu_value, color = factor(standard_044$concentration_moles))) + 
+  #facet_wrap(~factor(standard_044$column))+
+  geom_point(size = 0.5) +
+  scale_x_continuous(breaks = seq(0,240,20)) +
+  scale_y_continuous(limits = c(0,3e6))+
+  scale_color_discrete(name = "concentration_moles")+
+  ggtitle("ENLITEN Kinetic Standards, Linear Scale Plot") + theme_bw()
+
+# ggplot(data = standard_044, aes(x= concentration_moles, y = rfu_value, color = factor(standard_044$column))) + 
+#   geom_jitter(width = 0.3) +
+#   scale_x_log10(breaks = c(1e-10,1e-11,1e-12,1e-13,1e-14,1e-15,1e-16,1e-17)) +
+#   scale_y_log10() +
+#   scale_color_discrete(name = "replicate")+
+#   ggtitle("ENLITEN 10s*240 Standards, Log Scale Plot") + theme_bw()
+
+standard_044 = subset(standard_044, concentration_moles < 1e-14)
+
+ggplot(data = standard_044, aes(x= read_number, y = rfu_value, color = factor(standard_044$concentration_moles))) + 
+  #facet_wrap(~factor(standard_044$column))+
+  geom_point(size = 0.5) +
+  scale_x_continuous(breaks = seq(0,240,20)) +
+  scale_y_continuous(limits = c(0,1e4), breaks = seq(0,10000,1000))+
+  scale_color_discrete(name = "concentration_moles")+
+  ggtitle("ENLITEN Kinetic Standards, Linear Scale Plot") + theme_bw()
+
+```
+
+## No Kinase Experiment (AMP and UMP standards from 1e-10 to 1e-17 moles)
+
+### Experimental Execution
++ For AMP, added Reagent 1 and incubated for 1 hour. I did not stagger this.
++ For AMP and UMP, I staggered the addition of AMP or UMP Detection Reagent for each row, using a multichannel to add the correct reagent every 6 minutes starting from the end of the incubation of Reagent I.
++ Injection plate reader reads by row, so for a 1 minute read of 6 wells, it takes 6 minutes to do one row
++ AMP Detection Reagent was 1X NEBuffer 2.1 + the correct amount of Reagent II
++ UMP Detection Reagent was 1X NEBuffer 2.1 + the correct amount of UMP/CMP Enzyme
++ I also added one column of UMP Detection Reagent with Nucleotide Detection Reagent as a positive control
++ Each concentration for no kinase samples was done in triplicate
+
+### Reads
++ An endpoint read with 10s integration was taken at the beginning, of the whole plate - this is "0"
++ An injection read with a 10s or 0.5ms integration was taken after 60 minutes of incubation of the first row, of just the no kinase samples - this is "60"
++ An endpoint read with 10s integration was taken at the end after all injections, of the whole plate - this is "end"
++ End samples had been sitting for up to 1hr depending on when injection occurred
++ 2s delay after injection, 0.5 or 10 s integration time ??, and 6 reads were taken
+
+### Plots
++ All 6 reads were summed for the total_rfu plotted in all three graphs
++ In the first plot, all timepoints were plotted (0 minutes, 60 minutes injection read and the final read) against the reagent added (AMP no kinase, UMP with kinase and UMP no kinase). The average of triplicates is plotted for no kinase samples. No data was collected for UMP with kinase at 60 minute injection (middle of first plot)
++ In second and third plot, you can see the injection read for the no kinase samples performed at 60 minutes, plotted with error bars
+
+### Conclusions
+I would say both AMP and UMP can be used without kinase and with the ENLITEN kit to detect down to 1e-15 moles in 100uL. Please note something went wrong with UMP 1e-10 reads, as it is suspiciously low and below the 0 point. AMP seems to give higher signals, which is consistent with the kit alone. There is no signal in 0 read for no kinase samples, but there is a concentration dependent signal in the UMP kit with kinase. Signal in no kinase samples appears after ENLITEN reagent is added, indicating ATP is being used to produce light only with ENLITEN luciferase. Signal drops in end read for no kinase samples like it does for all ENLITEN only samples and is comparable to 0 read for kinase samples as usual.
+
+```{r echo=FALSE, warning=FALSE}
+DETECTR_048 <- read.csv("../tidy_data/DETECTR_048_tidy.csv")
+nokinase <- subset(DETECTR_048, DETECTR_048$experiment == "nokinase")
+nokinase <- nokinase %>% group_by(minutes, kit, experiment, concentration_moles, standard_substrate, read, well, row, column) %>% summarize (total_rfu = sum(rfu_value))
+
+#add a small value to 0 plot to allow log-scale plotting
+
+nokinase_add_small_value = nokinase %>% mutate(concentration_moles_small_value = ifelse(concentration_moles == 0, 1e-17, concentration_moles))
+
+nokinase_add_small_value = nokinase_add_small_value %>% group_by(minutes, kit, experiment, concentration_moles, concentration_moles_small_value, standard_substrate, read) %>% summarize (mean_total_rfu = mean(total_rfu), stdev = sd(total_rfu))
+
+ggplot(data = nokinase_add_small_value, aes(x= concentration_moles_small_value, y = mean_total_rfu, color = standard_substrate)) + 
+  facet_grid(standard_substrate~minutes)+
+  geom_point() +
+  #geom_errorbar(aes(ymin=mean_total_rfu-stdev, ymax=mean_total_rfu+stdev), width=.2,
+                 #color = "black") +
+  scale_x_log10(breaks = c(1e-10,1e-11,1e-12,1e-13,1e-14,1e-15,1e-16))+
+  #scale_y_log10(breaks = c(1e4,2e4,3e4,4e4,5e4,6e4,7e4,8e4,9e4,1e5,2e5,3e5,4e5,5e5,1e6) )+ 
+  ggtitle("No Kinase Experiment, All Timepoints") + 
+  scale_color_discrete(name = "reagent")+
+  theme_bw()+
+  scale_y_log10()+ 
+  theme (axis.text.x=element_text(angle=60, hjust=1))
+
+nokinase_add_small_value = subset(nokinase_add_small_value, nokinase_add_small_value$kit %in% c("AMP_nokinase_1hr", "UMP_nokinase_1hr"))
+
+ggplot(data = nokinase_add_small_value, aes(x= concentration_moles_small_value, y = mean_total_rfu, color = standard_substrate)) + 
+  facet_wrap(~standard_substrate)+
+  geom_point() +
+  geom_errorbar(aes(ymin=mean_total_rfu-stdev, ymax=mean_total_rfu+stdev), width=.2,
+                 color = "black") +
+  scale_x_log10(breaks = c(1e-10,1e-11,1e-12,1e-13,1e-14,1e-15,1e-16))+
+  scale_y_log10(breaks = c(3e6,1e6,3e5,1e5,3e4,1e4,3e3)) + 
+  ggtitle("No Kinase Experiment\n60 min Injection Read Only") + 
+  scale_color_discrete(name = "reagent")+
+  theme_bw()+
+  theme (axis.text.x=element_text(angle=60, hjust=1))
+
+
+nokinase_add_small_value = subset(nokinase_add_small_value, nokinase_add_small_value$concentration_moles < 1e-13)
+
+ggplot(data = nokinase_add_small_value, aes(x= concentration_moles_small_value, y = mean_total_rfu, color = standard_substrate)) + 
+  facet_wrap(~standard_substrate)+
+  geom_point() +
+  geom_errorbar(aes(ymin=mean_total_rfu-stdev, ymax=mean_total_rfu+stdev), width=.2,
+                 color = "black") +
+  scale_x_log10(breaks = c(1e-10,1e-11,1e-12,1e-13,1e-14,1e-15,1e-16))+
+  scale_y_log10(breaks = c(3e6,1e6,3e5,1e5,3e4,1e4,3e3)) + 
+  ggtitle("No Kinase Experiment\n60 min Injection Read Only, Low Concentrations") + 
+  scale_color_discrete(name = "reagent")+
+  theme_bw()+
+  theme (axis.text.x=element_text(angle=60, hjust=1))
+
+
+
+```
+
+## ENLITEN Injection Read of 0 and 1e-12 moles at 2 integration times
++ The 1e-12 moles and 0 moles Read 1 was pulled from the kinetics experiment
++ This is plotted next to an injection read done on only the 0 and 1e-12 moles standards at two defined integration times - 0.5s and 10s
+
+### Conclusion 
+The value reported by the instrument seems the same regardless of integration time, which doesn't really make sense. It is unclear what the integration time was used in the kinetics read.
+
+```{r echo=FALSE}
+
+DETECTR_048 <- read.csv("../tidy_data/DETECTR_048_tidy.csv")
+integration_time <- subset(DETECTR_048, DETECTR_048$kit %in% c("ENLITEN_10s", "ENLITEN_0.5s", "ENLITEN_kinetics") & DETECTR_048$read_number == 1 & DETECTR_048$concentration_moles %in% c(1e-12, 0))
+
+
+ggplot(data = integration_time, aes(x= concentration_moles, y = rfu_value, color = kit)) + 
+  geom_point() +
+  ggtitle("ENLITEN Injection Read, 2 Integration Times") + 
+  scale_color_discrete(name = "luminescence read")+
+  theme_bw() + 
+  scale_x_continuous(breaks = c(0,1e-12))
+
+
+```
+
+## AMP and UMP no kinase Endpoint Read after injection read, at two integration times
++ After the injection read, an endpoint read of the plate was taken for the no kinase experiment, first with an integration time of 0.5s and then at an integration time of 10s
++ Each column is a different replicate, such that each dot represents a single read of a single well
++ The plot is colored by the cross of substrate and integration time - the pink and blue had a 10s integration time, while green and purple had a 0.5ms integration time 
+
+### Conclusion 
+As with the injection read above, the value reported by the instrument seems the same regardless of integration time.
+
+```{r echo=FALSE}
+
+DETECTR_048 <- read.csv("../tidy_data/DETECTR_048_tidy.csv")
+integration_time <- subset(DETECTR_048, DETECTR_048$kit %in% c("AMP_nokinase_end", "AMP_nokinase_end_0.5s", "UMP_nokinase_end", "UMP_nokinase_end_0.5s"))
+
+integration_time_add_small_value = integration_time %>% mutate(concentration_moles_small_value = ifelse(concentration_moles == 0, 1e-17, concentration_moles))
+
+
+ggplot(data = integration_time_add_small_value, aes(x= concentration_moles_small_value, y = rfu_value, color = kit)) + 
+  geom_jitter(width = 0.3, alpha = 0.5) +
+  facet_wrap(~column)+
+  ggtitle("AMP and UMP No Kinase Endpoint, 2 Integration Times") + 
+  scale_color_discrete(name = "luminescence read")+
+  theme_bw()+
+  scale_y_log10() +
+  scale_x_log10(breaks = c(1e-10,1e-11,1e-12,1e-13,1e-14,1e-15,1e-16)) +
+  theme(axis.text.x = element_text(angle = 60, hjust =1))
+
+
+
+```
+
+

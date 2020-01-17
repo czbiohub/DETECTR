@@ -1,0 +1,305 @@
+,experiment,read,read_number,row,column,well,rfu_value,standard_substrate,kit,minutes,concentration,concentration_moles
+0,ENLITEN_STDS,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate,1,A,10.0,A10,15018100.0,ATP,ENLITEN_10s,0,10^-11mol/100nM,1E-11
+1,ENLITEN_STDS,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate,1,B,10.0,B10,1432900.0,ATP,ENLITEN_10s,0,10^-12mol/10nM,1E-12
+2,ENLITEN_STDS,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate,1,C,10.0,C10,470561.0,ATP,ENLITEN_10s,0,10^-13mol/1nM,1E-13
+3,ENLITEN_STDS,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate,1,D,10.0,D10,205225.0,ATP,ENLITEN_10s,0,10^-14mol/100pM,1E-14
+4,ENLITEN_STDS,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate,1,E,10.0,E10,132085.0,ATP,ENLITEN_10s,0,10^-15mol/10pM,1E-15
+5,ENLITEN_STDS,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate,1,F,10.0,F10,98117.8,ATP,ENLITEN_10s,0,10^-16mol/1pM,1E-16
+6,ENLITEN_STDS,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate,1,G,10.0,G10,89888.9,ATP,ENLITEN_10s,0,10^-17mol/100fM,1E-17
+7,ENLITEN_STDS,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate,1,H,10.0,H10,80163.2,ATP,ENLITEN_10s,0,0mol/0pM,0
+8,ENLITEN_STDS,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate,1,A,11.0,A11,15527900.0,ATP,ENLITEN_10s,0,10^-11mol/100nM,1E-11
+9,ENLITEN_STDS,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate,1,B,11.0,B11,1466070.0,ATP,ENLITEN_10s,0,10^-12mol/10nM,1E-12
+10,ENLITEN_STDS,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate,1,C,11.0,C11,395729.0,ATP,ENLITEN_10s,0,10^-13mol/1nM,1E-13
+11,ENLITEN_STDS,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate,1,D,11.0,D11,183026.0,ATP,ENLITEN_10s,0,10^-14mol/100pM,1E-14
+12,ENLITEN_STDS,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate,1,E,11.0,E11,117091.0,ATP,ENLITEN_10s,0,10^-15mol/10pM,1E-15
+13,ENLITEN_STDS,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate,1,F,11.0,F11,93995.7,ATP,ENLITEN_10s,0,10^-16mol/1pM,1E-16
+14,ENLITEN_STDS,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate,1,G,11.0,G11,83115.7,ATP,ENLITEN_10s,0,10^-17mol/100fM,1E-17
+15,ENLITEN_STDS,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate,1,H,11.0,H11,79057.6,ATP,ENLITEN_10s,0,0mol/0pM,0
+16,ENLITEN_STDS,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate,1,A,12.0,A12,16016400.0,ATP,ENLITEN_10s,0,10^-11mol/100nM,1E-11
+17,ENLITEN_STDS,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate,1,B,12.0,B12,1399820.0,ATP,ENLITEN_10s,0,10^-12mol/10nM,1E-12
+18,ENLITEN_STDS,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate,1,C,12.0,C12,328180.0,ATP,ENLITEN_10s,0,10^-13mol/1nM,1E-13
+19,ENLITEN_STDS,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate,1,D,12.0,D12,147475.0,ATP,ENLITEN_10s,0,10^-14mol/100pM,1E-14
+20,ENLITEN_STDS,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate,1,E,12.0,E12,105807.0,ATP,ENLITEN_10s,0,10^-15mol/10pM,1E-15
+21,ENLITEN_STDS,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate,1,F,12.0,F12,88129.7,ATP,ENLITEN_10s,0,10^-16mol/1pM,1E-16
+22,ENLITEN_STDS,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate,1,G,12.0,G12,79472.0,ATP,ENLITEN_10s,0,10^-17mol/100fM,1E-17
+23,ENLITEN_STDS,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate,1,H,12.0,H12,75402.5,ATP,ENLITEN_10s,0,0mol/0pM,0
+0,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,1,A,1,A1,18904700.0,ATP,ENLITEN_60s,0,10^-11mol/100nM,1E-11
+1,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,2,A,1,A1,18653800.0,ATP,ENLITEN_60s,0,10^-11mol/100nM,1E-11
+2,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,3,A,1,A1,18461100.0,ATP,ENLITEN_60s,0,10^-11mol/100nM,1E-11
+3,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,4,A,1,A1,18335900.0,ATP,ENLITEN_60s,0,10^-11mol/100nM,1E-11
+4,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,5,A,1,A1,18094100.0,ATP,ENLITEN_60s,0,10^-11mol/100nM,1E-11
+5,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,6,A,1,A1,17876200.0,ATP,ENLITEN_60s,0,10^-11mol/100nM,1E-11
+6,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,1,A,2,A2,50000000.0,ATP,ENLITEN_60s,0,10^-11mol/100nM,1E-11
+7,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,2,A,2,A2,50000000.0,ATP,ENLITEN_60s,0,10^-11mol/100nM,1E-11
+8,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,3,A,2,A2,50000000.0,ATP,ENLITEN_60s,0,10^-11mol/100nM,1E-11
+9,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,4,A,2,A2,50000000.0,ATP,ENLITEN_60s,0,10^-11mol/100nM,1E-11
+10,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,5,A,2,A2,50000000.0,ATP,ENLITEN_60s,0,10^-11mol/100nM,1E-11
+11,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,6,A,2,A2,50000000.0,ATP,ENLITEN_60s,0,10^-11mol/100nM,1E-11
+12,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,1,A,3,A3,19380800.0,ATP,ENLITEN_60s,0,10^-11mol/100nM,1E-11
+13,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,2,A,3,A3,18963600.0,ATP,ENLITEN_60s,0,10^-11mol/100nM,1E-11
+14,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,3,A,3,A3,18863700.0,ATP,ENLITEN_60s,0,10^-11mol/100nM,1E-11
+15,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,4,A,3,A3,18621100.0,ATP,ENLITEN_60s,0,10^-11mol/100nM,1E-11
+16,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,5,A,3,A3,18647300.0,ATP,ENLITEN_60s,0,10^-11mol/100nM,1E-11
+17,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,6,A,3,A3,18127100.0,ATP,ENLITEN_60s,0,10^-11mol/100nM,1E-11
+18,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,1,B,1,B1,1827960.0,ATP,ENLITEN_60s,0,10^-12mol/10nM,1E-12
+19,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,2,B,1,B1,1828920.0,ATP,ENLITEN_60s,0,10^-12mol/10nM,1E-12
+20,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,3,B,1,B1,1820970.0,ATP,ENLITEN_60s,0,10^-12mol/10nM,1E-12
+21,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,4,B,1,B1,1795270.0,ATP,ENLITEN_60s,0,10^-12mol/10nM,1E-12
+22,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,5,B,1,B1,1784950.0,ATP,ENLITEN_60s,0,10^-12mol/10nM,1E-12
+23,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,6,B,1,B1,1775570.0,ATP,ENLITEN_60s,0,10^-12mol/10nM,1E-12
+24,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,1,B,2,B2,1731420.0,ATP,ENLITEN_60s,0,10^-12mol/10nM,1E-12
+25,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,2,B,2,B2,1723400.0,ATP,ENLITEN_60s,0,10^-12mol/10nM,1E-12
+26,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,3,B,2,B2,1720140.0,ATP,ENLITEN_60s,0,10^-12mol/10nM,1E-12
+27,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,4,B,2,B2,1742560.0,ATP,ENLITEN_60s,0,10^-12mol/10nM,1E-12
+28,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,5,B,2,B2,1693070.0,ATP,ENLITEN_60s,0,10^-12mol/10nM,1E-12
+29,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,6,B,2,B2,1722060.0,ATP,ENLITEN_60s,0,10^-12mol/10nM,1E-12
+30,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,1,B,3,B3,1588090.0,ATP,ENLITEN_60s,0,10^-12mol/10nM,1E-12
+31,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,2,B,3,B3,1595510.0,ATP,ENLITEN_60s,0,10^-12mol/10nM,1E-12
+32,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,3,B,3,B3,1634550.0,ATP,ENLITEN_60s,0,10^-12mol/10nM,1E-12
+33,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,4,B,3,B3,1596850.0,ATP,ENLITEN_60s,0,10^-12mol/10nM,1E-12
+34,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,5,B,3,B3,1567990.0,ATP,ENLITEN_60s,0,10^-12mol/10nM,1E-12
+35,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,6,B,3,B3,1551360.0,ATP,ENLITEN_60s,0,10^-12mol/10nM,1E-12
+36,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,1,C,1,C1,579738.0,ATP,ENLITEN_60s,0,10^-13mol/1nM,1E-13
+37,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,2,C,1,C1,578283.0,ATP,ENLITEN_60s,0,10^-13mol/1nM,1E-13
+38,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,3,C,1,C1,572975.0,ATP,ENLITEN_60s,0,10^-13mol/1nM,1E-13
+39,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,4,C,1,C1,566600.0,ATP,ENLITEN_60s,0,10^-13mol/1nM,1E-13
+40,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,5,C,1,C1,563633.0,ATP,ENLITEN_60s,0,10^-13mol/1nM,1E-13
+41,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,6,C,1,C1,559782.0,ATP,ENLITEN_60s,0,10^-13mol/1nM,1E-13
+42,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,1,C,2,C2,506107.0,ATP,ENLITEN_60s,0,10^-13mol/1nM,1E-13
+43,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,2,C,2,C2,505216.0,ATP,ENLITEN_60s,0,10^-13mol/1nM,1E-13
+44,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,3,C,2,C2,499594.0,ATP,ENLITEN_60s,0,10^-13mol/1nM,1E-13
+45,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,4,C,2,C2,497910.0,ATP,ENLITEN_60s,0,10^-13mol/1nM,1E-13
+46,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,5,C,2,C2,499061.0,ATP,ENLITEN_60s,0,10^-13mol/1nM,1E-13
+47,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,6,C,2,C2,491078.0,ATP,ENLITEN_60s,0,10^-13mol/1nM,1E-13
+48,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,1,C,3,C3,465422.0,ATP,ENLITEN_60s,0,10^-13mol/1nM,1E-13
+49,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,2,C,3,C3,467054.0,ATP,ENLITEN_60s,0,10^-13mol/1nM,1E-13
+50,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,3,C,3,C3,464558.0,ATP,ENLITEN_60s,0,10^-13mol/1nM,1E-13
+51,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,4,C,3,C3,459031.0,ATP,ENLITEN_60s,0,10^-13mol/1nM,1E-13
+52,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,5,C,3,C3,454016.0,ATP,ENLITEN_60s,0,10^-13mol/1nM,1E-13
+53,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,6,C,3,C3,454418.0,ATP,ENLITEN_60s,0,10^-13mol/1nM,1E-13
+54,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,1,D,1,D1,341836.0,ATP,ENLITEN_60s,0,10^-14mol/100pM,1E-14
+55,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,2,D,1,D1,341548.0,ATP,ENLITEN_60s,0,10^-14mol/100pM,1E-14
+56,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,3,D,1,D1,340392.0,ATP,ENLITEN_60s,0,10^-14mol/100pM,1E-14
+57,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,4,D,1,D1,334000.0,ATP,ENLITEN_60s,0,10^-14mol/100pM,1E-14
+58,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,5,D,1,D1,336256.0,ATP,ENLITEN_60s,0,10^-14mol/100pM,1E-14
+59,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,6,D,1,D1,333686.0,ATP,ENLITEN_60s,0,10^-14mol/100pM,1E-14
+60,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,1,D,2,D2,338175.0,ATP,ENLITEN_60s,0,10^-14mol/100pM,1E-14
+61,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,2,D,2,D2,338801.0,ATP,ENLITEN_60s,0,10^-14mol/100pM,1E-14
+62,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,3,D,2,D2,336364.0,ATP,ENLITEN_60s,0,10^-14mol/100pM,1E-14
+63,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,4,D,2,D2,334911.0,ATP,ENLITEN_60s,0,10^-14mol/100pM,1E-14
+64,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,5,D,2,D2,332987.0,ATP,ENLITEN_60s,0,10^-14mol/100pM,1E-14
+65,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,6,D,2,D2,330593.0,ATP,ENLITEN_60s,0,10^-14mol/100pM,1E-14
+66,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,1,D,3,D3,327322.0,ATP,ENLITEN_60s,0,10^-14mol/100pM,1E-14
+67,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,2,D,3,D3,321108.0,ATP,ENLITEN_60s,0,10^-14mol/100pM,1E-14
+68,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,3,D,3,D3,319054.0,ATP,ENLITEN_60s,0,10^-14mol/100pM,1E-14
+69,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,4,D,3,D3,315700.0,ATP,ENLITEN_60s,0,10^-14mol/100pM,1E-14
+70,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,5,D,3,D3,313177.0,ATP,ENLITEN_60s,0,10^-14mol/100pM,1E-14
+71,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,6,D,3,D3,310380.0,ATP,ENLITEN_60s,0,10^-14mol/100pM,1E-14
+72,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,1,E,1,E1,298982.0,ATP,ENLITEN_60s,0,10^-15mol/10pM,1E-15
+73,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,2,E,1,E1,298599.0,ATP,ENLITEN_60s,0,10^-15mol/10pM,1E-15
+74,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,3,E,1,E1,300100.0,ATP,ENLITEN_60s,0,10^-15mol/10pM,1E-15
+75,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,4,E,1,E1,296738.0,ATP,ENLITEN_60s,0,10^-15mol/10pM,1E-15
+76,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,5,E,1,E1,292298.0,ATP,ENLITEN_60s,0,10^-15mol/10pM,1E-15
+77,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,6,E,1,E1,290924.0,ATP,ENLITEN_60s,0,10^-15mol/10pM,1E-15
+78,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,1,E,2,E2,310128.0,ATP,ENLITEN_60s,0,10^-15mol/10pM,1E-15
+79,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,2,E,2,E2,307508.0,ATP,ENLITEN_60s,0,10^-15mol/10pM,1E-15
+80,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,3,E,2,E2,305919.0,ATP,ENLITEN_60s,0,10^-15mol/10pM,1E-15
+81,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,4,E,2,E2,304469.0,ATP,ENLITEN_60s,0,10^-15mol/10pM,1E-15
+82,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,5,E,2,E2,301228.0,ATP,ENLITEN_60s,0,10^-15mol/10pM,1E-15
+83,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,6,E,2,E2,299228.0,ATP,ENLITEN_60s,0,10^-15mol/10pM,1E-15
+84,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,1,E,3,E3,299623.0,ATP,ENLITEN_60s,0,10^-15mol/10pM,1E-15
+85,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,2,E,3,E3,296710.0,ATP,ENLITEN_60s,0,10^-15mol/10pM,1E-15
+86,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,3,E,3,E3,295132.0,ATP,ENLITEN_60s,0,10^-15mol/10pM,1E-15
+87,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,4,E,3,E3,294704.0,ATP,ENLITEN_60s,0,10^-15mol/10pM,1E-15
+88,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,5,E,3,E3,290512.0,ATP,ENLITEN_60s,0,10^-15mol/10pM,1E-15
+89,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,6,E,3,E3,288400.0,ATP,ENLITEN_60s,0,10^-15mol/10pM,1E-15
+90,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,1,F,1,F1,284780.0,ATP,ENLITEN_60s,0,10^-16mol/1pM,1E-16
+91,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,2,F,1,F1,281488.0,ATP,ENLITEN_60s,0,10^-16mol/1pM,1E-16
+92,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,3,F,1,F1,278943.0,ATP,ENLITEN_60s,0,10^-16mol/1pM,1E-16
+93,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,4,F,1,F1,279982.0,ATP,ENLITEN_60s,0,10^-16mol/1pM,1E-16
+94,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,5,F,1,F1,275934.0,ATP,ENLITEN_60s,0,10^-16mol/1pM,1E-16
+95,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,6,F,1,F1,273104.0,ATP,ENLITEN_60s,0,10^-16mol/1pM,1E-16
+96,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,1,F,2,F2,282412.0,ATP,ENLITEN_60s,0,10^-16mol/1pM,1E-16
+97,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,2,F,2,F2,280707.0,ATP,ENLITEN_60s,0,10^-16mol/1pM,1E-16
+98,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,3,F,2,F2,279192.0,ATP,ENLITEN_60s,0,10^-16mol/1pM,1E-16
+99,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,4,F,2,F2,277196.0,ATP,ENLITEN_60s,0,10^-16mol/1pM,1E-16
+100,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,5,F,2,F2,276076.0,ATP,ENLITEN_60s,0,10^-16mol/1pM,1E-16
+101,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,6,F,2,F2,272265.0,ATP,ENLITEN_60s,0,10^-16mol/1pM,1E-16
+102,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,1,F,3,F3,283300.0,ATP,ENLITEN_60s,0,10^-16mol/1pM,1E-16
+103,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,2,F,3,F3,282500.0,ATP,ENLITEN_60s,0,10^-16mol/1pM,1E-16
+104,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,3,F,3,F3,283756.0,ATP,ENLITEN_60s,0,10^-16mol/1pM,1E-16
+105,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,4,F,3,F3,277208.0,ATP,ENLITEN_60s,0,10^-16mol/1pM,1E-16
+106,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,5,F,3,F3,274681.0,ATP,ENLITEN_60s,0,10^-16mol/1pM,1E-16
+107,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,6,F,3,F3,273034.0,ATP,ENLITEN_60s,0,10^-16mol/1pM,1E-16
+108,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,1,G,1,G1,262866.0,ATP,ENLITEN_60s,0,10^-17mol/100fM,1E-17
+109,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,2,G,1,G1,261681.0,ATP,ENLITEN_60s,0,10^-17mol/100fM,1E-17
+110,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,3,G,1,G1,259372.0,ATP,ENLITEN_60s,0,10^-17mol/100fM,1E-17
+111,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,4,G,1,G1,257041.0,ATP,ENLITEN_60s,0,10^-17mol/100fM,1E-17
+112,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,5,G,1,G1,257064.0,ATP,ENLITEN_60s,0,10^-17mol/100fM,1E-17
+113,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,6,G,1,G1,256828.0,ATP,ENLITEN_60s,0,10^-17mol/100fM,1E-17
+114,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,1,G,2,G2,266492.0,ATP,ENLITEN_60s,0,10^-17mol/100fM,1E-17
+115,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,2,G,2,G2,261832.0,ATP,ENLITEN_60s,0,10^-17mol/100fM,1E-17
+116,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,3,G,2,G2,262622.0,ATP,ENLITEN_60s,0,10^-17mol/100fM,1E-17
+117,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,4,G,2,G2,261019.0,ATP,ENLITEN_60s,0,10^-17mol/100fM,1E-17
+118,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,5,G,2,G2,259001.0,ATP,ENLITEN_60s,0,10^-17mol/100fM,1E-17
+119,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,6,G,2,G2,256757.0,ATP,ENLITEN_60s,0,10^-17mol/100fM,1E-17
+120,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,1,G,3,G3,260884.0,ATP,ENLITEN_60s,0,10^-17mol/100fM,1E-17
+121,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,2,G,3,G3,261636.0,ATP,ENLITEN_60s,0,10^-17mol/100fM,1E-17
+122,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,3,G,3,G3,261256.0,ATP,ENLITEN_60s,0,10^-17mol/100fM,1E-17
+123,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,4,G,3,G3,255875.0,ATP,ENLITEN_60s,0,10^-17mol/100fM,1E-17
+124,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,5,G,3,G3,256880.0,ATP,ENLITEN_60s,0,10^-17mol/100fM,1E-17
+125,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,6,G,3,G3,253396.0,ATP,ENLITEN_60s,0,10^-17mol/100fM,1E-17
+126,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,1,H,1,H1,251619.0,ATP,ENLITEN_60s,0,0mol/0pM,0
+127,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,2,H,1,H1,249164.0,ATP,ENLITEN_60s,0,0mol/0pM,0
+128,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,3,H,1,H1,248201.0,ATP,ENLITEN_60s,0,0mol/0pM,0
+129,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,4,H,1,H1,248102.0,ATP,ENLITEN_60s,0,0mol/0pM,0
+130,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,5,H,1,H1,245204.0,ATP,ENLITEN_60s,0,0mol/0pM,0
+131,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,6,H,1,H1,247015.0,ATP,ENLITEN_60s,0,0mol/0pM,0
+132,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,1,H,2,H2,252330.0,ATP,ENLITEN_60s,0,0mol/0pM,0
+133,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,2,H,2,H2,248691.0,ATP,ENLITEN_60s,0,0mol/0pM,0
+134,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,3,H,2,H2,251238.0,ATP,ENLITEN_60s,0,0mol/0pM,0
+135,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,4,H,2,H2,246164.0,ATP,ENLITEN_60s,0,0mol/0pM,0
+136,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,5,H,2,H2,244774.0,ATP,ENLITEN_60s,0,0mol/0pM,0
+137,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,6,H,2,H2,243823.0,ATP,ENLITEN_60s,0,0mol/0pM,0
+138,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,1,H,3,H3,252728.0,ATP,ENLITEN_60s,0,0mol/0pM,0
+139,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,2,H,3,H3,252497.0,ATP,ENLITEN_60s,0,0mol/0pM,0
+140,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,3,H,3,H3,251139.0,ATP,ENLITEN_60s,0,0mol/0pM,0
+141,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,4,H,3,H3,247753.0,ATP,ENLITEN_60s,0,0mol/0pM,0
+142,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,5,H,3,H3,244659.0,ATP,ENLITEN_60s,0,0mol/0pM,0
+143,ENLITEN_STDS_kinetic,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate. kinetics,6,H,3,H3,244604.0,ATP,ENLITEN_60s,0,0mol/0pM,0
+0,AMP_0hr_afterENLITEN_injection1,50µl per well (Injector 1) 2sec. ,1,A,5.0,A5,366356.0,AMP,ENLITEN+AMP_0hr_addition,0,10^-10mol/1uM,1E-10
+1,AMP_0hr_afterENLITEN_injection1,50µl per well (Injector 1) 2sec. ,1,B,5.0,B5,225546.0,AMP,ENLITEN+AMP_0hr_addition,0,10^-11mol/100nM,1E-11
+2,AMP_0hr_afterENLITEN_injection1,50µl per well (Injector 1) 2sec. ,1,C,5.0,C5,161414.0,AMP,ENLITEN+AMP_0hr_addition,0,10^-12mol/10nM,1E-12
+3,AMP_0hr_afterENLITEN_injection1,50µl per well (Injector 1) 2sec. ,1,D,5.0,D5,117652.0,AMP,ENLITEN+AMP_0hr_addition,0,10^-13mol/1nM,1E-13
+4,AMP_0hr_afterENLITEN_injection1,50µl per well (Injector 1) 2sec. ,1,E,5.0,E5,109668.0,AMP,ENLITEN+AMP_0hr_addition,0,10^-14mol/100pM,1E-14
+5,AMP_0hr_afterENLITEN_injection1,50µl per well (Injector 1) 2sec. ,1,F,5.0,F5,142861.0,AMP,ENLITEN+AMP_0hr_addition,0,10^-15mol/10pM,1E-15
+6,AMP_0hr_afterENLITEN_injection1,50µl per well (Injector 1) 2sec. ,1,G,5.0,G5,193161.0,AMP,ENLITEN+AMP_0hr_addition,0,10^-16mol/1pM,1E-16
+7,AMP_0hr_afterENLITEN_injection1,50µl per well (Injector 1) 2sec. ,1,H,5.0,H5,231109.0,AMP,ENLITEN+AMP_0hr_addition,0,0mol/0pM,0
+8,AMP_0hr_afterAMP_injection2,100µl per well (Injector 2) 2sec. 1 repeat. 96 well plate,2,A,5.0,A5,470871.0,AMP,ENLITEN+AMP_0hr_addition,0,10^-10mol/1uM,1E-10
+9,AMP_0hr_afterAMP_injection2,100µl per well (Injector 2) 2sec. 1 repeat. 96 well plate,2,B,5.0,B5,285563.0,AMP,ENLITEN+AMP_0hr_addition,0,10^-11mol/100nM,1E-11
+10,AMP_0hr_afterAMP_injection2,100µl per well (Injector 2) 2sec. 1 repeat. 96 well plate,2,C,5.0,C5,203449.0,AMP,ENLITEN+AMP_0hr_addition,0,10^-12mol/10nM,1E-12
+11,AMP_0hr_afterAMP_injection2,100µl per well (Injector 2) 2sec. 1 repeat. 96 well plate,2,D,5.0,D5,169101.0,AMP,ENLITEN+AMP_0hr_addition,0,10^-13mol/1nM,1E-13
+12,AMP_0hr_afterAMP_injection2,100µl per well (Injector 2) 2sec. 1 repeat. 96 well plate,2,E,5.0,E5,138858.0,AMP,ENLITEN+AMP_0hr_addition,0,10^-14mol/100pM,1E-14
+13,AMP_0hr_afterAMP_injection2,100µl per well (Injector 2) 2sec. 1 repeat. 96 well plate,2,F,5.0,F5,178271.0,AMP,ENLITEN+AMP_0hr_addition,0,10^-15mol/10pM,1E-15
+14,AMP_0hr_afterAMP_injection2,100µl per well (Injector 2) 2sec. 1 repeat. 96 well plate,2,G,5.0,G5,239309.0,AMP,ENLITEN+AMP_0hr_addition,0,10^-16mol/1pM,1E-16
+15,AMP_0hr_afterAMP_injection2,100µl per well (Injector 2) 2sec. 1 repeat. 96 well plate,2,H,5.0,H5,283380.0,AMP,ENLITEN+AMP_0hr_addition,0,0mol/0pM,0
+0,AMP_0hr_END,Luminescence. 1 repeat. 96 well plate,1,A,4.0,A4,478167.0,AMP,ENLITEN+AMP_0hr_addition,5,10^-10mol/1uM,1E-10
+1,AMP_0hr_END,Luminescence. 1 repeat. 96 well plate,1,B,4.0,B4,48046.4,AMP,ENLITEN+AMP_0hr_addition,5,10^-11mol/100nM,1E-11
+2,AMP_0hr_END,Luminescence. 1 repeat. 96 well plate,1,C,4.0,C4,63156.3,AMP,ENLITEN+AMP_0hr_addition,5,10^-12mol/10nM,1E-12
+3,AMP_0hr_END,Luminescence. 1 repeat. 96 well plate,1,D,4.0,D4,72684.7,AMP,ENLITEN+AMP_0hr_addition,5,10^-13mol/1nM,1E-13
+4,AMP_0hr_END,Luminescence. 1 repeat. 96 well plate,1,E,4.0,E4,72158.5,AMP,ENLITEN+AMP_0hr_addition,5,10^-14mol/100pM,1E-14
+5,AMP_0hr_END,Luminescence. 1 repeat. 96 well plate,1,F,4.0,F4,67387.9,AMP,ENLITEN+AMP_0hr_addition,5,10^-15mol/10pM,1E-15
+6,AMP_0hr_END,Luminescence. 1 repeat. 96 well plate,1,G,4.0,G4,54408.3,AMP,ENLITEN+AMP_0hr_addition,5,10^-16mol/1pM,1E-16
+7,AMP_0hr_END,Luminescence. 1 repeat. 96 well plate,1,H,4.0,H4,46638.1,AMP,ENLITEN+AMP_0hr_addition,5,0mol/0pM,0
+0,UMP_0hr_afterUMP_injection1,50µl per well (Injector 1) 2sec. ,1,A,5.0,A5,366356.0,UMP,UMP+ENLITEN_0hr_addition,0,10^-10mol/1uM,1E-10
+1,UMP_0hr_afterUMP_injection1,50µl per well (Injector 1) 2sec. ,1,B,5.0,B5,225546.0,UMP,UMP+ENLITEN_0hr_addition,0,10^-11mol/100nM,1E-11
+2,UMP_0hr_afterUMP_injection1,50µl per well (Injector 1) 2sec. ,1,C,5.0,C5,161414.0,UMP,UMP+ENLITEN_0hr_addition,0,10^-12mol/10nM,1E-12
+3,UMP_0hr_afterUMP_injection1,50µl per well (Injector 1) 2sec. ,1,D,5.0,D5,117652.0,UMP,UMP+ENLITEN_0hr_addition,0,10^-13mol/1nM,1E-13
+4,UMP_0hr_afterUMP_injection1,50µl per well (Injector 1) 2sec. ,1,E,5.0,E5,109668.0,UMP,UMP+ENLITEN_0hr_addition,0,10^-14mol/100pM,1E-14
+5,UMP_0hr_afterUMP_injection1,50µl per well (Injector 1) 2sec. ,1,F,5.0,F5,142861.0,UMP,UMP+ENLITEN_0hr_addition,0,10^-15mol/10pM,1E-15
+6,UMP_0hr_afterUMP_injection1,50µl per well (Injector 1) 2sec. ,1,G,5.0,G5,193161.0,UMP,UMP+ENLITEN_0hr_addition,0,10^-16mol/1pM,1E-16
+7,UMP_0hr_afterUMP_injection1,50µl per well (Injector 1) 2sec. ,1,H,5.0,H5,231109.0,UMP,UMP+ENLITEN_0hr_addition,0,0mol/0pM,0
+8,UMP_0hr_afterENLITEN_injection2,100µl per well (Injector 2) 2sec. 1 repeat. 96 well plate,2,A,5.0,A5,470871.0,UMP,UMP+ENLITEN_0hr_addition,0,10^-10mol/1uM,1E-10
+9,UMP_0hr_afterENLITEN_injection2,100µl per well (Injector 2) 2sec. 1 repeat. 96 well plate,2,B,5.0,B5,285563.0,UMP,UMP+ENLITEN_0hr_addition,0,10^-11mol/100nM,1E-11
+10,UMP_0hr_afterENLITEN_injection2,100µl per well (Injector 2) 2sec. 1 repeat. 96 well plate,2,C,5.0,C5,203449.0,UMP,UMP+ENLITEN_0hr_addition,0,10^-12mol/10nM,1E-12
+11,UMP_0hr_afterENLITEN_injection2,100µl per well (Injector 2) 2sec. 1 repeat. 96 well plate,2,D,5.0,D5,169101.0,UMP,UMP+ENLITEN_0hr_addition,0,10^-13mol/1nM,1E-13
+12,UMP_0hr_afterENLITEN_injection2,100µl per well (Injector 2) 2sec. 1 repeat. 96 well plate,2,E,5.0,E5,138858.0,UMP,UMP+ENLITEN_0hr_addition,0,10^-14mol/100pM,1E-14
+13,UMP_0hr_afterENLITEN_injection2,100µl per well (Injector 2) 2sec. 1 repeat. 96 well plate,2,F,5.0,F5,178271.0,UMP,UMP+ENLITEN_0hr_addition,0,10^-15mol/10pM,1E-15
+14,UMP_0hr_afterENLITEN_injection2,100µl per well (Injector 2) 2sec. 1 repeat. 96 well plate,2,G,5.0,G5,239309.0,UMP,UMP+ENLITEN_0hr_addition,0,10^-16mol/1pM,1E-16
+15,UMP_0hr_afterENLITEN_injection2,100µl per well (Injector 2) 2sec. 1 repeat. 96 well plate,2,H,5.0,H5,283380.0,UMP,UMP+ENLITEN_0hr_addition,0,0mol/0pM,0
+0,1hr_START,Luminescence. 1 repeat. 96 well plate,1,A,7.0,A7,535557.0,AMP,AMP0hr_ENLITEN1hr_addition,0,10^-10mol/1uM,1E-10
+1,1hr_START,Luminescence. 1 repeat. 96 well plate,1,B,7.0,B7,7607.83,AMP,AMP0hr_ENLITEN1hr_addition,0,10^-11mol/100nM,1E-11
+2,1hr_START,Luminescence. 1 repeat. 96 well plate,1,C,7.0,C7,2698.81,AMP,AMP0hr_ENLITEN1hr_addition,0,10^-12mol/10nM,1E-12
+3,1hr_START,Luminescence. 1 repeat. 96 well plate,1,D,7.0,D7,890.033,AMP,AMP0hr_ENLITEN1hr_addition,0,10^-13mol/1nM,1E-13
+4,1hr_START,Luminescence. 1 repeat. 96 well plate,1,E,7.0,E7,866.5319999999999,AMP,AMP0hr_ENLITEN1hr_addition,0,10^-14mol/100pM,1E-14
+5,1hr_START,Luminescence. 1 repeat. 96 well plate,1,F,7.0,F7,868.732,AMP,AMP0hr_ENLITEN1hr_addition,0,10^-15mol/10pM,1E-15
+6,1hr_START,Luminescence. 1 repeat. 96 well plate,1,G,7.0,G7,894.1339999999999,AMP,AMP0hr_ENLITEN1hr_addition,0,10^-16mol/1pM,1E-16
+7,1hr_START,Luminescence. 1 repeat. 96 well plate,1,H,7.0,H7,798.227,AMP,AMP0hr_ENLITEN1hr_addition,0,0mol/0pM,0
+8,1hr_START,Luminescence. 1 repeat. 96 well plate,1,A,8.0,A8,45068.9,UMP,UMP0hr_ENLITEN1hr_addition,0,10^-10mol/1uM,1E-10
+9,1hr_START,Luminescence. 1 repeat. 96 well plate,1,B,8.0,B8,29049.5,UMP,UMP0hr_ENLITEN1hr_addition,0,10^-11mol/100nM,1E-11
+10,1hr_START,Luminescence. 1 repeat. 96 well plate,1,C,8.0,C8,29082.4,UMP,UMP0hr_ENLITEN1hr_addition,0,10^-12mol/10nM,1E-12
+11,1hr_START,Luminescence. 1 repeat. 96 well plate,1,D,8.0,D8,38963.5,UMP,UMP0hr_ENLITEN1hr_addition,0,10^-13mol/1nM,1E-13
+12,1hr_START,Luminescence. 1 repeat. 96 well plate,1,E,8.0,E8,28308.6,UMP,UMP0hr_ENLITEN1hr_addition,0,10^-14mol/100pM,1E-14
+13,1hr_START,Luminescence. 1 repeat. 96 well plate,1,F,8.0,F8,33714.3,UMP,UMP0hr_ENLITEN1hr_addition,0,10^-15mol/10pM,1E-15
+14,1hr_START,Luminescence. 1 repeat. 96 well plate,1,G,8.0,G8,35237.1,UMP,UMP0hr_ENLITEN1hr_addition,0,10^-16mol/1pM,1E-16
+15,1hr_START,Luminescence. 1 repeat. 96 well plate,1,H,8.0,H8,37953.9,UMP,UMP0hr_ENLITEN1hr_addition,0,0mol/0pM,0
+16,1hr_START,Luminescence. 1 repeat. 96 well plate,1,A,10.0,A10,52.1001,AMP,AMP-noKinase0hr_ENLITEN1hr_addition,0,10^-10mol/1uM,1E-10
+17,1hr_START,Luminescence. 1 repeat. 96 well plate,1,B,10.0,B10,49.6001,AMP,AMP-noKinase0hr_ENLITEN1hr_addition,0,10^-11mol/100nM,1E-11
+18,1hr_START,Luminescence. 1 repeat. 96 well plate,1,C,10.0,C10,42.6001,AMP,AMP-noKinase0hr_ENLITEN1hr_addition,0,10^-12mol/10nM,1E-12
+19,1hr_START,Luminescence. 1 repeat. 96 well plate,1,D,10.0,D10,44.3001,AMP,AMP-noKinase0hr_ENLITEN1hr_addition,0,10^-13mol/1nM,1E-13
+20,1hr_START,Luminescence. 1 repeat. 96 well plate,1,E,10.0,E10,42.7001,AMP,AMP-noKinase0hr_ENLITEN1hr_addition,0,10^-14mol/100pM,1E-14
+21,1hr_START,Luminescence. 1 repeat. 96 well plate,1,F,10.0,F10,38.4001,AMP,AMP-noKinase0hr_ENLITEN1hr_addition,0,10^-15mol/10pM,1E-15
+22,1hr_START,Luminescence. 1 repeat. 96 well plate,1,G,10.0,G10,39.1001,AMP,AMP-noKinase0hr_ENLITEN1hr_addition,0,10^-16mol/1pM,1E-16
+23,1hr_START,Luminescence. 1 repeat. 96 well plate,1,H,10.0,H10,36.5001,AMP,AMP-noKinase0hr_ENLITEN1hr_addition,0,0mol/0pM,0
+0,1hr_25mins,Luminescence. 1 repeat. 96 well plate,1,A,7.0,A7,1543220.0,AMP,AMP0hr_ENLITEN1hr_addition,25,10^-10mol/1uM,1E-10
+1,1hr_25mins,Luminescence. 1 repeat. 96 well plate,1,B,7.0,B7,22754.9,AMP,AMP0hr_ENLITEN1hr_addition,25,10^-11mol/100nM,1E-11
+2,1hr_25mins,Luminescence. 1 repeat. 96 well plate,1,C,7.0,C7,3382.88,AMP,AMP0hr_ENLITEN1hr_addition,25,10^-12mol/10nM,1E-12
+3,1hr_25mins,Luminescence. 1 repeat. 96 well plate,1,D,7.0,D7,812.528,AMP,AMP0hr_ENLITEN1hr_addition,25,10^-13mol/1nM,1E-13
+4,1hr_25mins,Luminescence. 1 repeat. 96 well plate,1,E,7.0,E7,816.128,AMP,AMP0hr_ENLITEN1hr_addition,25,10^-14mol/100pM,1E-14
+5,1hr_25mins,Luminescence. 1 repeat. 96 well plate,1,F,7.0,F7,810.828,AMP,AMP0hr_ENLITEN1hr_addition,25,10^-15mol/10pM,1E-15
+6,1hr_25mins,Luminescence. 1 repeat. 96 well plate,1,G,7.0,G7,824.529,AMP,AMP0hr_ENLITEN1hr_addition,25,10^-16mol/1pM,1E-16
+7,1hr_25mins,Luminescence. 1 repeat. 96 well plate,1,H,7.0,H7,774.125,AMP,AMP0hr_ENLITEN1hr_addition,25,0mol/0pM,0
+8,1hr_25mins,Luminescence. 1 repeat. 96 well plate,1,A,8.0,A8,105697.0,UMP,UMP0hr_ENLITEN1hr_addition,25,10^-10mol/1uM,1E-10
+9,1hr_25mins,Luminescence. 1 repeat. 96 well plate,1,B,8.0,B8,17323.1,UMP,UMP0hr_ENLITEN1hr_addition,25,10^-11mol/100nM,1E-11
+10,1hr_25mins,Luminescence. 1 repeat. 96 well plate,1,C,8.0,C8,8292.49,UMP,UMP0hr_ENLITEN1hr_addition,25,10^-12mol/10nM,1E-12
+11,1hr_25mins,Luminescence. 1 repeat. 96 well plate,1,D,8.0,D8,7615.24,UMP,UMP0hr_ENLITEN1hr_addition,25,10^-13mol/1nM,1E-13
+12,1hr_25mins,Luminescence. 1 repeat. 96 well plate,1,E,8.0,E8,5757.89,UMP,UMP0hr_ENLITEN1hr_addition,25,10^-14mol/100pM,1E-14
+13,1hr_25mins,Luminescence. 1 repeat. 96 well plate,1,F,8.0,F8,6662.66,UMP,UMP0hr_ENLITEN1hr_addition,25,10^-15mol/10pM,1E-15
+14,1hr_25mins,Luminescence. 1 repeat. 96 well plate,1,G,8.0,G8,9789.72,UMP,UMP0hr_ENLITEN1hr_addition,25,10^-16mol/1pM,1E-16
+15,1hr_25mins,Luminescence. 1 repeat. 96 well plate,1,H,8.0,H8,7372.78,UMP,UMP0hr_ENLITEN1hr_addition,25,0mol/0pM,0
+16,1hr_25mins,Luminescence. 1 repeat. 96 well plate,1,A,10.0,A10,38.6001,AMP,AMP-noKinase0hr_ENLITEN1hr_addition,25,10^-10mol/1uM,1E-10
+17,1hr_25mins,Luminescence. 1 repeat. 96 well plate,1,B,10.0,B10,30.1,AMP,AMP-noKinase0hr_ENLITEN1hr_addition,25,10^-11mol/100nM,1E-11
+18,1hr_25mins,Luminescence. 1 repeat. 96 well plate,1,C,10.0,C10,36.5001,AMP,AMP-noKinase0hr_ENLITEN1hr_addition,25,10^-12mol/10nM,1E-12
+19,1hr_25mins,Luminescence. 1 repeat. 96 well plate,1,D,10.0,D10,27.2,AMP,AMP-noKinase0hr_ENLITEN1hr_addition,25,10^-13mol/1nM,1E-13
+20,1hr_25mins,Luminescence. 1 repeat. 96 well plate,1,E,10.0,E10,29.1,AMP,AMP-noKinase0hr_ENLITEN1hr_addition,25,10^-14mol/100pM,1E-14
+21,1hr_25mins,Luminescence. 1 repeat. 96 well plate,1,F,10.0,F10,31.5,AMP,AMP-noKinase0hr_ENLITEN1hr_addition,25,10^-15mol/10pM,1E-15
+22,1hr_25mins,Luminescence. 1 repeat. 96 well plate,1,G,10.0,G10,30.5,AMP,AMP-noKinase0hr_ENLITEN1hr_addition,25,10^-16mol/1pM,1E-16
+23,1hr_25mins,Luminescence. 1 repeat. 96 well plate,1,H,10.0,H10,30.3,AMP,AMP-noKinase0hr_ENLITEN1hr_addition,25,0mol/0pM,0
+0,1hr_45mins,Luminescence. 1 repeat. 96 well plate,1,A,7.0,A7,2116430.0,AMP,AMP0hr_ENLITEN1hr_addition,45,10^-10mol/1uM,1E-10
+1,1hr_45mins,Luminescence. 1 repeat. 96 well plate,1,B,7.0,B7,32859.7,AMP,AMP0hr_ENLITEN1hr_addition,45,10^-11mol/100nM,1E-11
+2,1hr_45mins,Luminescence. 1 repeat. 96 well plate,1,C,7.0,C7,2120.39,AMP,AMP0hr_ENLITEN1hr_addition,45,10^-12mol/10nM,1E-12
+3,1hr_45mins,Luminescence. 1 repeat. 96 well plate,1,D,7.0,D7,760.424,AMP,AMP0hr_ENLITEN1hr_addition,45,10^-13mol/1nM,1E-13
+4,1hr_45mins,Luminescence. 1 repeat. 96 well plate,1,E,7.0,E7,738.923,AMP,AMP0hr_ENLITEN1hr_addition,45,10^-14mol/100pM,1E-14
+5,1hr_45mins,Luminescence. 1 repeat. 96 well plate,1,F,7.0,F7,749.424,AMP,AMP0hr_ENLITEN1hr_addition,45,10^-15mol/10pM,1E-15
+6,1hr_45mins,Luminescence. 1 repeat. 96 well plate,1,G,7.0,G7,715.422,AMP,AMP0hr_ENLITEN1hr_addition,45,10^-16mol/1pM,1E-16
+7,1hr_45mins,Luminescence. 1 repeat. 96 well plate,1,H,7.0,H7,713.0210000000001,AMP,AMP0hr_ENLITEN1hr_addition,45,0mol/0pM,0
+8,1hr_45mins,Luminescence. 1 repeat. 96 well plate,1,A,8.0,A8,152840.0,UMP,UMP0hr_ENLITEN1hr_addition,45,10^-10mol/1uM,1E-10
+9,1hr_45mins,Luminescence. 1 repeat. 96 well plate,1,B,8.0,B8,18664.5,UMP,UMP0hr_ENLITEN1hr_addition,45,10^-11mol/100nM,1E-11
+10,1hr_45mins,Luminescence. 1 repeat. 96 well plate,1,C,8.0,C8,4959.13,UMP,UMP0hr_ENLITEN1hr_addition,45,10^-12mol/10nM,1E-12
+11,1hr_45mins,Luminescence. 1 repeat. 96 well plate,1,D,8.0,D8,3875.03,UMP,UMP0hr_ENLITEN1hr_addition,45,10^-13mol/1nM,1E-13
+12,1hr_45mins,Luminescence. 1 repeat. 96 well plate,1,E,8.0,E8,3272.85,UMP,UMP0hr_ENLITEN1hr_addition,45,10^-14mol/100pM,1E-14
+13,1hr_45mins,Luminescence. 1 repeat. 96 well plate,1,F,8.0,F8,3432.69,UMP,UMP0hr_ENLITEN1hr_addition,45,10^-15mol/10pM,1E-15
+14,1hr_45mins,Luminescence. 1 repeat. 96 well plate,1,G,8.0,G8,6618.94,UMP,UMP0hr_ENLITEN1hr_addition,45,10^-16mol/1pM,1E-16
+15,1hr_45mins,Luminescence. 1 repeat. 96 well plate,1,H,8.0,H8,3700.68,UMP,UMP0hr_ENLITEN1hr_addition,45,0mol/0pM,0
+16,1hr_45mins,Luminescence. 1 repeat. 96 well plate,1,A,10.0,A10,33.4,AMP,AMP-noKinase0hr_ENLITEN1hr_addition,45,10^-10mol/1uM,1E-10
+17,1hr_45mins,Luminescence. 1 repeat. 96 well plate,1,B,10.0,B10,29.6,AMP,AMP-noKinase0hr_ENLITEN1hr_addition,45,10^-11mol/100nM,1E-11
+18,1hr_45mins,Luminescence. 1 repeat. 96 well plate,1,C,10.0,C10,28.4,AMP,AMP-noKinase0hr_ENLITEN1hr_addition,45,10^-12mol/10nM,1E-12
+19,1hr_45mins,Luminescence. 1 repeat. 96 well plate,1,D,10.0,D10,29.1,AMP,AMP-noKinase0hr_ENLITEN1hr_addition,45,10^-13mol/1nM,1E-13
+20,1hr_45mins,Luminescence. 1 repeat. 96 well plate,1,E,10.0,E10,24.9,AMP,AMP-noKinase0hr_ENLITEN1hr_addition,45,10^-14mol/100pM,1E-14
+21,1hr_45mins,Luminescence. 1 repeat. 96 well plate,1,F,10.0,F10,27.9,AMP,AMP-noKinase0hr_ENLITEN1hr_addition,45,10^-15mol/10pM,1E-15
+22,1hr_45mins,Luminescence. 1 repeat. 96 well plate,1,G,10.0,G10,26.0,AMP,AMP-noKinase0hr_ENLITEN1hr_addition,45,10^-16mol/1pM,1E-16
+23,1hr_45mins,Luminescence. 1 repeat. 96 well plate,1,H,10.0,H10,27.7,AMP,AMP-noKinase0hr_ENLITEN1hr_addition,45,0mol/0pM,0
+0,1hr_END,100µl per well (Injector 2) 2sec. 1 repeat. 96 well plate,1,A,7.0,A7,3272310.0,AMP,AMP0hr_ENLITEN1hr_addition,60,10^-10mol/1uM,1E-10
+1,1hr_END,100µl per well (Injector 2) 2sec. 1 repeat. 96 well plate,1,B,7.0,B7,50415.8,AMP,AMP0hr_ENLITEN1hr_addition,60,10^-11mol/100nM,1E-11
+2,1hr_END,100µl per well (Injector 2) 2sec. 1 repeat. 96 well plate,1,C,7.0,C7,10139.5,AMP,AMP0hr_ENLITEN1hr_addition,60,10^-12mol/10nM,1E-12
+3,1hr_END,100µl per well (Injector 2) 2sec. 1 repeat. 96 well plate,1,D,7.0,D7,1103.95,AMP,AMP0hr_ENLITEN1hr_addition,60,10^-13mol/1nM,1E-13
+4,1hr_END,100µl per well (Injector 2) 2sec. 1 repeat. 96 well plate,1,E,7.0,E7,1082.55,AMP,AMP0hr_ENLITEN1hr_addition,60,10^-14mol/100pM,1E-14
+5,1hr_END,100µl per well (Injector 2) 2sec. 1 repeat. 96 well plate,1,F,7.0,F7,1101.35,AMP,AMP0hr_ENLITEN1hr_addition,60,10^-15mol/10pM,1E-15
+6,1hr_END,100µl per well (Injector 2) 2sec. 1 repeat. 96 well plate,1,G,7.0,G7,1065.25,AMP,AMP0hr_ENLITEN1hr_addition,60,10^-16mol/1pM,1E-16
+7,1hr_END,100µl per well (Injector 2) 2sec. 1 repeat. 96 well plate,1,H,7.0,H7,1057.85,AMP,AMP0hr_ENLITEN1hr_addition,60,0mol/0pM,0
+8,1hr_END,100µl per well (Injector 2) 2sec. 1 repeat. 96 well plate,1,A,8.0,A8,215919.0,UMP,UMP0hr_ENLITEN1hr_addition,60,10^-10mol/1uM,1E-10
+9,1hr_END,100µl per well (Injector 2) 2sec. 1 repeat. 96 well plate,1,B,8.0,B8,26826.2,UMP,UMP0hr_ENLITEN1hr_addition,60,10^-11mol/100nM,1E-11
+10,1hr_END,100µl per well (Injector 2) 2sec. 1 repeat. 96 well plate,1,C,8.0,C8,7241.8,UMP,UMP0hr_ENLITEN1hr_addition,60,10^-12mol/10nM,1E-12
+11,1hr_END,100µl per well (Injector 2) 2sec. 1 repeat. 96 well plate,1,D,8.0,D8,5389.42,UMP,UMP0hr_ENLITEN1hr_addition,60,10^-13mol/1nM,1E-13
+12,1hr_END,100µl per well (Injector 2) 2sec. 1 repeat. 96 well plate,1,E,8.0,E8,4531.96,UMP,UMP0hr_ENLITEN1hr_addition,60,10^-14mol/100pM,1E-14
+13,1hr_END,100µl per well (Injector 2) 2sec. 1 repeat. 96 well plate,1,F,8.0,F8,4877.0,UMP,UMP0hr_ENLITEN1hr_addition,60,10^-15mol/10pM,1E-15
+14,1hr_END,100µl per well (Injector 2) 2sec. 1 repeat. 96 well plate,1,G,8.0,G8,8508.54,UMP,UMP0hr_ENLITEN1hr_addition,60,10^-16mol/1pM,1E-16
+15,1hr_END,100µl per well (Injector 2) 2sec. 1 repeat. 96 well plate,1,H,8.0,H8,5049.47,UMP,UMP0hr_ENLITEN1hr_addition,60,0mol/0pM,0
+16,1hr_END,100µl per well (Injector 2) 2sec. 1 repeat. 96 well plate,1,A,10.0,A10,2154320.0,AMP,AMP-noKinase0hr_ENLITEN1hr_addition,60,10^-10mol/1uM,1E-10
+17,1hr_END,100µl per well (Injector 2) 2sec. 1 repeat. 96 well plate,1,B,10.0,B10,225803.0,AMP,AMP-noKinase0hr_ENLITEN1hr_addition,60,10^-11mol/100nM,1E-11
+18,1hr_END,100µl per well (Injector 2) 2sec. 1 repeat. 96 well plate,1,C,10.0,C10,4670.52,AMP,AMP-noKinase0hr_ENLITEN1hr_addition,60,10^-12mol/10nM,1E-12
+19,1hr_END,100µl per well (Injector 2) 2sec. 1 repeat. 96 well plate,1,D,10.0,D10,478.71,AMP,AMP-noKinase0hr_ENLITEN1hr_addition,60,10^-13mol/1nM,1E-13
+20,1hr_END,100µl per well (Injector 2) 2sec. 1 repeat. 96 well plate,1,E,10.0,E10,368.20599999999996,AMP,AMP-noKinase0hr_ENLITEN1hr_addition,60,10^-14mol/100pM,1E-14
+21,1hr_END,100µl per well (Injector 2) 2sec. 1 repeat. 96 well plate,1,F,10.0,F10,332.605,AMP,AMP-noKinase0hr_ENLITEN1hr_addition,60,10^-15mol/10pM,1E-15
+22,1hr_END,100µl per well (Injector 2) 2sec. 1 repeat. 96 well plate,1,G,10.0,G10,305.30400000000003,AMP,AMP-noKinase0hr_ENLITEN1hr_addition,60,10^-16mol/1pM,1E-16
+23,1hr_END,100µl per well (Injector 2) 2sec. 1 repeat. 96 well plate,1,H,10.0,H10,305.904,AMP,AMP-noKinase0hr_ENLITEN1hr_addition,60,0mol/0pM,0

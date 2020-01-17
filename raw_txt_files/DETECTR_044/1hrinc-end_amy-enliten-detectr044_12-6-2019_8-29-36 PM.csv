@@ -1,0 +1,21 @@
+Protocol Description
+,Protocol name: amy-enliten-detectr044
+,Result File name: \Thumb Drive\Promega\Data\CSV\1hrinc-end_amy-enliten-detectr044_12-6-2019_8-29-36 PM.csv
+,Total steps: 1
+
+
+Step 1,Luminescence,100µl per well (Injector 2) 2sec. 1 repeat. 96 well plate
+PlateResults
+,Read 1
+,,1,2,3,4,5,6,7,8,9,10,11,12
+,A,X,X,X,X,X,X,3272310,215919,X,2154320,X,X
+,B,X,X,X,X,X,X,50415.8,26826.2,X,225803,X,X
+,C,X,X,X,X,X,X,10139.5,7241.8,X,4670.52,X,X
+,D,X,X,X,X,X,X,1103.95,5389.42,X,478.71,X,X
+,E,X,X,X,X,X,X,1082.55,4531.96,X,368.206,X,X
+,F,X,X,X,X,X,X,1101.35,4877,X,332.605,X,X
+,G,X,X,X,X,X,X,1065.25,8508.54,X,305.304,X,X
+,H,X,X,X,X,X,X,1057.85,5049.47,X,305.904,X,X
+
+
+Notes for the assay run: Enter Notes

@@ -1,0 +1,197 @@
+---
+title: "R Notebook"
+output:
+  html_document:
+    df_print: paged
+---
+
+```{r setup, include=FALSE}
+library(dplyr)
+library(data.table)
+library(ggplot2)
+```
+
+
+```{r include=FALSE}
+ggplotRegression <- function (fit) {
+
+require(ggplot2)
+
+ggplot(fit$model, aes_string(x = names(fit$model)[2], y = names(fit$model)[1])) + 
+  geom_point() +
+  stat_smooth(method = "lm", col = "red") +
+  labs(title = paste("Adj R2 = ",signif(summary(fit)$adj.r.squared, 5),
+                     "Intercept =",signif(fit$coef[[1]],5 ),
+                     " Slope =",signif(fit$coef[[2]], 5),
+                     " P =",signif(summary(fit)$coef[2,4], 5)))
+}
+```
+
+```{r include=FALSE}
+
+convertAMP <- function (fit, value) {
+
+intercept = signif(fit$coef[[1]],5 )
+slope = signif(fit$coef[[2]], 5)
+AMP = (value - intercept)/slope
+
+
+return(AMP)
+}
+```
+
+```{r include=FALSE}
+sumBelowTime <- function (DETECTR_037, hour, min, sec) {
+
+DETECTR_037 = subset(DETECTR_037, hours < hour || hours == hour & minutes == 0 & seconds == 0)
+DETECTR_037_sum = DETECTR_037 %>% group_by(standard_conc, replicate) %>% summarize (total_rfu=sum(rfu_value))
+return(DETECTR_037_sum)
+}
+```
+
+## NEBuffer 4+ 2.1 Fresh Standard Curves for concentrations from 0.01uM to 10uM, including 0uM
++ 0hr and 1hr single time points are first two plots
++ Summation of all data points below 1hr, 3hr, 6hr and 11.5hr are next four plots
+
+### Conclusion 
+For all samples, summing up all rfu values that came before a certain timepoint gives no noticeable gains on the R2 value. This standard curve was particularly good. The signal is more stable at 1hr than 0hr.
+
+
+```{r echo=FALSE}
+
+DETECTR_040 <- read.csv("../tidy_data/DETECTR_040_kinetics_tidy_metadata.csv")
+standard_040 <- subset(DETECTR_040, !(is.na(DETECTR_040$standard_conc)))
+standard_040$standard_conc <- as.numeric(as.character(standard_040$standard_conc))
+
+standard_040_0hr_single_point = subset(standard_040,time =="00:00:00")
+standard_040_1hr_single_point = subset(standard_040,time =="01:00:00")
+#standard_040_30min = sumBelowTime(standard_040,0,30,0)
+
+standard_040_1hr = sumBelowTime(standard_040,1,0,0)
+standard_040_3hr = sumBelowTime(standard_040,3,0,0)
+standard_040_6hr = sumBelowTime(standard_040,6,0,0)
+standard_040_12hr = sumBelowTime(standard_040,12,0,0)
+ggplotRegression(lm(standard_040_0hr_single_point$rfu_value~standard_040_0hr_single_point$standard_conc))
+ggplotRegression(lm(standard_040_1hr_single_point$rfu_value~standard_040_1hr_single_point$standard_conc))
+#ggplotRegression(lm(standard_040_30min$total_rfu~standard_040_30min$standard_conc))
+
+ggplotRegression(lm(standard_040_1hr$total_rfu~standard_040_1hr$standard_conc)) 
+ggplotRegression(lm(standard_040_3hr$total_rfu~standard_040_3hr$standard_conc))
+ggplotRegression(lm(standard_040_6hr$total_rfu~standard_040_6hr$standard_conc))
+
+ggplotRegression(lm(standard_040_12hr$total_rfu~standard_040_12hr$standard_conc))
+```
+
+## NEBuffer 4+ 2.1 Fresh Standard Curves for concentrations from 0.01uM to 0.625uM, including 0uM
++ 0hr and 1hr single time points are first two plots
++ Summation of all data points below 1hr, 3hr, 6hr and 11.5hr are next four plots
++ Summation of all data points from 30 minutes to 1 hr is the last plot
+
+### Conclusion 
+This actually doesn't look too bad at the 1 hr timepoint. For low concentration samples, summing up all rfu values that came before a certain timepoint gives some gains on >6hr, but not with 1hr timepoint and 3 hr timepoint. 1 hour is again significantly more stable than 0 hour, so perhaps the better R2 for the 6 and 12 hr timepoints is due to the earlier timepoints getting drowned out. To test this, I summed 30, 40, 50, 60 minute timepoints, and this had the same R2 value as the 3 hr timepoint, suggesting this might be true.
+
+
+```{r echo=FALSE}
+
+DETECTR_040 <- read.csv("../tidy_data/DETECTR_040_kinetics_tidy_metadata.csv")
+standard_040 <- subset(DETECTR_040, !(is.na(DETECTR_040$standard_conc)))
+standard_040$standard_conc <- as.numeric(as.character(standard_040$standard_conc))
+standard_040 = subset(standard_040,standard_conc<=1)
+
+standard_040_0hr_single_point = subset(standard_040,time =="00:00:00")
+standard_040_1hr_single_point = subset(standard_040,time =="01:00:00")
+#standard_040_30min = sumBelowTime(standard_040,0,30,0)
+
+standard_040_1hr = sumBelowTime(standard_040,1,0,0)
+standard_040_3hr = sumBelowTime(standard_040,3,0,0)
+standard_040_6hr = sumBelowTime(standard_040,6,0,0)
+standard_040_12hr = sumBelowTime(standard_040,12,0,0)
+
+standard_040_12hr = sumBelowTime(standard_040,12,0,0)
+
+ggplotRegression(lm(standard_040_0hr_single_point$rfu_value~standard_040_0hr_single_point$standard_conc))
+ggplotRegression(lm(standard_040_1hr_single_point$rfu_value~standard_040_1hr_single_point$standard_conc))
+#ggplotRegression(lm(standard_040_30min$total_rfu~standard_040_30min$standard_conc))
+
+ggplotRegression(lm(standard_040_1hr$total_rfu~standard_040_1hr$standard_conc)) 
+ggplotRegression(lm(standard_040_3hr$total_rfu~standard_040_3hr$standard_conc))
+ggplotRegression(lm(standard_040_6hr$total_rfu~standard_040_6hr$standard_conc))
+
+ggplotRegression(lm(standard_040_12hr$total_rfu~standard_040_12hr$standard_conc))
+
+
+
+standard_040_30min_to_1hr = subset(standard_040, (hours == 1 & minutes <= 0) | (hours == 0 & minutes >= 30 & seconds <= 0)) %>% group_by(standard_conc, replicate) %>% summarize (total_rfu=sum(rfu_value))
+ggplotRegression(lm(standard_040_30min_to_1hr$total_rfu~standard_040_30min_to_1hr$standard_conc))
+
+
+```
+
+## Testing the alt-R vs synthetic Lbcas12a gRNA, testing r17A-AAAAA-phos reporter
++ Both alt-R and synthetic gRNA samples appear negative in the no target control, indicating they are both blocked from ExoT activity
++ Both alt-R and synthetic gRNA samples appear positive in the target added sample, indicating they both work on the r17Ar3C reporter
++ No target controls look negative for both 3Cs and phos blocked reporter, but there seems to be more background for the phos reporter than the 3C reporter
++ Phos blocked reporter seems to give less signal than the r17Ar3C reporter
++ Interesting result - no reporter signal is higher than no target and no gRNA signal? Could Cas12a be self digesting gRNA in the absense of reporter substrate? Why would it only do that in reporter substrate? Could it be cross contamination from other samples (seems unlikely, as no reporter was near other negative samples)?
+
+```{r echo=FALSE}
+DETECTR_040$AMP <- convertAMP(lm(standard_040$rfu_value~standard_040$standard_conc), DETECTR_040$rfu_value)
+samples_040 <- subset(DETECTR_040, !(is.na(DETECTR_040$gRNA)) & !(DETECTR_040$gRNA=="") & DETECTR_040$time=="01:00:00")
+
+samples_040 <- samples_040 %>% group_by(gRNA, reporter, target) %>% summarize (mean_rfu_value = mean(rfu_value), sd_rfu_value = sd(rfu_value), mean_amp = mean(AMP), sd_amp = sd(AMP))
+
+ggplot(samples_040, aes(x = reporter, y = mean_amp, fill = gRNA)) +
+  facet_wrap(~target)+
+  geom_bar(stat = 'identity', position = 'dodge', color = "black") +
+  geom_errorbar(aes(ymin=mean_amp-sd_amp, ymax=mean_amp+sd_amp), width=.2,
+                 position=position_dodge(.9)) +
+  scale_y_continuous(expand = c(0,0))+
+  ggtitle("DETECTR 040")+
+  scale_fill_manual(values = c("darkslategray3", "mediumpurple3","darkseagreen3","olivedrab4"
+                              ))+
+  ylab("average AMP (uM)") +
+  xlab("reporter used")+
+  theme(axis.text.x = element_text(angle = 60, hjust = 1), 
+        panel.background = element_rect(fill = "white"),
+        panel.grid = element_line(color = "grey"),
+        panel.border = element_rect(fill = NA, color = "black"),
+        title = element_text(face = "bold"),
+        strip.background = element_rect(fill = NA, color = "black"),
+        strip.text = element_text(size = 10),
+        legend.title = element_blank()
+          
+        
+)
+
+
+
+samples_040 <- subset(DETECTR_040, !(is.na(DETECTR_040$gRNA)) & !(DETECTR_040$gRNA=="") & (DETECTR_040$target=="no_target")& DETECTR_040$time=="01:00:00")
+
+samples_040 <- samples_040 %>% group_by(gRNA, reporter, target) %>% summarize (mean_rfu_value = mean(rfu_value), sd_rfu_value = sd(rfu_value), mean_amp = mean(AMP), sd_amp = sd(AMP))
+
+ggplot(samples_040, aes(x = reporter, y = mean_amp, fill = gRNA)) +
+  facet_wrap(~target)+
+  geom_bar(stat = 'identity', position = 'dodge', color = "black") +
+  geom_errorbar(aes(ymin=mean_amp-sd_amp, ymax=mean_amp+sd_amp), width=.2,
+                 position=position_dodge(.9)) +
+  scale_y_continuous(expand = c(0,0))+
+  ggtitle("DETECTR 040")+
+  scale_fill_manual(values = c("darkslategray3", "mediumpurple3","darkseagreen3","olivedrab4"
+                              ))+
+  ylab("average AMP (uM)") +
+  xlab("reporter used")+
+  theme(axis.text.x = element_text(angle = 60, hjust = 1), 
+        panel.background = element_rect(fill = "white"),
+        panel.grid = element_line(color = "grey"),
+        panel.border = element_rect(fill = NA, color = "black"),
+        title = element_text(face = "bold"),
+        strip.background = element_rect(fill = NA, color = "black"),
+        strip.text = element_text(size = 10),
+        legend.title = element_blank()
+          
+        
+)
+
+
+```
+

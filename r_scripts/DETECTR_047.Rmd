@@ -1,0 +1,286 @@
+---
+title: "DETECTR 047 NANCY DREW"
+output:
+  html_document:
+    df_print: paged
+---
+
+```{r setup, include=FALSE}
+library(dplyr)
+library(data.table)
+library(ggplot2)
+```
+
+
+```{r include=FALSE}
+ggplotRegression <- function (fit) {
+
+require(ggplot2)
+
+ggplot(fit$model, aes_string(x = names(fit$model)[2], y = names(fit$model)[1])) + 
+  geom_point() +
+  stat_smooth(method = "lm", col = "red") +
+  labs(title = paste("Adj R2 = ",signif(summary(fit)$adj.r.squared, 5),
+                     "Intercept =",signif(fit$coef[[1]],5 ),
+                     " Slope =",signif(fit$coef[[2]], 5),
+                     " P =",signif(summary(fit)$coef[2,4], 5)))
+}
+```
+
+```{r include=FALSE}
+
+convertAMP <- function (fit, value) {
+
+intercept = signif(fit$coef[[1]],5 )
+slope = signif(fit$coef[[2]], 5)
+AMP = (value - intercept)/slope
+
+
+return(AMP)
+}
+```
+
+```{r include=FALSE}
+sumBelowTime <- function (DETECTR_037, hour) {
+
+DETECTR_037 = subset(DETECTR_037, (hours < hour) | (hours == hour & minutes == 0 & seconds == 0))
+DETECTR_037_sum = DETECTR_037 %>% group_by(standard_conc, replicate) %>% summarize (total_rfu=sum(rfu_value))
+return(DETECTR_037_sum)
+}
+```
+
+## AMP NEBuffer 4 + 2.1 Fresh Standard Curves for concentrations from 0.01uM to 10uM, including 0uM
++ 0hr and 1hr single time points are first two plots
++ Summation of all data points below 1hr, 3hr, 6hr and 12hr are next four plots
++ No ATP standard curve
++ 1.5ms integration time
+
+### Conclusion 
+This looks like previous AMP standard curve with no ATP (0.5ms integration, DETECTR 042). Summing helps a little.
+
+```{r echo=FALSE}
+
+DETECTR_047 <- read.csv("../tidy_data/DETECTR_047_tidy_metadata.csv")
+standard_047 <- subset(DETECTR_047, !(is.na(DETECTR_047$standard_conc)) & DETECTR_047$sample_set == "AMP_standard")
+standard_047$standard_conc <- as.numeric(as.character(standard_047$standard_conc))
+
+standard_047_0hr_single_point = subset(standard_047,time =="00:00:00")
+standard_047_1hr_single_point = subset(standard_047,time =="01:00:00")
+#standard_047_30min = sumBelowTime(standard_047,0,30,0)
+
+standard_047_1hr = sumBelowTime(standard_047,1)
+standard_047_3hr = sumBelowTime(standard_047,3)
+standard_047_6hr = sumBelowTime(standard_047,6)
+standard_047_12hr = sumBelowTime(standard_047,12)
+ggplotRegression(lm(standard_047_0hr_single_point$rfu_value~standard_047_0hr_single_point$standard_conc))
+ggplotRegression(lm(standard_047_1hr_single_point$rfu_value~standard_047_1hr_single_point$standard_conc))
+#ggplotRegression(lm(standard_047_30min$total_rfu~standard_047_30min$standard_conc))
+
+ggplotRegression(lm(standard_047_1hr$total_rfu~standard_047_1hr$standard_conc)) 
+ggplotRegression(lm(standard_047_3hr$total_rfu~standard_047_3hr$standard_conc))
+ggplotRegression(lm(standard_047_6hr$total_rfu~standard_047_6hr$standard_conc))
+
+ggplotRegression(lm(standard_047_12hr$total_rfu~standard_047_12hr$standard_conc))
+```
+
+## AMP NEBuffer 4+ 2.1 Fresh Standard Curves for concentrations from 0.01uM to 0.625uM, including 0uM
++ 0hr and 1hr single time points are first two plots
++ Summation of all data points below 1hr, 3hr, 6hr and 12hr are next four plots
++ No ATP
++ 1.5ms integration time
+
+### Conclusion 
+As in DETECTR 042, it is not linear in the lower regime. There is actually not a lot of noise (similar to 042)
+
+```{r echo=FALSE}
+
+DETECTR_047 <- read.csv("../tidy_data/DETECTR_047_tidy_metadata.csv")
+standard_047 <- subset(DETECTR_047, !(is.na(DETECTR_047$standard_conc)) & DETECTR_047$sample_set == "AMP_standard")
+standard_047$standard_conc <- as.numeric(as.character(standard_047$standard_conc))
+standard_047 = subset(standard_047,standard_conc<=1)
+
+standard_047_0hr_single_point = subset(standard_047,time =="00:00:00")
+standard_047_1hr_single_point = subset(standard_047,time =="01:00:00")
+#standard_047_30min = sumBelowTime(standard_047,0,30,0)
+
+standard_047_1hr = sumBelowTime(standard_047,1)
+standard_047_3hr = sumBelowTime(standard_047,3)
+standard_047_6hr = sumBelowTime(standard_047,6)
+standard_047_12hr = sumBelowTime(standard_047,12)
+
+ggplotRegression(lm(standard_047_0hr_single_point$rfu_value~standard_047_0hr_single_point$standard_conc))
+ggplotRegression(lm(standard_047_1hr_single_point$rfu_value~standard_047_1hr_single_point$standard_conc))
+#ggplotRegression(lm(standard_047_30min$total_rfu~standard_047_30min$standard_conc))
+
+ggplotRegression(lm(standard_047_1hr$total_rfu~standard_047_1hr$standard_conc)) 
+ggplotRegression(lm(standard_047_3hr$total_rfu~standard_047_3hr$standard_conc))
+ggplotRegression(lm(standard_047_6hr$total_rfu~standard_047_6hr$standard_conc))
+
+ggplotRegression(lm(standard_047_12hr$total_rfu~standard_047_12hr$standard_conc))
+
+
+```
+
+## AMP NEBuffer 4 + 2.1 Fresh Standard Curves for concentrations from 0.01uM to 0.04uM, including 0uM
++ 0hr and 1hr single time points are first two plots
++ Summation of all data points below 1hr is next plot
++ No ATP
++ 1.5ms integration time
+
+### Conclusion 
+I would trust down to 0.018uM on the summed plots. This is better than with the 0.5ms, which was 0.04uM limit. Summing definitely helps and this is much less noisy to start with than the 0.5ms integration time.
+
+```{r echo=FALSE}
+
+DETECTR_047 <- read.csv("../tidy_data/DETECTR_047_tidy_metadata.csv")
+standard_047 <- subset(DETECTR_047, !(is.na(DETECTR_047$standard_conc)) & DETECTR_047$sample_set == "AMP_standard")
+standard_047$standard_conc <- as.numeric(as.character(standard_047$standard_conc))
+standard_047 = subset(standard_047,standard_conc<=0.05)
+
+
+standard_047_0hr_single_point = subset(standard_047,time =="00:00:00")
+standard_047_1hr_single_point = subset(standard_047,time =="01:00:00")
+#samples_047_30min = sumBelowTime(samples_047,0,30,0)
+
+standard_047_1hr = sumBelowTime(standard_047,1)
+standard_047_3hr = sumBelowTime(standard_047,3)
+standard_047_6hr = sumBelowTime(standard_047,6)
+standard_047_12hr = sumBelowTime(standard_047,12)
+ggplotRegression(lm(standard_047_0hr_single_point$rfu_value~standard_047_0hr_single_point$standard_conc))
+ggplotRegression(lm(standard_047_1hr_single_point$rfu_value~standard_047_1hr_single_point$standard_conc))
+
+ggplotRegression(lm(standard_047_1hr$total_rfu~standard_047_1hr$standard_conc)) 
+ggplotRegression(lm(standard_047_3hr$total_rfu~standard_047_3hr$standard_conc))
+ggplotRegression(lm(standard_047_6hr$total_rfu~standard_047_6hr$standard_conc))
+
+ggplotRegression(lm(standard_047_12hr$total_rfu~standard_047_12hr$standard_conc))
+
+```
+
+
+
+## AMP GLO NANCY DREW Controls
++ Used IDT cas12a and alt-R 11C gRNA with synthetic 11C target for all
++ r17A-AAAAA-r3C-phos reporter had no gRNA, no RNAseT, and no target controls
++ r17Ar3C, r17A-TTATT-r3C and r17A-AAAAA-phos had no target control
++ No reporter control serves as negative control for all reporter
++ RFU values were converted to AMP uM concentrations using the 1hr summation regression
++ In zoomed plot, r17A-TTATT-r3C reporter is removed as it is too high
+
+### Conclusions
+As seen previously in DETECTR 043, r17A-TTATT-r3C has a really noisy background. As shown in DETECTR 043, but opposite of what is seen in DETECTR 040, r17A-AAAAA-phos has higher activity than r17Ar3C (though not by as much as in 043). The new reporter r17A-AAAAA-r3C-phos has the lowest activity (but also not by much). It also has the lowest background, though again, not by much. From this experiment we could conclude that r3C is the most effective block, followed by phos, followed by the combination. However, the gRNA or contamination signal (shown in the 'no reporter' control) now contributes the most to the background signal.
+
+```{r echo=FALSE}
+DETECTR_047 <- read.csv("../tidy_data/DETECTR_047_tidy_metadata.csv")
+samples_047 <- subset(DETECTR_047, (DETECTR_047$sample_set=="sample") & !(is.na(DETECTR_047$gRNA))  & !(DETECTR_047$gRNA=="") )
+
+samples_047 = subset(samples_047, (hours < 1) | (hours == 1 & minutes == 0 & seconds == 0))
+
+samples_047 = samples_047 %>% group_by(reporter, gRNA, target, RNAseT, replicate) %>% summarize (total_rfu=sum(rfu_value))
+
+
+standard_047_AMP <- subset(DETECTR_047, !(is.na(DETECTR_047$standard_conc)) & DETECTR_047$sample_set == "AMP_standard" )
+
+standard_047_AMP_1hr = sumBelowTime(standard_047_AMP,1)
+
+standard_047_AMP_1hr$standard_conc <- as.numeric(as.character(standard_047_AMP_1hr$standard_conc))
+
+samples_047$AMP <- convertAMP(lm(standard_047_AMP_1hr$total_rfu~standard_047_AMP_1hr$standard_conc), samples_047$total_rfu)
+samples_047 <- samples_047 %>% group_by(gRNA, reporter, target, RNAseT) %>% summarize (mean_rfu_value = mean(total_rfu), sd_rfu_value = sd(total_rfu), mean_amp = mean(AMP), sd_amp = sd(AMP))
+
+
+
+#samples_047$sample_name = paste(samples_047$gRNA, samples_047$target, samples_047$RNAseT, samples_047$reporter)
+samples_047$sample_name = c("no_target","target_added","no_target","target_added","no_target","no_RNAseT","target_added","no_target","target_added", "no_target","target_added","no_gRNA")
+
+ggplot(samples_047, aes(x = sample_name, y = mean_amp, fill = reporter)) +
+  #facet_wrap(~reporter)+
+  geom_bar(stat = 'identity', position = 'dodge', color = "black") +
+  geom_errorbar(aes(ymin=mean_amp-sd_amp, ymax=mean_amp+sd_amp), width=.2,
+                 position=position_dodge(.9), color = "black") +
+  scale_y_continuous(expand = c(0,0), limits = c(0,12))+
+  ggtitle("DETECTR 043, NANCY DREW AMP GLO")+
+  scale_fill_manual(values = c("darkslategray3", "mediumpurple3","darkseagreen3","olivedrab4",
+                              "royalblue4"))+
+  ylab("average AMP (uM)") +
+  #xlab("reporter used")+
+  theme(axis.text.x = element_text(angle = 60, hjust = 1), 
+        panel.background = element_rect(fill = "white"),
+        panel.grid = element_line(color = "grey"),
+        panel.border = element_rect(fill = NA, color = "black"),
+        title = element_text(face = "bold"),
+        strip.background = element_rect(fill = NA, color = "black"),
+        strip.text = element_text(size = 10),
+        legend.title = element_blank(),
+        axis.title.x = element_blank()
+          
+        
+)
+
+
+```
+
+
+```{r echo=FALSE, warning=FALSE}
+
+
+
+samples_047 = subset(samples_047, sample_name != "target_added")
+
+ggplot(samples_047, aes(x = sample_name, y = mean_amp, fill = reporter)) +
+  #facet_wrap(~reporter)+
+  geom_bar(stat = 'identity', position = 'dodge', color = "black") +
+  geom_errorbar(aes(ymin=mean_amp-sd_amp, ymax=mean_amp+sd_amp), width=.2,
+                 position=position_dodge(.9), color = "black") +
+  scale_y_continuous(expand = c(0,0), limits = c(0,0.15))+
+  ggtitle("DETECTR 047, NANCY DREW AMP GLO, Zoomed")+
+  scale_fill_manual(values = c("darkslategray3", "mediumpurple3","darkseagreen3","olivedrab4","royalblue4"
+                              ))+
+  ylab("average AMP (uM)") +
+  #xlab("reporter used")+
+  theme(axis.text.x = element_text(angle = 60, hjust = 1), 
+        panel.background = element_rect(fill = "white"),
+        panel.grid = element_line(color = "grey"),
+        panel.border = element_rect(fill = NA, color = "black"),
+        title = element_text(face = "bold"),
+        strip.background = element_rect(fill = NA, color = "black"),
+        strip.text = element_text(size = 10),
+        legend.title = element_blank(),
+        axis.title.x = element_blank()
+          
+        
+)
+
+```
+
+
+## Kinetics over time, AMP standards
+
+```{r echo=FALSE, warning=FALSE}
+
+DETECTR_047 <- read.csv("../tidy_data/DETECTR_047_tidy_metadata.csv")
+DETECTR_047$standard_conc <- as.numeric(as.character(DETECTR_047$standard_conc))
+DETECTR_047 <- subset(DETECTR_047,  DETECTR_047$sample_set %in% c("AMP_standard") )
+DETECTR_047$standard_conc <- factor(DETECTR_047$standard_conc)
+
+ggplot(DETECTR_047, aes(x = time, y = rfu_value, color = standard_conc)) +
+  facet_wrap(~sample_set, scale = "free_y")+
+  #geom_line(stat = 'identity') +
+  geom_point(stat = 'identity', size = 0.5) +
+  scale_y_continuous(expand = c(0,0))+
+ # scale_x_continuous(breaks = seq(0,24,2))+
+  scale_color_manual(values = c("darkslategray3", "mediumpurple3","darkseagreen3","olivedrab4","orange","yellow","blue","red","green","brown","black","purple","olivedrab2","grey","pink","orchid3"))+
+  ylab("rfu_value") +
+  xlab("time from 0 hr to 12 hr")+
+  theme(axis.text.x = element_blank(), 
+        panel.background = element_rect(fill = "white"),
+        panel.grid = element_line(color = "grey"),
+        panel.border = element_rect(fill = NA, color = "black"),
+        title = element_text(face = "bold"),
+        strip.background = element_rect(fill = NA, color = "black"),
+        strip.text = element_text(size = 10),
+        legend.title = element_blank()
+          
+        
+)
+```

@@ -1,0 +1,21 @@
+Protocol Description
+,Protocol name: amy-enliten-detectr044
+,Result File name: \Thumb Drive\Promega\Data\CSV\amp0hr-end_amy-enliten-detectr044_12-6-2019_7-15-41 PM.csv
+,Total steps: 1
+
+
+Step 1,Luminescence. 1 repeat. 96 well plate
+PlateResults
+,Read 1
+,,1,2,3,4,5,6,7,8,9,10,11,12
+,A,X,X,X,478167,X,X,X,X,X,X,X,X
+,B,X,X,X,48046.4,X,X,X,X,X,X,X,X
+,C,X,X,X,63156.3,X,X,X,X,X,X,X,X
+,D,X,X,X,72684.7,X,X,X,X,X,X,X,X
+,E,X,X,X,72158.5,X,X,X,X,X,X,X,X
+,F,X,X,X,67387.9,X,X,X,X,X,X,X,X
+,G,X,X,X,54408.3,X,X,X,X,X,X,X,X
+,H,X,X,X,46638.1,X,X,X,X,X,X,X,X
+
+
+Notes for the assay run: Enter Notes

@@ -1,0 +1,21 @@
+Protocol Description
+,Protocol name: amyl-detectr048
+,Result File name: \Thumb Drive\Promega\Data\CSV\enliten-10s_amyl-detectr048_12-19-2019_10-01-11 PM.csv
+,Total steps: 1
+
+
+Step 1,Luminescence,100µl per well (Injector 1) 2sec. 1 repeat. 96 well plate
+PlateResults
+,Read 1
+,,1,2,3,4,5,6,7,8,9,10,11,12
+,A,X,X,X,X,X,X,X,X,X,X,X,X
+,B,X,X,X,X,X,X,X,2529290,X,X,X,X
+,C,X,X,X,X,X,X,X,X,X,X,X,X
+,D,X,X,X,X,X,X,X,X,X,X,X,X
+,E,X,X,X,X,X,X,X,X,X,X,X,X
+,F,X,X,X,X,X,X,X,X,X,X,X,X
+,G,X,X,X,X,X,X,X,X,X,X,X,X
+,H,X,X,X,X,X,X,X,30562,X,X,X,X
+
+
+Notes for the assay run: Enter Notes

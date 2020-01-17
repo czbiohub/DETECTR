@@ -1,0 +1,214 @@
+---
+title: "DETECTR 037 SpectraMax Overnight 384 White Plate"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+library(dplyr)
+library(data.table)
+library(ggplot2)
+```
+
+```{r include=FALSE}
+ggplotRegression <- function (fit) {
+
+require(ggplot2)
+
+ggplot(fit$model, aes_string(x = names(fit$model)[2], y = names(fit$model)[1])) + 
+  geom_point() +
+  stat_smooth(method = "lm", col = "red") +
+  labs(title = paste("Adj R2 = ",signif(summary(fit)$adj.r.squared, 5),
+                     "Intercept =",signif(fit$coef[[1]],5 ),
+                     " Slope =",signif(fit$coef[[2]], 5),
+                     " P =",signif(summary(fit)$coef[2,4], 5)
+                     ))
+}
+```
+
+```{r include=FALSE}
+
+convertAMP <- function (fit, value) {
+
+intercept = signif(fit$coef[[1]],5 )
+slope = signif(fit$coef[[2]], 5)
+AMP = (value - intercept)/slope
+
+
+return(AMP)
+}
+```
+
+```{r include=FALSE}
+# sumBelowTime <- function (DETECTR_037, hour, min, sec) {
+# 
+# DETECTR_037 = subset(DETECTR_037, hours <= hour & minutes <= min & seconds <= sec)
+# DETECTR_037_sum = DETECTR_037 %>% group_by(standard_conc, replicate) %>% summarize (total_rfu=sum(rfu_value))
+# return(DETECTR_037_sum)
+# }
+
+sumBelowTime <- function (DETECTR_037, hour) {
+
+DETECTR_037 = subset(DETECTR_037, (hours < hour) | (hours == hour & minutes == 0 & seconds == 0))
+DETECTR_037_sum = DETECTR_037 %>% group_by(standard_conc, replicate) %>% summarize (total_rfu=sum(rfu_value))
+return(DETECTR_037_sum)
+}
+```
+
+```{r include=FALSE}
+filterConcentration <- function (DETECTR_037, conc) {
+
+DETECTR_037 = subset(DETECTR_037, standard_conc <= conc )
+
+return(DETECTR_037)
+}
+```
+
+
+## Standard Curves for concentrations from 0.01uM to 10uM, including 0uM
++ 0hr and 1hr single time points are first two plots
++ Summation of all data points below 1hr, 3hr, 6hr and 12hr are next four plots
+
+### Conclusion 
+For all samples, summing up all rfu values that came before a certain timepoint gives no noticeable gains on the R2 value. 
+
+```{r DETECTR 037 all concentrations, echo=FALSE}
+
+
+
+DETECTR_037 <- read.csv("../tidy_data/DETECTR_037_kinetics_tidy_metadata.csv")
+DETECTR_037$standard_conc <- as.numeric(as.character(DETECTR_037$standard_conc))
+DETECTR_037 = subset(DETECTR_037, replicate != 'a' | standard_conc != 0.0195312)
+
+DETECTR_037_0hr_single_point = subset(DETECTR_037,time =="00:00:00")
+DETECTR_037_1hr_single_point = subset(DETECTR_037,time =="01:00:00")
+#DETECTR_037_30min = sumBelowTime(DETECTR_037,0,30,0)
+
+DETECTR_037_1hr = sumBelowTime(DETECTR_037,1)
+DETECTR_037_3hr = sumBelowTime(DETECTR_037,3)
+DETECTR_037_6hr = sumBelowTime(DETECTR_037,6)
+DETECTR_037_12hr = sumBelowTime(DETECTR_037,12)
+ggplotRegression(lm(DETECTR_037_0hr_single_point$rfu_value~DETECTR_037_0hr_single_point$standard_conc))
+ggplotRegression(lm(DETECTR_037_1hr_single_point$rfu_value~DETECTR_037_1hr_single_point$standard_conc))
+#ggplotRegression(lm(DETECTR_037_30min$total_rfu~DETECTR_037_30min$standard_conc))
+
+ggplotRegression(lm(DETECTR_037_1hr$total_rfu~DETECTR_037_1hr$standard_conc)) 
+ggplotRegression(lm(DETECTR_037_3hr$total_rfu~DETECTR_037_3hr$standard_conc))
+ggplotRegression(lm(DETECTR_037_6hr$total_rfu~DETECTR_037_6hr$standard_conc))
+
+ggplotRegression(lm(DETECTR_037_12hr$total_rfu~DETECTR_037_12hr$standard_conc))
+
+
+```
+
+
+
+## Standard Curves for concentrations from 0.01uM to 0.625uM, including 0uM
++ 0hr and 1hr single time points are first two plots
++ Summation of all data points below 1hr, 3hr, 6hr and 12hr are next four plots
+
+### Conclusion
+For lower concentration samples, summing up all rfu values that came before a certain timepoint gives small gains on the R2 value [with longer time meaning higher R2], but outliers are consistently outliers and skew R2. Perhaps another sample set would not have these outliers - could be due to small errors in pipetting or cross contamination. However all outliers are higher than 0, so perhaps this suggests we could still detect small amounts, though without accurate quantification. It looks like it could be used to detect >0.1uM concentrations.
+
+```{r DETECTR 037 low concentrations, echo=FALSE}
+DETECTR_037 <- read.csv("../tidy_data/DETECTR_037_kinetics_tidy_metadata.csv")
+DETECTR_037$standard_conc <- as.numeric(as.character(DETECTR_037$standard_conc))
+DETECTR_037 = subset(DETECTR_037, replicate != 'a' | standard_conc != 0.0195312)
+
+DETECTR_037 = subset(DETECTR_037,standard_conc<=1)
+DETECTR_037_0hr_single_point = subset(DETECTR_037,time =="00:00:00")
+DETECTR_037_1hr_single_point = subset(DETECTR_037,time =="01:00:00")
+#DETECTR_037_30min = sumBelowTime(DETECTR_037,0,30,0)
+
+DETECTR_037_1hr = sumBelowTime(DETECTR_037,1)
+DETECTR_037_3hr = sumBelowTime(DETECTR_037,3)
+DETECTR_037_6hr = sumBelowTime(DETECTR_037,6)
+DETECTR_037_12hr = sumBelowTime(DETECTR_037,12)
+ggplotRegression(lm(DETECTR_037_0hr_single_point$rfu_value~DETECTR_037_0hr_single_point$standard_conc))
+ggplotRegression(lm(DETECTR_037_1hr_single_point$rfu_value~DETECTR_037_1hr_single_point$standard_conc))
+#ggplotRegression(lm(DETECTR_037_30min$total_rfu~DETECTR_037_30min$standard_conc))
+
+ggplotRegression(lm(DETECTR_037_1hr$total_rfu~DETECTR_037_1hr$standard_conc))
+ggplotRegression(lm(DETECTR_037_3hr$total_rfu~DETECTR_037_3hr$standard_conc))
+ggplotRegression(lm(DETECTR_037_6hr$total_rfu~DETECTR_037_6hr$standard_conc))
+
+ggplotRegression(lm(DETECTR_037_12hr$total_rfu~DETECTR_037_12hr$standard_conc))
+
+
+
+```
+
+
+## Standard Curves for concentrations from 0.01uM to 5uM, including 0uM
++ 1hr single time points is first plot
++ Summation of all data points below 1hr is second plot
+
+### Conclusion
+10uM standard decreases linearity of relationship. Removing it improves R2 values. Consider excluding from future standard curves.
+
+```{r DETECTR 037 all concentrations except 10uM, echo=FALSE}
+DETECTR_037 <- read.csv("../tidy_data/DETECTR_037_kinetics_tidy_metadata.csv")
+DETECTR_037$standard_conc <- as.numeric(as.character(DETECTR_037$standard_conc))
+DETECTR_037 = subset(DETECTR_037, replicate != 'a' | standard_conc != 0.0195312)
+
+#DETECTR_037 = subset(DETECTR_037,standard_conc>=0.1 || standard_conc==0)
+DETECTR_037 = subset(DETECTR_037,standard_conc<=5)
+DETECTR_037_0hr_single_point = subset(DETECTR_037,time =="00:00:00")
+DETECTR_037_1hr_single_point = subset(DETECTR_037,time =="01:00:00")
+#DETECTR_037_30min = sumBelowTime(DETECTR_037,0,30,0)
+
+DETECTR_037_1hr = sumBelowTime(DETECTR_037,1)
+DETECTR_037_3hr = sumBelowTime(DETECTR_037,3)
+DETECTR_037_6hr = sumBelowTime(DETECTR_037,6)
+DETECTR_037_12hr = sumBelowTime(DETECTR_037,12)
+#ggplotRegression(lm(DETECTR_037_0hr_single_point$rfu_value~DETECTR_037_0hr_single_point$standard_conc))
+ggplotRegression(lm(DETECTR_037_1hr_single_point$rfu_value~DETECTR_037_1hr_single_point$standard_conc))
+#ggplotRegression(lm(DETECTR_037_30min$total_rfu~DETECTR_037_30min$standard_conc))
+
+ggplotRegression(lm(DETECTR_037_1hr$total_rfu~DETECTR_037_1hr$standard_conc))
+#ggplotRegression(lm(DETECTR_037_3hr$total_rfu~DETECTR_037_3hr$standard_conc))
+#ggplotRegression(lm(DETECTR_037_6hr$total_rfu~DETECTR_037_6hr$standard_conc))
+
+#ggplotRegression(lm(DETECTR_037_12hr$total_rfu~DETECTR_037_12hr$standard_conc))
+
+
+
+```
+
+
+## Standard Curves for concentrations from 0.15uM to 5uM, including 0uM
++ 1hr single time points is first plot
++ Summation of all data points below 1hr is second plot
+
+### Conclusion
+Perhaps we should define a range which has linearity - somewhere between 0.1uM and 5uM.
+
+```{r DETECTR 037 linear range, echo=FALSE}
+DETECTR_037 <- read.csv("../tidy_data/DETECTR_037_kinetics_tidy_metadata.csv")
+DETECTR_037$standard_conc <- as.numeric(as.character(DETECTR_037$standard_conc))
+DETECTR_037 = subset(DETECTR_037, replicate != 'a' | standard_conc != 0.0195312)
+
+DETECTR_037 = subset(DETECTR_037,standard_conc>=0.1 | standard_conc==0)
+DETECTR_037 = subset(DETECTR_037,standard_conc<=5)
+DETECTR_037_0hr_single_point = subset(DETECTR_037,time =="00:00:00")
+DETECTR_037_1hr_single_point = subset(DETECTR_037,time =="01:00:00")
+#DETECTR_037_30min = sumBelowTime(DETECTR_037,0,30,0)
+
+DETECTR_037_1hr = sumBelowTime(DETECTR_037,1)
+DETECTR_037_3hr = sumBelowTime(DETECTR_037,3)
+DETECTR_037_6hr = sumBelowTime(DETECTR_037,6)
+DETECTR_037_12hr = sumBelowTime(DETECTR_037,12)
+#ggplotRegression(lm(DETECTR_037_0hr_single_point$rfu_value~DETECTR_037_0hr_single_point$standard_conc))
+ggplotRegression(lm(DETECTR_037_1hr_single_point$rfu_value~DETECTR_037_1hr_single_point$standard_conc))
+#ggplotRegression(lm(DETECTR_037_30min$total_rfu~DETECTR_037_30min$standard_conc))
+
+ggplotRegression(lm(DETECTR_037_1hr$total_rfu~DETECTR_037_1hr$standard_conc))
+#ggplotRegression(lm(DETECTR_037_3hr$total_rfu~DETECTR_037_3hr$standard_conc))
+#ggplotRegression(lm(DETECTR_037_6hr$total_rfu~DETECTR_037_6hr$standard_conc))
+
+#ggplotRegression(lm(DETECTR_037_12hr$total_rfu~DETECTR_037_12hr$standard_conc))
+
+
+
+```

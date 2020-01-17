@@ -1,0 +1,205 @@
+---
+title: "DETECTR 045 SpectraMax AMP and UMP standards on UMP kit"
+output:
+  html_document:
+    df_print: paged
+---
+
+Main takeaways: UMP 1.5s integration times seems to give us 2X more sensitivity (from 0.04uM to 0.02uM). AMP is not an intermediate in the UMP GLO kit as it doesn't give signal in UMP GLO assay.
+
+```{r setup, include=FALSE}
+library(dplyr)
+library(data.table)
+library(ggplot2)
+```
+
+
+```{r include=FALSE}
+ggplotRegression <- function (fit) {
+
+require(ggplot2)
+
+ggplot(fit$model, aes_string(x = names(fit$model)[2], y = names(fit$model)[1])) + 
+  geom_point() +
+  stat_smooth(method = "lm", col = "red") +
+  labs(title = paste("Adj R2 = ",signif(summary(fit)$adj.r.squared, 5),
+                     "Intercept =",signif(fit$coef[[1]],5 ),
+                     " Slope =",signif(fit$coef[[2]], 5),
+                     " P =",signif(summary(fit)$coef[2,4], 5)))
+}
+```
+
+```{r include=FALSE}
+
+convertAMP <- function (fit, value) {
+
+intercept = signif(fit$coef[[1]],5 )
+slope = signif(fit$coef[[2]], 5)
+AMP = (value - intercept)/slope
+
+
+return(AMP)
+}
+```
+
+```{r include=FALSE}
+sumBelowTime <- function (DETECTR_037, hour) {
+
+DETECTR_037 = subset(DETECTR_037, (hours < hour) | (hours == hour & minutes == 0 & seconds == 0))
+DETECTR_037_sum = DETECTR_037 %>% group_by(standard_conc, replicate, sample_set) %>% summarize (total_rfu=sum(rfu_value))
+return(DETECTR_037_sum)
+}
+```
+
+## UMP NEBuffer 4 + 2.1 Fresh Standard Curves for concentrations from 0.01uM to 10uM, including 0uM
++ 0hr and 1hr single time points are first two plots
++ Summation of all data points below 1hr, 3hr, 6hr and 12hr are next four plots
++ 1.5 second integration time
+
+### Conclusion 
+R2 value is amazing and fit seems great.
+
+```{r echo=FALSE}
+
+DETECTR_045 <- read.csv("../tidy_data/DETECTR_045_tidy_metadata.csv")
+standard_045 <- subset(DETECTR_045, !(is.na(DETECTR_045$standard_conc)) & DETECTR_045$sample_set == "UMP_standard")
+standard_045$standard_conc <- as.numeric(as.character(standard_045$standard_conc))
+
+standard_045_0hr_single_point = subset(standard_045,time =="00:00:00")
+standard_045_1hr_single_point = subset(standard_045,time =="01:00:00")
+#standard_045_30min = sumBelowTime(standard_045,0,30,0)
+
+standard_045_1hr = sumBelowTime(standard_045,1)
+standard_045_3hr = sumBelowTime(standard_045,3)
+standard_045_6hr = sumBelowTime(standard_045,6)
+standard_045_12hr = sumBelowTime(standard_045,12)
+ggplotRegression(lm(standard_045_0hr_single_point$rfu_value~standard_045_0hr_single_point$standard_conc))
+ggplotRegression(lm(standard_045_1hr_single_point$rfu_value~standard_045_1hr_single_point$standard_conc))
+#ggplotRegression(lm(standard_045_30min$total_rfu~standard_045_30min$standard_conc))
+
+ggplotRegression(lm(standard_045_1hr$total_rfu~standard_045_1hr$standard_conc)) 
+ggplotRegression(lm(standard_045_3hr$total_rfu~standard_045_3hr$standard_conc))
+ggplotRegression(lm(standard_045_6hr$total_rfu~standard_045_6hr$standard_conc))
+
+ggplotRegression(lm(standard_045_12hr$total_rfu~standard_045_12hr$standard_conc))
+```
+
+## UMP NEBuffer 4+ 2.1 Fresh Standard Curves for concentrations from 0.01uM to 0.625uM, including 0uM
++ 0hr and 1hr single time points are first two plots
++ Summation of all data points below 1hr, 3hr, 6hr and 12hr are next four plots
++ 1.5s integration time
+
+### Conclusion 
+With UMP GLO, we can now detect to 0.02uM with a 1hr summation (with the 500ms integration this was 0.04). The curve gets tighter as we add more hours, but still 0.02 seems about the lower limit. With AMP GLO, with a 1hr or 12hr sum we could get down to 0.08 uM (no ATP, DETECTR 042)
+
+```{r echo=FALSE}
+
+DETECTR_045 <- read.csv("../tidy_data/DETECTR_045_tidy_metadata.csv")
+standard_045 <- subset(DETECTR_045, !(is.na(DETECTR_045$standard_conc)) & DETECTR_045$sample_set == "UMP_standard")
+standard_045$standard_conc <- as.numeric(as.character(standard_045$standard_conc))
+standard_045 = subset(standard_045,standard_conc<=1)
+
+standard_045_0hr_single_point = subset(standard_045,time =="00:00:00")
+standard_045_1hr_single_point = subset(standard_045,time =="01:00:00")
+#standard_045_30min = sumBelowTime(standard_045,0,30,0)
+
+standard_045_1hr = sumBelowTime(standard_045,1)
+standard_045_3hr = sumBelowTime(standard_045,3)
+standard_045_6hr = sumBelowTime(standard_045,6)
+standard_045_12hr = sumBelowTime(standard_045,12)
+
+ggplotRegression(lm(standard_045_0hr_single_point$rfu_value~standard_045_0hr_single_point$standard_conc))
+ggplotRegression(lm(standard_045_1hr_single_point$rfu_value~standard_045_1hr_single_point$standard_conc))
+#ggplotRegression(lm(standard_045_30min$total_rfu~standard_045_30min$standard_conc))
+
+ggplotRegression(lm(standard_045_1hr$total_rfu~standard_045_1hr$standard_conc)) 
+ggplotRegression(lm(standard_045_3hr$total_rfu~standard_045_3hr$standard_conc))
+ggplotRegression(lm(standard_045_6hr$total_rfu~standard_045_6hr$standard_conc))
+
+ggplotRegression(lm(standard_045_12hr$total_rfu~standard_045_12hr$standard_conc))
+
+
+```
+
+## UMP vs AMP NEBuffer 4 + 2.1 Fresh Standard Curves for concentrations from 0.01uM to 10uM, including 0uM
++ Summation of all data points below 1hr is used
+
+### Conclusion 
+Because we see no signal with AMP standards but do with the UMP standards, we can conclude AMP is not an intermediate of the UMP GLO kit.
+
+```{r echo=FALSE}
+
+DETECTR_045 <- read.csv("../tidy_data/DETECTR_045_tidy_metadata.csv")
+standard_045 <- DETECTR_045
+standard_045$standard_conc <- as.numeric(as.character(standard_045$standard_conc))
+
+standard_045_1hr = sumBelowTime(standard_045,1)
+
+ggplot(standard_045_1hr, aes(x = standard_conc, y = total_rfu, color = sample_set)) +
+  geom_point(stat = 'identity', size = 1) +
+  scale_y_continuous(expand = c(0,0))+
+  scale_color_manual(values = c("darkslategray3", "mediumpurple3","darkseagreen3","olivedrab4","orange","yellow","blue","red","green","brown","black","purple","olivedrab2","grey","pink","orchid3"))+
+  ylab("rfu_value") +
+  xlab("concentration (uM)")+
+  ggtitle("UMP and AMP Plots")+
+  theme(
+        panel.background = element_rect(fill = "white"),
+        panel.grid = element_line(color = "grey"),
+        panel.border = element_rect(fill = NA, color = "black"),
+        title = element_text(face = "bold"),
+        strip.background = element_rect(fill = NA, color = "black"),
+        strip.text = element_text(size = 10),
+        legend.title = element_blank())
+
+standard_045_1hr = subset(standard_045_1hr,standard_conc<=1)
+
+ggplot(standard_045_1hr, aes(x = standard_conc, y = total_rfu, color = sample_set)) +
+  geom_point(stat = 'identity', size = 1) +
+  scale_y_continuous(expand = c(0,0))+
+  scale_color_manual(values = c("darkslategray3", "mediumpurple3","darkseagreen3","olivedrab4","orange","yellow","blue","red","green","brown","black","purple","olivedrab2","grey","pink","orchid3"))+
+  ylab("rfu_value") +
+  xlab("concentration (uM)")+
+  ggtitle("UMP and AMP Plots, low concentrations")+
+  theme(
+        panel.background = element_rect(fill = "white"),
+        panel.grid = element_line(color = "grey"),
+        panel.border = element_rect(fill = NA, color = "black"),
+        title = element_text(face = "bold"),
+        strip.background = element_rect(fill = NA, color = "black"),
+        strip.text = element_text(size = 10),
+        legend.title = element_blank())
+
+
+
+```
+
+## Kinetics over time, UMP and AMP
+AMP is random noise and UMP has the same curve as before - a spike early on and then exponential (close to linear) decay.
+
+```{r echo=FALSE, warning=FALSE}
+
+DETECTR_045 <- read.csv("../tidy_data/DETECTR_045_tidy_metadata.csv")
+DETECTR_045$standard_conc <- as.numeric(as.character(DETECTR_045$standard_conc))
+DETECTR_045$standard_conc <- factor(DETECTR_045$standard_conc)
+
+ggplot(DETECTR_045, aes(x = time, y = rfu_value, color = standard_conc)) +
+  facet_wrap(~sample_set, scale = "free_y")+
+  #geom_line(stat = 'identity') +
+  geom_point(stat = 'identity', size = 0.5) +
+  scale_y_continuous(expand = c(0,0))+
+ # scale_x_continuous(breaks = seq(0,24,2))+
+  #scale_color_discrete(face = "concentration(uM)")+
+  scale_color_manual(name = "concentration(uM)", values = c("darkslategray3", "mediumpurple3","darkseagreen3","olivedrab4","orange","yellow","blue","red","green","brown","black","purple","olivedrab2","grey","pink","orchid3"))+
+  ylab("rfu_value") +
+  xlab("time from 0 hr to 12 hr")+
+  theme(axis.text.x = element_blank(), 
+        panel.background = element_rect(fill = "white"),
+        panel.grid = element_line(color = "grey"),
+        panel.border = element_rect(fill = NA, color = "black"),
+        title = element_text(face = "bold"),
+        strip.background = element_rect(fill = NA, color = "black"),
+        strip.text = element_text(size = 10)
+          
+        
+)
+```

@@ -1,0 +1,110 @@
+---
+title: "DETECTR_040_Markdown"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(dplyr)
+library(data.table)
+library(ggplot2)
+```
+
+
+```{r}
+ggplotRegression <- function (fit) {
+
+require(ggplot2)
+
+ggplot(fit$model, aes_string(x = names(fit$model)[2], y = names(fit$model)[1])) + 
+  geom_point() +
+  stat_smooth(method = "lm", col = "red") +
+  labs(title = paste("Adj R2 = ",signif(summary(fit)$adj.r.squared, 5),
+                     "Intercept =",signif(fit$coef[[1]],5 ),
+                     " Slope =",signif(fit$coef[[2]], 5),
+                     " P =",signif(summary(fit)$coef[2,4], 5)))
+}
+```
+
+```{r}
+
+convertAMP <- function (fit, value) {
+
+intercept = signif(fit$coef[[1]],5 )
+slope = signif(fit$coef[[2]], 5)
+AMP = (value - intercept)/slope
+
+
+return(AMP)
+}
+```
+
+```{r include=FALSE}
+sumBelowTime <- function (DETECTR_037, hour, min, sec) {
+
+DETECTR_037 = subset(DETECTR_037, hours <= hour & minutes <= min & seconds <= sec)
+DETECTR_037_sum = DETECTR_037 %>% group_by(standard_conc, replicate) %>% summarize (total_rfu=sum(rfu_value))
+return(DETECTR_037_sum)
+}
+```
+
+## NEBuffer 4+ 2.1 Fresh Standard Curves for concentrations from 0.01uM to 10uM, including 0uM
++ 0hr and 1hr single time points are first two plots
++ Summation of all data points below 1hr, 3hr, 6hr and 11.5hr are next four plots
+
+### Conclusion 
+For all samples, summing up all rfu values that came before a certain timepoint gives no noticeable gains on the R2 value. There is significant difference between the replicates. 10uM doesn't seem out of the linear range on the Envision.
+
+
+```{r include=FALSE}
+
+DETECTR_040 <- read.csv("../tidy_data/DETECTR_040_kinetics_tidy_metadata.csv")
+standard_040 <- subset(DETECTR_040, !(is.na(DETECTR_040$standard_conc)))
+standard_040$standard_conc <- as.numeric(as.character(standard_040$standard_conc))
+
+standard_040_0hr_single_point = subset(standard_040,time =="00:00:00")
+standard_040_1hr_single_point = subset(standard_040,time =="01:00:00")
+#standard_040_30min = sumBelowTime(standard_040,0,30,0)
+
+standard_040_1hr = sumBelowTime(standard_040,1,0,0)
+standard_040_3hr = sumBelowTime(standard_040,3,0,0)
+standard_040_6hr = sumBelowTime(standard_040,6,0,0)
+standard_040_12hr = sumBelowTime(standard_040,12,0,0)
+ggplotRegression(lm(standard_040_0hr_single_point$rfu_value~standard_040_0hr_single_point$standard_conc))
+ggplotRegression(lm(standard_040_1hr_single_point$rfu_value~standard_040_1hr_single_point$standard_conc))
+#ggplotRegression(lm(standard_040_30min$total_rfu~standard_040_30min$standard_conc))
+
+ggplotRegression(lm(standard_040_1hr$total_rfu~standard_040_1hr$standard_conc)) 
+ggplotRegression(lm(standard_040_3hr$total_rfu~standard_040_3hr$standard_conc))
+ggplotRegression(lm(standard_040_6hr$total_rfu~standard_040_6hr$standard_conc))
+
+ggplotRegression(lm(standard_040_12hr$total_rfu~standard_040_12hr$standard_conc))
+```
+
+
+
+
+```{r include=FALSE}
+
+DETECTR_040 <- read.csv("../tidy_data/DETECTR_040_kinetics_tidy_metadata.csv")
+standard_040 <- subset(DETECTR_040, !(is.na(DETECTR_040$standard_conc)))
+standard_040$standard_conc <- as.numeric(as.character(standard_040$standard_conc))
+standard_040 = subset(standard_040,standard_conc<=1)
+
+standard_040_0hr_single_point = subset(standard_040,time =="00:00:00")
+standard_040_1hr_single_point = subset(standard_040,time =="01:00:00")
+#standard_040_30min = sumBelowTime(standard_040,0,30,0)
+
+standard_040_1hr = sumBelowTime(standard_040,1,0,0)
+standard_040_3hr = sumBelowTime(standard_040,3,0,0)
+standard_040_6hr = sumBelowTime(standard_040,6,0,0)
+standard_040_12hr = sumBelowTime(standard_040,12,0,0)
+ggplotRegression(lm(standard_040_0hr_single_point$rfu_value~standard_040_0hr_single_point$standard_conc))
+ggplotRegression(lm(standard_040_1hr_single_point$rfu_value~standard_040_1hr_single_point$standard_conc))
+#ggplotRegression(lm(standard_040_30min$total_rfu~standard_040_30min$standard_conc))
+
+ggplotRegression(lm(standard_040_1hr$total_rfu~standard_040_1hr$standard_conc)) 
+ggplotRegression(lm(standard_040_3hr$total_rfu~standard_040_3hr$standard_conc))
+ggplotRegression(lm(standard_040_6hr$total_rfu~standard_040_6hr$standard_conc))
+
+ggplotRegression(lm(standard_040_12hr$total_rfu~standard_040_12hr$standard_conc))
+```

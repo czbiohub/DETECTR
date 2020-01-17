@@ -1,0 +1,225 @@
+---
+title: "DETECTR 049 Luminometer Data"
+output:
+  html_document:
+    df_print: paged
+---
+
+Note that everything is plotted on a log10(x) and flexible log10(y) scale, meaning the axis changes with every plot. 6 kinetic reads for 10s interval will equate to a 1 minute integration time, summed and displayed here. The LOWEST concentration was read first, rather than the highest concentration as was done in previous experiments.
+
+# Experiments performed (in the following order)
+1. Before and after bleach clean ENLITEN samples on water
+2. NANCY DREW LOD with AMP no kinase and ENLITEN + AMP standards in buffer
+3. ATP Standards in buffer
+
+
+```{r setup, include=FALSE}
+library(dplyr)
+library(data.table)
+library(ggplot2)
+library(scales)
+```
+
+
+```{r include=FALSE}
+ggplotRegression <- function (fit) {
+
+require(ggplot2)
+
+p = ggplot(fit$model, aes_string(x = names(fit$model)[2], y = names(fit$model)[1])) + 
+  geom_point() +
+  stat_smooth(method = "lm", col = "red") +
+  labs(title = paste("Adj R2 = ",signif(summary(fit)$adj.r.squared, 5),
+                     "Intercept =",signif(fit$coef[[1]],5 ),
+                     " Slope =",signif(fit$coef[[2]], 5),
+                     " P =",signif(summary(fit)$coef[2,4], 5))) +
+  scale_x_log10(breaks = c(1e-10,1e-11,1e-12,1e-13,1e-14,1e-15,1e-16,1e-17))+
+  scale_y_log10()
+
+
+return (p)
+
+}
+
+```
+
+## ENLITEN ATP H20 Control Before and After 1hr Bleach Soak
++ 6 reads, 2s delay after injection, 10s integration time, total of 1 minute
++ Recommended flush performed before first H20 read
++ 2% bleach loaded into injectors, then left for 1hr
++ H20 primed 10X
++ Recommended flush performed and then ENLITEN reagent primed
+
+### Conclusion 
+Running bleach and performing an extra flush leads to 3X reduction in background from H20 in ENLITEN kit.
+
+```{r echo=FALSE}
+DETECTR_049 <- read.csv("../tidy_data/DETECTR_049_tidy.csv")
+standard_049 <- subset(DETECTR_049, DETECTR_049$experiment == "Clean_Test")
+
+standard_049_sum = standard_049 %>% group_by(concentration, concentration_moles, row, timepoint, column, well, kit, experiment) %>% summarize (total_rfu=sum(rfu_value))
+
+standard_049_sum$timepoint <- factor(standard_049_sum$timepoint, levels = c("before_clean","after_clean"))
+#add a small value to 0 plot to allow log-scale plotting
+
+ggplot(data = standard_049_sum, aes(x= timepoint, y = total_rfu, fill = factor(column))) + 
+  geom_bar(stat = "identity", position = "dodge") +
+  scale_fill_discrete(name = "replicate")+
+  ggtitle("ENLITEN Water Before and After Bleach Clean") + theme_bw()
+
+```
+
+
+## NANCY DREW ENLITEN AMP No Kinase Experiment (AMP standards from 1e-10 to 1e-16 moles)
+
+### Experimental Execution
++ AMP Detection Reagent was 1X NEBuffer 2.1 + the correct amount of Reagent II
++ For all samples, added Reagent 1 and incubated for 1 hour. I staggered this by 6 minutes.
++ I staggered the addition of AMP Detection Reagent 2 for each row, using a multichannel to add the correct reagent every 6 minutes starting from the end of the incubation of Reagent I.
++ Injection plate reader reads by row, so for a 1 minute read of 6 wells, it takes 6 minutes to do one row
++ Each concentration was done in triplicate
++ AMP standards contain no ATP and are diluted in 0.5X NEBuffer 2.1 and 1X NEBuffer 4.
++ No reporter control was read first, followed by concentrations from low to high.
+
+### Reads
++ 2s delay after injection, 10 s integration time, and 6 reads were taken
+
+### Plots
++ All 6 reads were summed for the total_rfu plotted in all three graphs
+
+### Conclusions
+AMP standards display a lot of variability. The 0 value (in buffer) is similar to the water. Perhaps the ATP levels drop as more samples are performed, explaining the lower signal for 1e-16 to 1e-13 moles. The NANCY DREW samples display a concentration dependent signal, illustrating that it works. However, it is only really sensitive down to 1.25e-16 mol of input DNA. There is also a much higher background (~10X higher) for the NANCY DREW samples than for the AMP standards, indicating that other reagents are contributing to signal. The no reporter control (which contained 1.25e-13 mol of input target DNA) also confusingly shows a high signal.
+
+```{r echo=FALSE, warning=FALSE}
+DETECTR_049 <- read.csv("../tidy_data/DETECTR_049_tidy.csv")
+nancydrew <- subset(DETECTR_049, DETECTR_049$experiment == "NANCY_DREW")
+nancydrew <- nancydrew %>% group_by(kit, experiment, concentration,concentration_moles, sample_set,standard_substrate, read, well, row, column) %>% summarize (total_rfu = sum(rfu_value))
+
+#add a small value to 0 plot to allow log-scale plotting
+
+nancydrew_add_small_value = nancydrew %>% mutate(concentration_moles_small_value = ifelse(concentration_moles == 0, 1e-21, concentration_moles))
+
+nancydrew_add_small_value = nancydrew_add_small_value %>% group_by(kit, experiment, concentration, concentration_moles, concentration_moles_small_value, sample_set,standard_substrate, read) %>% summarize (mean_total_rfu = mean(total_rfu), stdev = sd(total_rfu))
+
+ggplot(data = nancydrew_add_small_value, aes(x= concentration_moles_small_value, y = mean_total_rfu, color = sample_set)) + 
+  geom_point() +
+  geom_errorbar(aes(ymin=mean_total_rfu-stdev, ymax=mean_total_rfu+stdev), width=.2,
+                 color = "black") +
+  scale_x_log10(breaks = c(1e-10,1e-11,1e-12,1e-13,1e-14,1e-15,1e-16,1e-17,1e-18,1e-19,1e-20))+
+  #scale_y_log10(breaks = c(1e4,2e4,3e4,4e4,5e4,6e4,7e4,8e4,9e4,1e5,2e5,3e5,4e5,5e5,1e6) )+ 
+  ggtitle("NANCY DREW no kinase ENLITEN with AMP Standards") + 
+  scale_color_discrete(name = "reagent")+
+  theme_bw()+
+  scale_y_log10()+ 
+  theme (axis.text.x=element_text(angle=60, hjust=1))
+
+nancydrew_add_small_value_low = subset(nancydrew_add_small_value, nancydrew_add_small_value$concentration_moles < 1e-15 & nancydrew_add_small_value$sample_set == "NANCY_DREW")
+
+ggplot(data = nancydrew_add_small_value_low, aes(x= concentration_moles_small_value, y = mean_total_rfu)) + 
+  geom_point() +
+  geom_errorbar(aes(ymin=mean_total_rfu-stdev, ymax=mean_total_rfu+stdev), width=.2,
+                 color = "black") +
+  scale_x_log10(breaks = c(1e-10,1e-11,1e-12,1e-13,1e-14,1e-15,1e-16,1e-17,1e-18,1e-19,1e-20))+
+  #scale_y_log10(breaks = c(1e4,2e4,3e4,4e4,5e4,6e4,7e4,8e4,9e4,1e5,2e5,3e5,4e5,5e5,1e6) )+ 
+  ggtitle("NANCY DREW no kinase ENLITEN, Low Concentrations") + 
+  scale_color_discrete(name = "reagent")+
+  theme_bw()+
+  scale_y_log10()+ 
+  theme (axis.text.x=element_text(angle=60, hjust=1))
+
+nancydrew_only = subset(nancydrew, nancydrew$sample_set == "NANCY_DREW")
+
+nancydrew_only = nancydrew_only %>% group_by(kit, experiment, concentration, concentration_moles,  sample_set,standard_substrate) %>% summarize (mean_total_rfu = mean(total_rfu), stdev = sd(total_rfu))
+
+nancydrew_only$concentration <- factor(nancydrew_only$concentration, levels = c("no_reporter","0mol/0aM","1.25e-20mol/125aM","1.25e-18mol/12.5fM","1.25e-16mol/1.25pM","1.25e-15mol/12.5pM","1.25e-14mol/125pM","1.25e-13mol/1.25nM"))
+
+ggplot(data = nancydrew_only, aes(x= concentration, y = mean_total_rfu)) + 
+  geom_bar(stat = "identity") +
+  geom_errorbar(aes(ymin=mean_total_rfu-stdev, ymax=mean_total_rfu+stdev), width=.2,
+                 color = "black") +
+  ggtitle("NANCY DREW no kinase ENLITEN, with no reporter control") + 
+  theme_bw()+
+  theme (axis.text.x=element_text(angle=60, hjust=1))
+```
+
+## ENLITEN ATP Standards from 1E-11 to 1E-17 moles
++ 6 reads, 2s delay after injection, 10s integration time, total of 1 minute
++ Standards were diluted in a 0.5X NEBuffer 2.1 and 1X NEBuffer 4
+
+### Conclusion 
+The standards look similar to what we have seen in the past, but buffer seems to have a LOWER background (~4X lower), perhaps because this experiment was done at the end of the day after all other samples. There is an outlier in the 1e-15 concentration, which impacts the regression, but all other replicates look fine for that concentration.  High concentration relationship look very linear. There is minimal difference between 1e-16 and 1e-17 but both are higher than 0. Since data is only taken for 1 minute, it is hard to see any kinetics, but it does appear that the signal doesn't drop too much in that time frame.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+DETECTR_049 <- read.csv("../tidy_data/DETECTR_049_tidy.csv")
+standard_049 <- subset(DETECTR_049, DETECTR_049$experiment == "ATP_Standards")
+
+standard_049_sum = standard_049 %>% group_by(concentration, concentration_moles, row, column, well, kit, experiment) %>% summarize (total_rfu=sum(rfu_value))
+
+
+#add a small value to 0 plot to allow log-scale plotting
+
+standard_049_add_small_value = standard_049_sum %>% mutate(concentration_moles_small = ifelse(concentration_moles == 0, 1e-18, concentration_moles))
+
+ggplot(data = standard_049_add_small_value, aes(x= concentration_moles_small, y = total_rfu)) + 
+  geom_point(color = "blue") +
+  scale_x_log10(breaks = c(1e-10,1e-11,1e-12,1e-13,1e-14,1e-15,1e-16,1e-17)) +
+  scale_y_log10() +
+  ggtitle("ENLITEN ATP Standards, Log Scale Plot") + theme_bw()
+
+standard_049_add_small_value = standard_049_add_small_value %>% group_by(concentration, concentration_moles,concentration_moles_small, kit, experiment) %>% summarize (mean_total_rfu = mean(total_rfu), stdev = sd(total_rfu))
+
+ggplot(data = standard_049_add_small_value, aes(x= concentration_moles_small, y = mean_total_rfu))+
+  geom_point(color = "blue") +
+  geom_errorbar(aes(ymin=mean_total_rfu-stdev, ymax=mean_total_rfu+stdev), width=.1,
+                 color = "black") +
+  scale_x_log10(breaks = c(1e-11,1e-12,1e-13,1e-14,1e-15,1e-16,1e-17))+
+  ggtitle("ATP Standards, Log Scale Plot, Average") + 
+  theme_bw()+
+  scale_y_log10()+ 
+  theme (axis.text.x=element_text(angle=60, hjust=1))
+
+
+
+standard_049_add_small_value_low <- subset (standard_049_add_small_value, (concentration_moles_small < 1e-13) & (concentration_moles_small > 1e-19))
+
+ggplot(data = standard_049_add_small_value_low, aes(x= concentration_moles_small, y = mean_total_rfu))+
+  geom_point(color = "blue") +
+  geom_errorbar(aes(ymin=mean_total_rfu-stdev, ymax=mean_total_rfu+stdev), width=.1,
+                 color = "black") +
+  scale_x_log10(breaks = c(1e-11,1e-12,1e-13,1e-14,1e-15,1e-16,1e-17))+
+  ggtitle("ATP Standards, , Log Scale Plot, Average\nlow concentrations") + 
+  theme_bw()+
+  scale_y_log10()+ 
+  theme (axis.text.x=element_text(angle=60, hjust=1))
+
+#calculate and plot regression without 0 on log scale
+standard_049_sum <- subset(standard_049_sum, concentration_moles != 0)
+ggplotRegression(lm(standard_049_sum$total_rfu~standard_049_sum$concentration_moles))
+
+
+ggplot(data = standard_049, aes(x= read_number, y = rfu_value, color = factor(standard_049$concentration_moles))) + 
+  #facet_wrap(~factor(standard_049$column))+
+  geom_point(size = 0.5) +
+  scale_x_continuous(breaks = seq(0,240,20)) +
+  #scale_y_continuous(limits = c(0,5e6))+
+  scale_color_discrete(name = "concentration_moles")+
+  ggtitle("ENLITEN 1min Kinetic Standards, Linear Scale Plot") + theme_bw()
+
+# ggplot(data = standard_049, aes(x= concentration_moles, y = rfu_value, color = factor(standard_049$column))) + 
+#   geom_jitter(width = 0.3) +
+#   scale_x_log10(breaks = c(1e-10,1e-11,1e-12,1e-13,1e-14,1e-15,1e-16,1e-17)) +
+#   scale_y_log10() +
+#   scale_color_discrete(name = "replicate")+
+#   ggtitle("ENLITEN 10s*240 Standards, Log Scale Plot") + theme_bw()
+
+standard_049 = subset(standard_049, concentration_moles < 1e-14)
+
+ggplot(data = standard_049, aes(x= read_number, y = rfu_value, color = factor(standard_049$concentration_moles))) + 
+  #facet_wrap(~factor(standard_049$column))+
+  geom_point(size = 0.5) +
+  scale_x_continuous(breaks = seq(0,240,20)) +
+  scale_y_continuous(limits = c(0,1e4), breaks = seq(0,10000,1000))+
+  scale_color_discrete(name = "concentration_moles")+
+  ggtitle("ENLITEN 1min Kinetic Standards, Linear Scale Plot\nLow Concentrations") + theme_bw()
+
+```

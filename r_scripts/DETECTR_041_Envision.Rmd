@@ -1,0 +1,267 @@
+---
+title: "DETECTR_041 Envision Data"
+output:
+  html_document:
+    df_print: paged
+---
+
+```{r setup, include=FALSE}
+library(dplyr)
+library(data.table)
+library(ggplot2)
+```
+
+```{r include=FALSE}
+ggplotRegression <- function (fit) {
+
+require(ggplot2)
+
+ggplot(fit$model, aes_string(x = names(fit$model)[2], y = names(fit$model)[1])) + 
+  geom_point() +
+  stat_smooth(method = "lm", col = "red") +
+  labs(title = paste("Adj R2 = ",signif(summary(fit)$adj.r.squared, 5),
+                     "Intercept =",signif(fit$coef[[1]],5 ),
+                     " Slope =",signif(fit$coef[[2]], 5),
+                     " P =",signif(summary(fit)$coef[2,4], 5)))
+}
+```
+
+```{r include=FALSE}
+
+convertAMP <- function (fit, value) {
+
+intercept = signif(fit$coef[[1]],5 )
+slope = signif(fit$coef[[2]], 5)
+AMP = (value - intercept)/slope
+
+
+return(AMP)
+}
+```
+
+
+## AMP GLO NEBuffer 4 + 2.1 Thawed Standard Curves for concentrations from 0.01uM to 10uM, including 0uM
++ Note: used DETECTR 040 standards
++ 0hr timepoint only - taken roughly 10 minutes after adding reagent using 0.1s integration and Gloria's correct alignment
+
+### Conclusion 
+All sample standard curve on Envision doesn't look better than SpectraMax
+
+```{r echo=FALSE}
+
+DETECTR_041 <- read.csv("../tidy_data/DETECTR_041_Envision_tidy_metadata.csv")
+standard_041 <- subset(DETECTR_041, DETECTR_041$sample_set == "AMP_standard")
+standard_041$standard_conc <- as.numeric(as.character(standard_041$standard_conc))
+
+ggplotRegression(lm(standard_041$Signal~standard_041$standard_conc))
+
+```
+
+## UMP GLO NEBuffer 4 + 2.1 Fresh Standard Curves for concentrations from 0.01uM to 10uM, including 0uM
++ 0hr timepoint only - taken roughly 10 minutes after adding reagent using 0.1s integration and Gloria's correct alignment
+
+### Conclusion 
+UMP standard curve looks way worse on Envision than SpectraMax. Middle values look like they got cross-talk, perhaps due to Gloria's observation that it sweeps across diagonally
+
+```{r echo=FALSE}
+
+DETECTR_041 <- read.csv("../tidy_data/DETECTR_041_Envision_tidy_metadata.csv")
+standard_041 <- subset(DETECTR_041, DETECTR_041$sample_set == "UMP_standard")
+standard_041$standard_conc <- as.numeric(as.character(standard_041$standard_conc))
+
+ggplotRegression(lm(standard_041$Signal~standard_041$standard_conc))
+
+
+```
+
+## AMP GLO NEBuffer 4 + 2.1 Thawed Standard Curves for concentrations from 0.01uM to 0.625uM, including 0uM
++ Note: used DETECTR 040 standards
++ 0hr timepoint only - taken roughly 10 minutes after adding reagent using 0.1s integration and Gloria's correct alignment
+
+### Conclusion 
+Low concentrations look similar on the Envision. Spike on lowest concentration 0.01uM is the same on both Envision and SpectraMax.
+
+```{r echo=FALSE}
+DETECTR_041 <- read.csv("../tidy_data/DETECTR_041_Envision_tidy_metadata.csv")
+standard_041 <- subset(DETECTR_041, DETECTR_041$sample_set == "AMP_standard")
+standard_041$standard_conc <- as.numeric(as.character(standard_041$standard_conc))
+standard_041 = subset(standard_041,standard_conc<=0.625)
+
+ggplotRegression(lm(standard_041$Signal~standard_041$standard_conc))
+
+```
+
+
+
+## UMP GLO NEBuffer 4+ 2.1 Fresh Standard Curves for concentrations from 0.01uM to 0.625uM, including 0uM
++ 0hr and 1hr single time points are first two plots
++ Summation of all data points below 1hr, 3hr, 6hr and 12hr are the last four plots
+
+### Conclusion 
+UMP standard curve actually looks better on the Envision. R2 is worse, but lower regimes <0.1uM look less noisy.
+
+```{r echo=FALSE}
+
+DETECTR_041 <- read.csv("../tidy_data/DETECTR_041_Envision_tidy_metadata.csv")
+standard_041 <- subset(DETECTR_041, DETECTR_041$sample_set == "UMP_standard" )
+standard_041$standard_conc <- as.numeric(as.character(standard_041$standard_conc))
+standard_041 = subset(standard_041,standard_conc<=0.625)
+
+ggplotRegression(lm(standard_041$Signal~standard_041$standard_conc))
+
+```
+
+
+## AMP 0uM standards in row below AMP standard curve starting at 10uM and going down to 0uM
+The AMP standards were in rows A, C and E for this plate. I placed 0uM standards in rows B, D, and F.
+
+### Conclusions
+Large cross-talk on the left side of the plate near the AMP standards. Everything to the left of 0.1uM has increased signal. 20000 is roughly the signal from the 0.625uM so 0uM samples in wells B1 and D1 have signal as a 0.625uM sample.
+
+```{r echo=FALSE}
+#DETECTR_041$AMP <- convertAMP(lm(standard_041$rfu_value~standard_041$standard_conc), DETECTR_041$rfu_value)
+DETECTR_041 <- read.csv("../tidy_data/DETECTR_041_Envision_tidy_metadata.csv")
+
+samples_040 <- subset(DETECTR_041, DETECTR_041$sample_set=="AMP_0_proximal" )
+
+#samples_040 <- samples_040 %>% group_by(gRNA, reporter, target) %>% summarize (mean_rfu_value = mean(rfu_value), sd_rfu_value = sd(rfu_value), mean_amp = mean(AMP), sd_amp = sd(AMP))
+
+ggplot(samples_040, aes(x = column_384, y = Signal, color = row_384)) +
+  geom_line(stat = 'identity') +
+  scale_y_continuous(expand = c(0,0))+
+  ggtitle("DETECTR 041, 0 uM AMP proximal to AMP standard curve")+
+  scale_color_manual(values = c("darkslategray3", "mediumpurple3","darkseagreen3","olivedrab4"))+
+  ylab("rfu_value") +
+  xlab("row")+
+  scale_x_continuous(breaks = seq(0,24,2))+
+  geom_point(stat = 'identity') +
+  theme(axis.text.x = element_text(angle = 60, hjust = 1), 
+        panel.background = element_rect(fill = "white"),
+        panel.grid = element_line(color = "grey"),
+        panel.border = element_rect(fill = NA, color = "black"),
+        title = element_text(face = "bold"),
+        strip.background = element_rect(fill = NA, color = "black"),
+        strip.text = element_text(size = 10),
+        legend.title = element_blank()
+          
+        
+)
+```
+
+
+
+## Water in row below UMP standard curve starting at 10uM and going down to 0uM
+The UMP standards were in rows H, J and L for this plate. I pulled the waters directly below them in rows I, K and M.
+
+### Conclusions
+Cross talk seems to be effecting middle waters, perhaps due to diagonal effect. Hard to tell if this is actually coming from UMP or AMP samples, though AMP samples are farther away (but closest to row I). 1000 is roughly the signal from 0.3uM UMP sample.
+
+```{r echo=FALSE}
+#DETECTR_041$AMP <- convertAMP(lm(standard_041$rfu_value~standard_041$standard_conc), DETECTR_041$rfu_value)
+DETECTR_041 <- read.csv("../tidy_data/DETECTR_041_Envision_tidy_metadata.csv")
+
+samples_040 <- subset(DETECTR_041, DETECTR_041$sample_set=="UMP_water_proximal" )
+
+#samples_040 <- samples_040 %>% group_by(gRNA, reporter, target) %>% summarize (mean_rfu_value = mean(rfu_value), sd_rfu_value = sd(rfu_value), mean_amp = mean(AMP), sd_amp = sd(AMP))
+
+ggplot(samples_040, aes(x = column_384, y = Signal, color = row_384)) +
+  geom_line(stat = 'identity') +
+  scale_y_continuous(expand = c(0,0))+
+  scale_x_continuous(breaks = seq(0,24,2))+
+  geom_point(stat = 'identity') +
+  ggtitle("DETECTR 041, water proximal to UMP standard curve")+
+  scale_color_manual(values = c("darkslategray3", "mediumpurple3","darkseagreen3","olivedrab4"))+
+  ylab("rfu_value") +
+  xlab("row")+
+  theme(axis.text.x = element_text(angle = 60, hjust = 1), 
+        panel.background = element_rect(fill = "white"),
+        panel.grid = element_line(color = "grey"),
+        panel.border = element_rect(fill = NA, color = "black"),
+        title = element_text(face = "bold"),
+        strip.background = element_rect(fill = NA, color = "black"),
+        strip.text = element_text(size = 10),
+        legend.title = element_blank()
+          
+        
+)
+```
+
+
+
+## Comparing proximal and distal AMP 0uM standards and proximal water wells
+The AMP standards were in rows A, C and E for this plate. I placed 0uM AMP standards in rows B, D, and F.
+The UMP standards were in rows H, J and L for this plate. I pulled the waters directly below them in rows I, K and M.
+The distal 0uM AMP standards were in row N, O and P on the plate.
+
+### Conclusions
+Proximal 0uM AMP standards have a much higher signal than those in the distal category, especially on the left side of the plate, but also slightly on the right side of the plate too (it settles at a baseline on the right side that is higher than the distal standards). Reagent still has higher signal than water wells.
+
+```{r echo=FALSE}
+#DETECTR_041$AMP <- convertAMP(lm(standard_041$rfu_value~standard_041$standard_conc), DETECTR_041$rfu_value)
+DETECTR_041 <- read.csv("../tidy_data/DETECTR_041_Envision_tidy_metadata.csv")
+
+samples_040 <- subset(DETECTR_041, DETECTR_041$sample_set %in% c("UMP_water_proximal", "AMP_0_proximal","AMP_0_distal"))
+
+#samples_040 <- samples_040 %>% group_by(gRNA, reporter, target) %>% summarize (mean_rfu_value = mean(rfu_value), sd_rfu_value = sd(rfu_value), mean_amp = mean(AMP), sd_amp = sd(AMP))
+
+ggplot(samples_040, aes(x = column_384, y = Signal, color = row_384)) +
+  facet_wrap(~sample_set)+
+  geom_line(stat = 'identity') +
+  scale_y_continuous(expand = c(0,0))+
+  scale_x_continuous(breaks = seq(0,24,2))+
+  geom_point(stat = 'identity') +
+  ggtitle("DETECTR 041\n0uM AMP standard and waters proximal and distal from standard curves")+
+  scale_color_manual(values = c("darkslategray3", "mediumpurple3","darkseagreen3","olivedrab4","orange","yellow","blue","red","green"))+
+  ylab("rfu_value") +
+  xlab("row")+
+  theme(axis.text.x = element_text(angle = 60, hjust = 1), 
+        panel.background = element_rect(fill = "white"),
+        panel.grid = element_line(color = "grey"),
+        panel.border = element_rect(fill = NA, color = "black"),
+        title = element_text(face = "bold"),
+        strip.background = element_rect(fill = NA, color = "black"),
+        strip.text = element_text(size = 10),
+        legend.title = element_blank()
+          
+        
+)
+```
+
+## Comparing all water wells on the plate
+The AMP standards were in rows A, C and E for this plate, in odd columns. The UMP standards were in rows H, J and L for this plate, in odd columns. The distal 0uM AMP standards were in row N, O and P on the plate, in odd columns.
+
+### Conclusions
+Waters next to the 10uM and 5uM have higher signal than those farther away. Some of the water wells are equivalent to a 0.625uM sample. Middle of the plate seems to be subject to cross talk. Waters in between multiple high concentrations standards have higher signal than those on edges. Diagonal wells seem lower than adjacent wells. 
+
+```{r echo=FALSE}
+#DETECTR_041$AMP <- convertAMP(lm(standard_041$rfu_value~standard_041$standard_conc), DETECTR_041$rfu_value)
+DETECTR_041 <- read.csv("../tidy_data/DETECTR_041_Envision_tidy_metadata.csv")
+
+samples_040 <- subset(DETECTR_041, DETECTR_041$kit %in% c("water"))
+
+#samples_040 <- samples_040 %>% group_by(gRNA, reporter, target) %>% summarize (mean_rfu_value = mean(rfu_value), sd_rfu_value = sd(rfu_value), mean_amp = mean(AMP), sd_amp = sd(AMP))
+
+ggplot(samples_040, aes(x = column_384, y = Signal, color = row_384)) +
+  #facet_wrap(~sample_set)+
+  geom_line(stat = 'identity') +
+  geom_point(stat = 'identity') +
+
+  scale_y_continuous(expand = c(0,0))+
+  scale_x_continuous(breaks = seq(0,24,2))+
+
+  ggtitle("DETECTR 041\nWaters plotted by column and colored by row")+
+  scale_color_manual(values = c("darkslategray3", "mediumpurple3","darkseagreen3","olivedrab4","orange","yellow","blue","red","green","brown","black","purple","olivedrab2","grey","pink","orchid3"))+
+  ylab("rfu_value") +
+  xlab("row")+
+  theme(axis.text.x = element_text(angle = 60, hjust = 1), 
+        panel.background = element_rect(fill = "white"),
+        panel.grid = element_line(color = "grey"),
+        panel.border = element_rect(fill = NA, color = "black"),
+        title = element_text(face = "bold"),
+        strip.background = element_rect(fill = NA, color = "black"),
+        strip.text = element_text(size = 10),
+        legend.title = element_blank()
+          
+        
+)
+```

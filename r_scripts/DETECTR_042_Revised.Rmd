@@ -1,0 +1,338 @@
+---
+title: "DETECTR_042 SpectraMax Data"
+output:
+  html_document:
+    df_print: paged
+---
+
+```{r setup, include=FALSE}
+library(dplyr)
+library(data.table)
+library(ggplot2)
+```
+
+```{r include=FALSE}
+ggplotRegression <- function (fit) {
+
+require(ggplot2)
+
+ggplot(fit$model, aes_string(x = names(fit$model)[2], y = names(fit$model)[1])) + 
+  geom_point() +
+  stat_smooth(method = "lm", col = "red") +
+  labs(title = paste("Adj R2 = ",signif(summary(fit)$adj.r.squared, 5),
+                     "Intercept =",signif(fit$coef[[1]],5 ),
+                     " Slope =",signif(fit$coef[[2]], 5),
+                     " P =",signif(summary(fit)$coef[2,4], 5)))
+}
+```
+
+```{r include=FALSE}
+
+convertAMP <- function (fit, value) {
+
+intercept = signif(fit$coef[[1]],5 )
+slope = signif(fit$coef[[2]], 5)
+AMP = (value - intercept)/slope
+
+
+return(AMP)
+}
+```
+
+```{r include=FALSE}
+sumBelowTime <- function (DETECTR_037, hour, min, sec) {
+
+DETECTR_037 = subset(DETECTR_037, (hours < hour) | (hours == hour & minutes == 0 & seconds == 0))
+DETECTR_037_sum = DETECTR_037 %>% group_by(standard_conc, replicate) %>% summarize (total_rfu=sum(rfu_value))
+return(DETECTR_037_sum)
+}
+```
+
+## AMP GLO NEBuffer 4 + 2.1 Fresh Standard Curves for concentrations from 0.01uM to 10uM, including 0uM
++ 0hr and 1hr single time points are first two plots
++ Summation of all data points below 1hr, 3hr, 6hr and 12hr are the last four plots
++ Note: includes ATP
+
+### Conclusion 
+For all samples, summing up all rfu values that came before a certain timepoint gives no noticeable gains on the R2 value. The 0 timepoint looks worse than the 1 hr timempoint again.
+
+```{r echo=FALSE}
+
+DETECTR_042 <- read.csv("../tidy_data/DETECTR_042_tidy_metadata.csv")
+standard_041 <- subset(DETECTR_042, DETECTR_042$sample_set == "AMP_standard")
+standard_041$standard_conc <- as.numeric(as.character(standard_041$standard_conc))
+
+standard_041_0hr_single_point = subset(standard_041,time =="00:00:00")
+standard_041_1hr_single_point = subset(standard_041,time =="01:00:00")
+#standard_041_30min = sumBelowTime(standard_041,0,30,0)
+
+standard_041_1hr = sumBelowTime(standard_041,1)
+standard_041_3hr = sumBelowTime(standard_041,3)
+standard_041_6hr = sumBelowTime(standard_041,6)
+standard_041_12hr = sumBelowTime(standard_041,12)
+ggplotRegression(lm(standard_041_0hr_single_point$rfu_value~standard_041_0hr_single_point$standard_conc))
+ggplotRegression(lm(standard_041_1hr_single_point$rfu_value~standard_041_1hr_single_point$standard_conc))
+#ggplotRegression(lm(standard_041_30min$total_rfu~standard_041_30min$standard_conc))
+
+ggplotRegression(lm(standard_041_1hr$total_rfu~standard_041_1hr$standard_conc)) 
+ggplotRegression(lm(standard_041_3hr$total_rfu~standard_041_3hr$standard_conc))
+ggplotRegression(lm(standard_041_6hr$total_rfu~standard_041_6hr$standard_conc))
+
+ggplotRegression(lm(standard_041_12hr$total_rfu~standard_041_12hr$standard_conc))
+
+
+#standard_041_30min_to_1hr = subset(standard_041, (hours <= 0 & minutes <= 50 & seconds <= 0) & (hours <= 0 & minutes >= 20 & seconds <= 0)) 
+
+#standard_041_30min_to_1hr = standard_041_30min_to_1hr %>% group_by(standard_conc, replicate) %>% summarize (total_rfu=sum(rfu_value))
+
+
+#ggplotRegression(lm(standard_041_30min_to_1hr$total_rfu~standard_041_30min_to_1hr$standard_conc))
+
+
+```
+
+## AMP GLO NEBuffer 4 + 2.1 Fresh Standard Curves for concentrations from 0.01uM to 10uM, including 0uM, no ATP!
++ 0hr and 1hr single time points are first two plots
++ Summation of all data points below 1hr, 3hr, 6hr and 12hr are the last four plots
++ Note: no ATP
+
+### Conclusion 
+For all samples, summing up all rfu values that came before a certain timepoint gives no noticeable gains on the R2 value. The R2 doesn't seem to be much better without ATP, nor does there seem to be less variability.
+
+```{r echo=FALSE}
+
+DETECTR_042 <- read.csv("../tidy_data/DETECTR_042_tidy_metadata.csv")
+standard_041 <- subset(DETECTR_042, DETECTR_042$sample_set == "AMP_standard_no_ATP" )
+standard_041$standard_conc <- as.numeric(as.character(standard_041$standard_conc))
+
+standard_041_0hr_single_point = subset(standard_041,time =="00:00:00")
+standard_041_1hr_single_point = subset(standard_041,time =="01:00:00")
+#standard_041_30min = sumBelowTime(standard_041,0,30,0)
+
+standard_041_1hr = sumBelowTime(standard_041,1)
+standard_041_3hr = sumBelowTime(standard_041,3)
+standard_041_6hr = sumBelowTime(standard_041,6)
+standard_041_12hr = sumBelowTime(standard_041,12)
+ggplotRegression(lm(standard_041_0hr_single_point$rfu_value~standard_041_0hr_single_point$standard_conc))
+ggplotRegression(lm(standard_041_1hr_single_point$rfu_value~standard_041_1hr_single_point$standard_conc))
+#ggplotRegression(lm(standard_041_30min$total_rfu~standard_041_30min$standard_conc))
+
+ggplotRegression(lm(standard_041_1hr$total_rfu~standard_041_1hr$standard_conc)) 
+ggplotRegression(lm(standard_041_3hr$total_rfu~standard_041_3hr$standard_conc))
+ggplotRegression(lm(standard_041_6hr$total_rfu~standard_041_6hr$standard_conc))
+
+ggplotRegression(lm(standard_041_12hr$total_rfu~standard_041_12hr$standard_conc))
+
+#standard_041_30min_to_1hr = subset(standard_041, (hours <= 0 & minutes <= 50 & seconds <= 0) & (hours <= 0 & minutes >= 20 & seconds <= 0)) 
+
+#standard_041_30min_to_1hr = standard_041_30min_to_1hr %>% group_by(standard_conc, replicate) %>% summarize (total_rfu=sum(rfu_value))
+
+
+#ggplotRegression(lm(standard_041_30min_to_1hr$total_rfu~standard_041_30min_to_1hr$standard_conc))
+
+
+```
+
+## AMP GLO NEBuffer 4 + 2.1 Fresh Standard Curves for concentrations from 0.01uM to 0.625uM, including 0uM
++ 0hr and 1hr single time points are first two plots
++ Summation of all data points below 1hr, 3hr, 6hr and 12hr are the last four plots
++ Note: includes ATP
+
+### Conclusion 
+For low concentration samples, summing up all rfu values that came before a certain timepoint gives some gains on the R2 value. The 0 timepoint looks terrible. Summing seems to help reduce noise, though there are some outliers.
+
+
+```{r echo=FALSE}
+
+DETECTR_042 <- read.csv("../tidy_data/DETECTR_042_tidy_metadata.csv")
+standard_041 <- subset(DETECTR_042, DETECTR_042$sample_set == "AMP_standard" )
+standard_041$standard_conc <- as.numeric(as.character(standard_041$standard_conc))
+standard_041 = subset(standard_041,standard_conc<=0.625)
+standard_041_0hr_single_point = subset(standard_041,time =="00:00:00")
+standard_041_1hr_single_point = subset(standard_041,time =="01:00:00")
+#standard_041_30min = sumBelowTime(standard_041,0,30,0)
+
+standard_041_1hr = sumBelowTime(standard_041,1)
+standard_041_3hr = sumBelowTime(standard_041,3)
+standard_041_6hr = sumBelowTime(standard_041,6)
+standard_041_12hr = sumBelowTime(standard_041,12)
+ggplotRegression(lm(standard_041_0hr_single_point$rfu_value~standard_041_0hr_single_point$standard_conc))
+ggplotRegression(lm(standard_041_1hr_single_point$rfu_value~standard_041_1hr_single_point$standard_conc))
+#ggplotRegression(lm(standard_041_30min$total_rfu~standard_041_30min$standard_conc))
+
+ggplotRegression(lm(standard_041_1hr$total_rfu~standard_041_1hr$standard_conc)) 
+ggplotRegression(lm(standard_041_3hr$total_rfu~standard_041_3hr$standard_conc))
+ggplotRegression(lm(standard_041_6hr$total_rfu~standard_041_6hr$standard_conc))
+
+ggplotRegression(lm(standard_041_12hr$total_rfu~standard_041_12hr$standard_conc))
+
+#standard_041_30min_to_1hr = subset(standard_041, (hours <= 0 & minutes <= 50 & seconds <= 0) & (hours <= 0 & minutes >= 20 & seconds <= 0)) 
+
+#standard_041_30min_to_1hr = standard_041_30min_to_1hr %>% group_by(standard_conc, replicate) %>% summarize (total_rfu=sum(rfu_value))
+
+
+#ggplotRegression(lm(standard_041_30min_to_1hr$total_rfu~standard_041_30min_to_1hr$standard_conc))
+```
+
+
+
+## AMP GLO NEBuffer 4 + 2.1 Fresh Standard Curves for concentrations from 0.01uM to 0.625uM, including 0uM, no ATP!
++ 0hr and 1hr single time points are first two plots
++ Summation of all data points below 1hr, 3hr, 6hr and 12hr are the last four plots
++ Note: no ATP
+
+### Conclusion 
+For low concentration samples, summing up all rfu values that came before a certain timepoint gives some gains on the R2 value. Noise is slightly reduced after summing. Lower concentration AMP seems to be nonlinear. It is not really detecting below 0.08uM.
+
+```{r echo=FALSE}
+
+DETECTR_042 <- read.csv("../tidy_data/DETECTR_042_tidy_metadata.csv")
+standard_041 <- subset(DETECTR_042, DETECTR_042$sample_set == "AMP_standard_no_ATP" )
+standard_041$standard_conc <- as.numeric(as.character(standard_041$standard_conc))
+standard_041 = subset(standard_041,standard_conc<=0.625)
+standard_041_0hr_single_point = subset(standard_041,time =="00:00:00")
+standard_041_1hr_single_point = subset(standard_041,time =="01:00:00")
+#standard_041_30min = sumBelowTime(standard_041,0,30,0)
+
+standard_041_1hr = sumBelowTime(standard_041,1)
+standard_041_3hr = sumBelowTime(standard_041,3)
+standard_041_6hr = sumBelowTime(standard_041,6)
+standard_041_12hr = sumBelowTime(standard_041,12)
+ggplotRegression(lm(standard_041_0hr_single_point$rfu_value~standard_041_0hr_single_point$standard_conc))
+ggplotRegression(lm(standard_041_1hr_single_point$rfu_value~standard_041_1hr_single_point$standard_conc))
+#ggplotRegression(lm(standard_041_30min$total_rfu~standard_041_30min$standard_conc))
+
+ggplotRegression(lm(standard_041_1hr$total_rfu~standard_041_1hr$standard_conc)) 
+ggplotRegression(lm(standard_041_3hr$total_rfu~standard_041_3hr$standard_conc))
+ggplotRegression(lm(standard_041_6hr$total_rfu~standard_041_6hr$standard_conc))
+
+ggplotRegression(lm(standard_041_12hr$total_rfu~standard_041_12hr$standard_conc))
+
+#standard_041_30min_to_1hr = subset(standard_041, (hours <= 0 & minutes <= 50 & seconds <= 0) & (hours <= 0 & minutes >= 20 & seconds <= 0)) 
+
+#standard_041_30min_to_1hr = standard_041_30min_to_1hr %>% group_by(standard_conc, replicate) %>% summarize (total_rfu=sum(rfu_value))
+
+
+#ggplotRegression(lm(standard_041_30min_to_1hr$total_rfu~standard_041_30min_to_1hr$standard_conc))
+```
+
+## AMP GLO NEBuffer 4 + 2.1 Fresh Standard Curves for concentrations from 0.01uM to 0.04uM, including 0uM, no ATP!
++ 0hr and 1hr single time points are first two plots
++ Summation of all data points below 1hr, 3hr, 6hr and 12hr are the last four plots
++ Note: no ATP
+
+### Conclusion 
+Zooming into all concentrations at or below 0.04uM, we can *maybe* get down to 0.02uM with summing overnight. Note that the concentrations with only one or two points instead of three are actually three with the exact same value for some data point.
+
+```{r echo=FALSE}
+
+DETECTR_042 <- read.csv("../tidy_data/DETECTR_042_tidy_metadata.csv")
+standard_041 <- subset(DETECTR_042, DETECTR_042$sample_set == "AMP_standard_no_ATP" )
+standard_041$standard_conc <- as.numeric(as.character(standard_041$standard_conc))
+standard_041 = subset(standard_041,standard_conc<=0.05)
+standard_041_0hr_single_point = subset(standard_041,time =="00:00:00")
+standard_041_1hr_single_point = subset(standard_041,time =="01:00:00")
+#standard_041_30min = sumBelowTime(standard_041,0,30,0)
+standard_041_1hr_single_point
+standard_041_1hr = sumBelowTime(standard_041,1)
+standard_041_3hr = sumBelowTime(standard_041,3)
+standard_041_6hr = sumBelowTime(standard_041,6)
+standard_041_12hr = sumBelowTime(standard_041,12)
+ggplotRegression(lm(standard_041_0hr_single_point$rfu_value~standard_041_0hr_single_point$standard_conc))
+ggplotRegression(lm(standard_041_1hr_single_point$rfu_value~standard_041_1hr_single_point$standard_conc))
+#ggplotRegression(lm(standard_041_30min$total_rfu~standard_041_30min$standard_conc))
+
+ggplotRegression(lm(standard_041_1hr$total_rfu~standard_041_1hr$standard_conc)) 
+ggplotRegression(lm(standard_041_3hr$total_rfu~standard_041_3hr$standard_conc))
+ggplotRegression(lm(standard_041_6hr$total_rfu~standard_041_6hr$standard_conc))
+
+ggplotRegression(lm(standard_041_12hr$total_rfu~standard_041_12hr$standard_conc))
+
+#standard_041_30min_to_1hr = subset(standard_041, (hours <= 0 & minutes <= 50 & seconds <= 0) & (hours <= 0 & minutes >= 20 & seconds <= 0)) 
+
+#standard_041_30min_to_1hr = standard_041_30min_to_1hr %>% group_by(standard_conc, replicate) %>% summarize (total_rfu=sum(rfu_value))
+
+
+#ggplotRegression(lm(standard_041_30min_to_1hr$total_rfu~standard_041_30min_to_1hr$standard_conc))
+```
+
+
+## AMP GLO Reagent Test
++ "Buffer" is 0.5X NEBuffer 2.1 and 1X NEBuffer 4
++ Various AMP GLO reagents were left out mix to determine if one was contributing to signal
++ 0uM standard from ATP and no ATP standard curve were also pulled for comparison on these plots
+
+### Conclusions
+ATP is contributing to majority of signal of 0uM standard. Other reagents have minimal signal, and show no additional luminescence signal over water.
+
+```{r echo=FALSE}
+#DETECTR_042$AMP <- convertAMP(lm(standard_041$rfu_value~standard_041$standard_conc), DETECTR_042$rfu_value)
+DETECTR_042 <- read.csv("../tidy_data/DETECTR_042_tidy_metadata.csv")
+
+DETECTR_042_1hr = subset(DETECTR_042, (hours < 1) | (hours == 1 & minutes == 0 & seconds == 0))
+DETECTR_042_1hr <- subset(DETECTR_042_1hr, DETECTR_042_1hr$reagents != "" & !(is.na(DETECTR_042_1hr$reagents)))
+DETECTR_042_1hr = DETECTR_042_1hr %>% group_by(sample_set,reagents, replicate) %>% summarize (total_rfu=sum(rfu_value), count = n())
+DETECTR_042_1hr =DETECTR_042_1hr %>% group_by(sample_set,reagents) %>% summarize (mean_total_rfu=mean(total_rfu), count = n(),stddev = sd(total_rfu,na.rm = TRUE))
+
+
+#samples_040 <- samples_040 %>% group_by(gRNA, reporter, target) %>% summarize (mean_rfu_value = mean(rfu_value), sd_rfu_value = sd(rfu_value), mean_amp = mean(AMP), sd_amp = sd(AMP))
+
+ggplot(DETECTR_042_1hr, aes(x = reagents, y = mean_total_rfu, fill = sample_set)) +
+
+  scale_y_continuous(expand = c(0,0), limits = c(0,4500))+
+  ggtitle("DETECTR 042, 1hr sum\nBuffer and Water with different AMP GLO Reagents")+
+  scale_fill_manual(values = c("darkslategray3", "mediumpurple3","darkseagreen3","olivedrab4"))+
+  ylab("rfu_value") +
+  xlab("row")+
+  geom_bar(stat = 'identity', position = "dodge") +
+  geom_errorbar(aes(ymin=mean_total_rfu-stddev, ymax=mean_total_rfu+stddev), width=.2,
+                position=position_dodge(.9)) +
+  theme(axis.text.x = element_text(angle = 60, hjust = 1), 
+        panel.background = element_rect(fill = "white"),
+        panel.grid = element_line(color = "grey"),
+        panel.border = element_rect(fill = NA, color = "black"),
+        title = element_text(face = "bold"),
+        strip.background = element_rect(fill = NA, color = "black"),
+        strip.text = element_text(size = 10),
+        legend.title = element_blank()
+          
+        
+)
+```
+
+
+```{r echo=FALSE}
+#DETECTR_042$AMP <- convertAMP(lm(standard_041$rfu_value~standard_041$standard_conc), DETECTR_042$rfu_value)
+DETECTR_042 <- read.csv("../tidy_data/DETECTR_042_tidy_metadata.csv")
+
+DETECTR_042_1hr = subset(DETECTR_042, (hours < 1) | (hours == 1 & minutes == 0 & seconds == 0))
+DETECTR_042_1hr <- subset(DETECTR_042_1hr, DETECTR_042_1hr$sample_set %in% c("buffer","water","AMP_standard_no_ATP") & DETECTR_042_1hr$reagents != "" & !(is.na(DETECTR_042_1hr$reagents)))
+DETECTR_042_1hr = DETECTR_042_1hr %>% group_by(sample_set,reagents, replicate) %>% summarize (total_rfu=sum(rfu_value), count = n())
+DETECTR_042_1hr =DETECTR_042_1hr %>% group_by(sample_set,reagents) %>% summarize (mean_total_rfu=mean(total_rfu), count = n(),stddev = sd(total_rfu,na.rm = TRUE))
+
+
+#samples_040 <- samples_040 %>% group_by(gRNA, reporter, target) %>% summarize (mean_rfu_value = mean(rfu_value), sd_rfu_value = sd(rfu_value), mean_amp = mean(AMP), sd_amp = sd(AMP))
+
+ggplot(DETECTR_042_1hr, aes(x = reagents, y = mean_total_rfu, fill = sample_set)) +
+
+  scale_y_continuous(expand = c(0,0), limits = c(0,200))+
+  ggtitle("DETECTR 042, 1hr sum, no ATP samples\nBuffer and Water with different AMP GLO Reagents")+
+  scale_fill_manual(values = c("darkslategray3", "mediumpurple3","darkseagreen3","olivedrab4"))+
+  ylab("rfu_value") +
+  xlab("row")+
+  geom_bar(stat = 'identity', position = "dodge") +
+  geom_errorbar(aes(ymin=mean_total_rfu-stddev, ymax=mean_total_rfu+stddev), width=.2,
+                position=position_dodge(.9)) +
+  theme(axis.text.x = element_text(angle = 60, hjust = 1), 
+        panel.background = element_rect(fill = "white"),
+        panel.grid = element_line(color = "grey"),
+        panel.border = element_rect(fill = NA, color = "black"),
+        title = element_text(face = "bold"),
+        strip.background = element_rect(fill = NA, color = "black"),
+        strip.text = element_text(size = 10),
+        legend.title = element_blank()
+          
+        
+)
+```
+

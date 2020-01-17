@@ -1,0 +1,21 @@
+Protocol Description
+,Protocol name: amyl-detectr049
+,Result File name: \Thumb Drive\Promega\Data\CSV\preclean-10_amyl-detectr049_1-9-2020_7-01-46 PM.csv
+,Total steps: 1
+
+
+Step 1,Luminescence. 1 repeat. 96 well plate
+PlateResults
+,Read 1
+,,1,2,3,4,5,6,7,8,9,10,11,12
+,A,X,X,X,X,X,X,X,X,X,29062.3,35815.2,37380.2
+,B,X,X,X,X,X,X,X,X,X,X,X,X
+,C,X,X,X,X,X,X,X,X,X,X,X,X
+,D,X,X,X,X,X,X,X,X,X,X,X,X
+,E,X,X,X,X,X,X,X,X,X,X,X,X
+,F,X,X,X,X,X,X,X,X,X,X,X,X
+,G,X,X,X,X,X,X,X,X,X,X,X,X
+,H,X,X,X,X,X,X,X,X,X,X,X,X
+
+
+Notes for the assay run: Enter Notes
