@@ -1,0 +1,456 @@
+---
+title: "DETECTR 050 SpectraMax AMP and UMP Data - NANCY DREW"
+output:
+  html_document:
+    df_print: paged
+---
+
+```{r setup, include=FALSE}
+library(dplyr)
+library(data.table)
+library(ggplot2)
+```
+
+
+```{r include=FALSE}
+ggplotRegression <- function (fit) {
+
+require(ggplot2)
+
+ggplot(fit$model, aes_string(x = names(fit$model)[2], y = names(fit$model)[1])) + 
+  geom_point() +
+  stat_smooth(method = "lm", col = "red") +
+  labs(title = paste("Adj R2 = ",signif(summary(fit)$adj.r.squared, 5),
+                     "Intercept =",signif(fit$coef[[1]],5 ),
+                     " Slope =",signif(fit$coef[[2]], 5),
+                     " P =",signif(summary(fit)$coef[2,4], 5)))
+}
+```
+
+```{r include=FALSE}
+
+convertAMP <- function (fit, value) {
+
+intercept = signif(fit$coef[[1]],5 )
+slope = signif(fit$coef[[2]], 5)
+AMP = (value - intercept)/slope
+
+
+return(AMP)
+}
+```
+
+```{r include=FALSE}
+sumBelowTime <- function (DETECTR_037, hour) {
+
+DETECTR_037 = subset(DETECTR_037, (hours < hour) | (hours == hour & minutes == 0 & seconds == 0))
+DETECTR_037_sum = DETECTR_037 %>% group_by(standard_conc, replicate) %>% summarize (total_rfu=sum(rfu_value))
+return(DETECTR_037_sum)
+}
+```
+
+## AMP NEBuffer 4 + 2.1 Fresh Standard Curves for concentrations from 0.01uM to 10uM, including 0uM
++ 0hr and 1hr single time points are first two plots
++ Summation of all data points below 1hr is the last plot
++ Fresh Standard Curve with no ATP
+
+### Conclusion 
+Same as before - 1hr looks better than 0hr. Summing doesn't help with whole regression.
+
+```{r echo=FALSE}
+
+DETECTR_050 <- read.csv("../tidy_data/DETECTR_050_tidy_metadata.csv")
+standard_050 <- subset(DETECTR_050, !(is.na(DETECTR_050$standard_conc)) & DETECTR_050$sample_set == "AMP_standard")
+standard_050$standard_conc <- as.numeric(as.character(standard_050$standard_conc))
+
+standard_050_0hr_single_point = subset(standard_050,time =="00:00:00")
+standard_050_1hr_single_point = subset(standard_050,time =="01:00:00")
+
+standard_050_1hr = sumBelowTime(standard_050,1)
+
+ggplotRegression(lm(standard_050_0hr_single_point$rfu_value~standard_050_0hr_single_point$standard_conc))
+ggplotRegression(lm(standard_050_1hr_single_point$rfu_value~standard_050_1hr_single_point$standard_conc))
+ggplotRegression(lm(standard_050_1hr$total_rfu~standard_050_1hr$standard_conc)) 
+
+```
+
+## AMP NEBuffer 4+ 2.1 Fresh Standard Curves for concentrations from 0.01uM to 0.16uM, including 0uM
++ 0hr and 1hr single time points are first two plots
++ Summation of all data points below 1hr is the last plot
++ Fresh Standard Curve with no ATP
+
+### Conclusion 
+Same as before - summing reduces noise quite a bit. Can detect down to 0.08 uM with summing.
+
+```{r echo=FALSE}
+
+DETECTR_050 <- read.csv("../tidy_data/DETECTR_050_tidy_metadata.csv")
+standard_050 <- subset(DETECTR_050, !(is.na(DETECTR_050$standard_conc)) & DETECTR_050$sample_set == "AMP_standard")
+standard_050$standard_conc <- as.numeric(as.character(standard_050$standard_conc))
+standard_050 = subset(standard_050,standard_conc<=0.2)
+
+standard_050_0hr_single_point = subset(standard_050,time =="00:00:00")
+standard_050_1hr_single_point = subset(standard_050,time =="01:00:00")
+standard_050_1hr = sumBelowTime(standard_050,1)
+
+
+ggplotRegression(lm(standard_050_0hr_single_point$rfu_value~standard_050_0hr_single_point$standard_conc))
+ggplotRegression(lm(standard_050_1hr_single_point$rfu_value~standard_050_1hr_single_point$standard_conc))
+ggplotRegression(lm(standard_050_1hr$total_rfu~standard_050_1hr$standard_conc)) 
+
+```
+
+## UMP NEBuffer 4 + 2.1 Fresh Standard Curves for concentrations from 0.01uM to 10uM, including 0uM
++ 0hr and 1hr single time points are first two plots
++ Summation of all data points below 1hr is the last plot
++ Fresh Standard Curve
+
+### Conclusion 
+UMP standard curve looks a lot better than AMP across the entire range. 1 hr is better than 0 hr. Summing reduces noise.
+
+```{r echo=FALSE}
+
+DETECTR_050 <- read.csv("../tidy_data/DETECTR_050_tidy_metadata.csv")
+standard_050_UMP <- subset(DETECTR_050, !(is.na(DETECTR_050$standard_conc)) & DETECTR_050$sample_set == "UMP_standard" & DETECTR_050$kit == "UMP")
+standard_050_UMP$standard_conc <- as.numeric(as.character(standard_050_UMP$standard_conc))
+
+standard_050_UMP_0hr_single_point = subset(standard_050_UMP,time =="00:00:00")
+standard_050_UMP_1hr_single_point = subset(standard_050_UMP,time =="01:00:00")
+standard_050_UMP_1hr = sumBelowTime(standard_050_UMP,1)
+
+ggplotRegression(lm(standard_050_UMP_0hr_single_point$rfu_value~standard_050_UMP_0hr_single_point$standard_conc))
+ggplotRegression(lm(standard_050_UMP_1hr_single_point$rfu_value~standard_050_UMP_1hr_single_point$standard_conc))
+ggplotRegression(lm(standard_050_UMP_1hr$total_rfu~standard_050_UMP_1hr$standard_conc)) 
+
+```
+
+## UMP NEBuffer 4 + 2.1 Fresh Standard Curves for concentrations from 0.01uM to 0.625uM, including 0uM
++ 0hr and 1hr single time points are first two plots
++ Summation of all data points below 1hr is the last plot
++ Fresh Standard Curve
+
+### Conclusion 
+Summing significantly helps with lower concentrations. Can MAYBE detect down to 0.04uM. This is the same as DETECTR 043.
+
+```{r echo=FALSE}
+
+DETECTR_050 <- read.csv("../tidy_data/DETECTR_050_tidy_metadata.csv")
+standard_050_UMP <- subset(DETECTR_050, !(is.na(DETECTR_050$standard_conc)) & DETECTR_050$sample_set == "UMP_standard" & DETECTR_050$kit == "UMP")
+standard_050_UMP$standard_conc <- as.numeric(as.character(standard_050_UMP$standard_conc))
+standard_050_UMP = subset(standard_050_UMP,standard_conc<=0.2)
+
+standard_050_UMP_0hr_single_point = subset(standard_050_UMP,time =="00:00:00")
+standard_050_UMP_1hr_single_point = subset(standard_050_UMP,time =="01:00:00")
+standard_050_UMP_1hr = sumBelowTime(standard_050_UMP,1)
+
+
+ggplotRegression(lm(standard_050_UMP_0hr_single_point$rfu_value~standard_050_UMP_0hr_single_point$standard_conc))
+ggplotRegression(lm(standard_050_UMP_1hr_single_point$rfu_value~standard_050_UMP_1hr_single_point$standard_conc))
+ggplotRegression(lm(standard_050_UMP_1hr$total_rfu~standard_050_UMP_1hr$standard_conc)) 
+
+
+```
+
+## Background for AMP vs UMP GLO NANCY DREW
++ Used NEB cas12a and synthetic 11C gRNA with synthetic 11C target for all
++ All AMP samples had the r17Ar3C and UMP samples had the r17U-TTATT-phos reporter
++ AMP background was done on Wednesday and UMP background was done on Thursday.
++ RFU values were converted to AMP or UMP uM concentrations using the 1hr summation regression
+
+### Conclusions
+Both don't seem to have a ton of background from either bacterial or human gDNA. UMP appears to have a slightly concentration dependent response to human gDNA. UMP also has a higher signal to noise ratio. They both have a similar noise level but AMP signal is lower. Of note, AMP reporter contained no DNA (r17Ar3C) and UMP reporter did (r17U-TTATT-phos). 
+
+```{r echo=FALSE}
+DETECTR_050 <- read.csv("../tidy_data/DETECTR_050_tidy_metadata.csv")
+samples_050_UMP <- subset(DETECTR_050, (DETECTR_050$kit=="UMP") & (DETECTR_050$sample_set=="UMP_background") & !(is.na(DETECTR_050$gRNA))  & !(DETECTR_050$gRNA=="") )
+
+samples_050_UMP = subset(samples_050_UMP, (hours < 1) | (hours == 1 & minutes == 0 & seconds == 0))
+
+samples_050_UMP = samples_050_UMP %>% group_by(reporter, gRNA, target, background_DNA,background_DNA_mass, RNAseT, replicate, kit) %>% summarize (total_rfu=sum(rfu_value))
+
+
+standard_050_UMP <- subset(DETECTR_050, !(is.na(DETECTR_050$standard_conc)) & DETECTR_050$sample_set == "UMP_standard"  & DETECTR_050$kit == "UMP")
+
+standard_050_UMP_1hr = sumBelowTime(standard_050_UMP,1)
+
+standard_050_UMP_1hr$standard_conc <- as.numeric(as.character(standard_050_UMP_1hr$standard_conc))
+
+
+samples_050_UMP$UMP <- convertAMP(lm(standard_050_UMP_1hr$total_rfu~standard_050_UMP_1hr$standard_conc), samples_050_UMP$total_rfu)
+samples_050_UMP <- samples_050_UMP %>% group_by(gRNA, reporter, target, background_DNA, background_DNA_mass,RNAseT, kit) %>% summarize (mean_rfu_value = mean(total_rfu), sd_rfu_value = sd(total_rfu), mean_amp = mean(UMP), sd_amp = sd(UMP))
+samples_050_UMP$background_DNA_mass <- factor(samples_050_UMP$background_DNA_mass, levels = c("400ng","40ng","4ng","0ng"))
+
+ggplot(samples_050_UMP, aes(x = background_DNA_mass, y = mean_amp, fill = target)) +
+  facet_wrap(~background_DNA)+
+  geom_bar(stat = 'identity', position = 'dodge', color = "black") +
+  geom_errorbar(aes(ymin=mean_amp-sd_amp, ymax=mean_amp+sd_amp), width=.2,
+                 position=position_dodge(.9)) +
+  scale_y_continuous(expand = c(0,0), breaks = seq(0,20,1),
+                     limits = c(0,20))+
+  ggtitle("DETECTR 050, NANCY DREW UMP GLO")+
+  scale_fill_manual(values = c("darkslategray3", "mediumpurple3","darkseagreen3","olivedrab4"))+
+  ylab("average UMP (uM)") +
+  #xlab("reporter used")+
+  theme(axis.text.x = element_text(angle = 60, hjust = 1), 
+        panel.background = element_rect(fill = "white"),
+        panel.grid = element_line(color = "grey"),
+        panel.border = element_rect(fill = NA, color = "black"),
+        title = element_text(face = "bold"),
+        strip.background = element_rect(fill = NA, color = "black"),
+        strip.text = element_text(size = 10),
+        legend.title = element_blank(),
+        axis.title.x = element_blank()
+)
+
+
+```
+
+
+```{r echo=FALSE}
+DETECTR_050 <- read.csv("../tidy_data/DETECTR_050_tidy_metadata.csv")
+samples_050 <- subset(DETECTR_050, (DETECTR_050$kit=="AMP") & (DETECTR_050$sample_set=="AMP_background") & !(is.na(DETECTR_050$gRNA))  & !(DETECTR_050$gRNA=="") )
+
+samples_050 = subset(samples_050, (hours < 1) | (hours == 1 & minutes == 0 & seconds == 0))
+
+samples_050 = samples_050 %>% group_by(reporter, gRNA, target, RNAseT, background_DNA, background_DNA_mass, replicate, kit) %>% summarize (total_rfu=sum(rfu_value))
+
+
+standard_050_AMP <- subset(DETECTR_050, !(is.na(DETECTR_050$standard_conc)) & DETECTR_050$sample_set == "AMP_standard" )
+
+standard_050_AMP_1hr = sumBelowTime(standard_050_AMP,1)
+
+standard_050_AMP_1hr$standard_conc <- as.numeric(as.character(standard_050_AMP_1hr$standard_conc))
+
+samples_050$AMP <- convertAMP(lm(standard_050_AMP_1hr$total_rfu~standard_050_AMP_1hr$standard_conc), samples_050$total_rfu)
+samples_050 <- samples_050 %>% group_by(gRNA, reporter, target, RNAseT, background_DNA, background_DNA_mass, kit) %>% summarize (mean_rfu_value = mean(total_rfu), sd_rfu_value = sd(total_rfu), mean_amp = mean(AMP), sd_amp = sd(AMP))
+
+samples_050$background_DNA_mass <- factor(samples_050$background_DNA_mass, levels = c("400ng","40ng","4ng","0ng"))
+
+
+#samples_050$sample_name = paste(samples_050$gRNA, samples_050$target, samples_050$RNAseT, samples_050$reporter)
+#samples_050$sample_name = c("no_gRNA", "no_reporter", "no_target", "no_RNAseT","target_added","no_target","target_added","no_target","target_added")
+
+ggplot(samples_050, aes(x = background_DNA_mass, y = mean_amp, fill = target)) +
+  facet_wrap(~background_DNA)+
+  geom_bar(stat = 'identity', position = 'dodge', color = "black") +
+  geom_errorbar(aes(ymin=mean_amp-sd_amp, ymax=mean_amp+sd_amp), width=.2,
+                 position=position_dodge(.9), color = "black") +
+  scale_y_continuous(expand = c(0,0), limits = c(0,5))+
+  ggtitle("DETECTR 050, NANCY DREW AMP GLO")+
+  scale_fill_manual(values = c("darkslategray3", "mediumpurple3","darkseagreen3","olivedrab4"
+                              ))+
+  ylab("average AMP (uM)") +
+  #xlab("reporter used")+
+  theme(axis.text.x = element_text(angle = 60, hjust = 1), 
+        panel.background = element_rect(fill = "white"),
+        panel.grid = element_line(color = "grey"),
+        panel.border = element_rect(fill = NA, color = "black"),
+        title = element_text(face = "bold"),
+        strip.background = element_rect(fill = NA, color = "black"),
+        strip.text = element_text(size = 10),
+        legend.title = element_blank(),
+        axis.title.x = element_blank()
+          
+        
+)
+
+
+```
+
+## UMP and AMP compared
+
+
+```{r echo=FALSE}
+samples_050_all = merge(samples_050_UMP, samples_050, by = c("reporter","background_DNA","background_DNA_mass","kit","gRNA", "RNAseT","target","mean_rfu_value","sd_rfu_value","mean_amp","sd_amp"), all = TRUE)
+
+ggplot(samples_050_all, aes(x = background_DNA_mass, y = mean_amp, fill = target)) +
+  facet_grid(kit~background_DNA)+
+  geom_bar(stat = 'identity', position = 'dodge', color = "black") +
+  geom_errorbar(aes(ymin=mean_amp-sd_amp, ymax=mean_amp+sd_amp), width=.2,
+                 position=position_dodge(.9), color = "black") +
+  scale_y_continuous(expand = c(0,0), limits = c(0,20), breaks = seq(0,20,2))+
+  ggtitle("DETECTR 050, NANCY DREW AMP and UMP GLO Combined")+
+  scale_fill_manual(values = c("darkslategray3", "mediumpurple3","darkseagreen3","olivedrab4","royalblue4"
+                              ))+
+  ylab("average AMP/UMP (uM)") +
+  #xlab("reporter used")+
+  theme(axis.text.x = element_text(angle = 60, hjust = 1), 
+        panel.background = element_rect(fill = "white"),
+        panel.grid = element_line(color = "grey"),
+        panel.border = element_rect(fill = NA, color = "black"),
+        title = element_text(face = "bold"),
+        strip.background = element_rect(fill = NA, color = "black"),
+        strip.text = element_text(size = 10),
+        legend.title = element_blank(),
+        axis.title.x = element_blank()
+          
+        
+)
+
+
+ggplot(samples_050_all, aes(x = background_DNA_mass, y = mean_amp, fill = target)) +
+  facet_grid(kit~background_DNA, scale = "free_y")+
+  geom_bar(stat = 'identity', position = 'dodge', color = "black") +
+  geom_errorbar(aes(ymin=mean_amp-sd_amp, ymax=mean_amp+sd_amp), width=.2,
+                 position=position_dodge(.9), color = "black") +
+  scale_y_continuous(expand = c(0,0))+
+  ggtitle("DETECTR 050, NANCY DREW AMP and UMP GLO Combined")+
+  scale_fill_manual(values = c("darkslategray3", "mediumpurple3","darkseagreen3","olivedrab4","royalblue4"
+                              ))+
+  ylab("average AMP/UMP (uM)") +
+  #xlab("reporter used")+
+  theme(axis.text.x = element_text(angle = 60, hjust = 1), 
+        panel.background = element_rect(fill = "white"),
+        panel.grid = element_line(color = "grey"),
+        panel.border = element_rect(fill = NA, color = "black"),
+        title = element_text(face = "bold"),
+        strip.background = element_rect(fill = NA, color = "black"),
+        strip.text = element_text(size = 10),
+        legend.title = element_blank(),
+        axis.title.x = element_blank()
+          
+        
+)
+
+```
+
+
+## TB Insertion Sequences alt-R synthetic gRNAs
++ This experiment was done in duplicate
++ Synthetic alt-R gRNAs were diluted to 35.2ng/uL based on Qubit rather than molar calculations from IDT
++ Transcribed IS1081 has been tested extensively in FRET assay, but transcribed IS6110 was only tested once and gave low signal
+
+### Conclusions
+IS6110 gRNA didn't work, perhaps because it is not a great gRNA as illustrated in DETECTR_004. IS1081 worked, but gave a low signal for unknown reasons - weak gRNA? gRNA concentration? DNA age? All negative controls, including the mismatched target DNA to the gRNA, turned up negative.
+
+```{r echo=FALSE, warning=FALSE}
+DETECTR_050 <- read.csv("../tidy_data/DETECTR_050_tidy_metadata.csv")
+samples_050 <- subset(DETECTR_050, (DETECTR_050$kit=="AMP") & (DETECTR_050$sample_set=="IS_gRNAs") & !(is.na(DETECTR_050$gRNA))  & !(DETECTR_050$gRNA=="") )
+
+samples_050 = subset(samples_050, (hours < 1) | (hours == 1 & minutes == 0 & seconds == 0))
+
+samples_050 = samples_050 %>% group_by(reporter, gRNA, target, RNAseT, background_DNA, background_DNA_mass, replicate, kit) %>% summarize (total_rfu=sum(rfu_value))
+
+
+standard_050_AMP <- subset(DETECTR_050, !(is.na(DETECTR_050$standard_conc)) & DETECTR_050$sample_set == "AMP_standard" )
+
+standard_050_AMP_1hr = sumBelowTime(standard_050_AMP,1)
+
+standard_050_AMP_1hr$standard_conc <- as.numeric(as.character(standard_050_AMP_1hr$standard_conc))
+
+samples_050$AMP <- convertAMP(lm(standard_050_AMP_1hr$total_rfu~standard_050_AMP_1hr$standard_conc), samples_050$total_rfu)
+samples_050 <- samples_050 %>% group_by(gRNA, reporter, target, RNAseT, background_DNA, background_DNA_mass, kit) %>% summarize (mean_rfu_value = mean(total_rfu), sd_rfu_value = sd(total_rfu), mean_amp = mean(AMP), sd_amp = sd(AMP))
+
+
+
+#samples_050$sample_name = paste(samples_050$gRNA, samples_050$target, samples_050$RNAseT, samples_050$reporter)
+samples_050$sample_name = c("no_reporter", "no_RNAseT", "IS1081_H6_target_DNA", "IS6110_A7_target_DNA","no_target","no_reporter","IS1081_H6_target_DNA","no_RNAseT","IS6110_A7_target_DNA","no_target", "IS1081_H6_target_DNA","IS6110_A7_target_DNA")
+
+ggplot(samples_050, aes(x = sample_name, y = mean_amp, fill = gRNA)) +
+  #facet_wrap(~background_DNA)+
+  geom_bar(stat = 'identity', position = 'dodge', color = "black") +
+  geom_errorbar(aes(ymin=mean_amp-sd_amp, ymax=mean_amp+sd_amp), width=.2,
+                 position=position_dodge(.9), color = "black") +
+  scale_y_continuous(expand = c(0,0), limits = c(0,3))+
+  ggtitle("DETECTR 050, alt-R IS gRNAs NANCY DREW AMP GLO")+
+  scale_fill_manual(values = c("darkslategray3", "mediumpurple3","darkseagreen3","olivedrab4"
+                              ))+
+  ylab("average AMP (uM)") +
+  #xlab("reporter used")+
+  theme(axis.text.x = element_text(angle = 60, hjust = 1), 
+        panel.background = element_rect(fill = "white"),
+        panel.grid = element_line(color = "grey"),
+        panel.border = element_rect(fill = NA, color = "black"),
+        title = element_text(face = "bold"),
+        strip.background = element_rect(fill = NA, color = "black"),
+        strip.text = element_text(size = 10),
+        axis.title.x = element_blank()
+          
+        
+)
+```
+
+
+## Background UMP GLO Data with wrong reporter
++ On the day I did the AMP GLO experiment, I added the wrong reporter for the UMP GLO samples - r17Ar3C instead of a U based reporter
++ I took the experiment to completion as a negative control
+
+### Conclusions
+UMP still looks like it might be getting some background signal from human gDNA. Having the wrong reporter gives no signal in target added condition.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
+DETECTR_050 <- read.csv("../tidy_data/DETECTR_050_tidy_metadata.csv")
+samples_050_UMP <- subset(DETECTR_050, (DETECTR_050$kit=="UMP_wrong_reporter") & (DETECTR_050$sample_set=="UMP_background") & !(is.na(DETECTR_050$gRNA))  & !(DETECTR_050$gRNA=="") )
+
+samples_050_UMP = subset(samples_050_UMP, (hours < 1) | (hours == 1 & minutes == 0 & seconds == 0))
+
+samples_050_UMP = samples_050_UMP %>% group_by(reporter, gRNA, target, background_DNA,background_DNA_mass, RNAseT, replicate, kit) %>% summarize (total_rfu=sum(rfu_value))
+
+
+standard_050_UMP <- subset(DETECTR_050, !(is.na(DETECTR_050$standard_conc)) & DETECTR_050$sample_set == "UMP_standard" )
+
+standard_050_UMP_1hr = sumBelowTime(standard_050_UMP,1)
+
+standard_050_UMP_1hr$standard_conc <- as.numeric(as.character(standard_050_UMP_1hr$standard_conc))
+
+
+samples_050_UMP$UMP <- convertAMP(lm(standard_050_UMP_1hr$total_rfu~standard_050_UMP_1hr$standard_conc), samples_050_UMP$total_rfu)
+samples_050_UMP <- samples_050_UMP %>% group_by(gRNA, reporter, target, background_DNA, background_DNA_mass,RNAseT, kit) %>% summarize (mean_rfu_value = mean(total_rfu), sd_rfu_value = sd(total_rfu), mean_amp = mean(UMP), sd_amp = sd(UMP))
+
+#samples_050_UMP$sample_name = paste(samples_050_UMP$gRNA, samples_050_UMP$target, samples_050_UMP$RNAseT, samples_050_UMP$reporter)
+#samples_050_UMP$sample_name = c("no_gRNA", "no_reporter", "no_target", "no_RNAseT","target_added")
+
+ggplot(samples_050_UMP, aes(x = background_DNA_mass, y = mean_amp, fill = target)) +
+  facet_wrap(~background_DNA)+
+  geom_bar(stat = 'identity', position = 'dodge', color = "black") +
+  geom_errorbar(aes(ymin=mean_amp-sd_amp, ymax=mean_amp+sd_amp), width=.2,
+                 position=position_dodge(.9)) +
+  scale_y_continuous(expand = c(0,0), limits = c(0,1))+
+  ggtitle("DETECTR 050, NANCY DREW UMP GLO\nBackground Experiment, Wrong Reporter (r17Ar3C)")+
+  scale_fill_manual(values = c("darkslategray3", "mediumpurple3","darkseagreen3","olivedrab4"))+
+  ylab("average UMP (uM)") +
+  #xlab("reporter used")+
+  theme(axis.text.x = element_text(angle = 60, hjust = 1), 
+        panel.background = element_rect(fill = "white"),
+        panel.grid = element_line(color = "grey"),
+        panel.border = element_rect(fill = NA, color = "black"),
+        title = element_text(face = "bold"),
+        strip.background = element_rect(fill = NA, color = "black"),
+        strip.text = element_text(size = 10),
+        legend.title = element_blank(),
+        axis.title.x = element_blank()
+)
+
+
+```
+
+## Kinetics over time, UMP and AMP standards
+
+```{r echo=FALSE, warning=FALSE}
+
+DETECTR_050 <- read.csv("../tidy_data/DETECTR_050_tidy_metadata.csv")
+DETECTR_050$standard_conc <- as.numeric(as.character(DETECTR_050$standard_conc))
+DETECTR_050 <- subset(DETECTR_050,  DETECTR_050$sample_set %in% c("AMP_standard","UMP_standard") & (DETECTR_050$hours < 1 | (DETECTR_050$hours == 1 & DETECTR_050$minutes == 0)))
+DETECTR_050$standard_conc <- factor(DETECTR_050$standard_conc)
+
+ggplot(DETECTR_050, aes(x = time, y = rfu_value, color = standard_conc)) +
+  facet_wrap(~sample_set, scale = "free_y")+
+  #geom_line(stat = 'identity') +
+  geom_point(stat = 'identity', size = 0.5) +
+  scale_y_continuous(expand = c(0,0))+
+ # scale_x_continuous(breaks = seq(0,24,2))+
+  scale_color_manual(values = c("darkslategray3", "mediumpurple3","darkseagreen3","olivedrab4","orange","yellow","blue","red","green","brown","black","purple","olivedrab2","grey","pink","orchid3"))+
+  ylab("rfu_value") +
+  xlab("time from 0 hr to 1 hr")+
+  theme(axis.text.x = element_blank(), 
+        panel.background = element_rect(fill = "white"),
+        panel.grid = element_line(color = "grey"),
+        panel.border = element_rect(fill = NA, color = "black"),
+        title = element_text(face = "bold"),
+        strip.background = element_rect(fill = NA, color = "black"),
+        strip.text = element_text(size = 10),
+        legend.title = element_blank()
+          
+        
+)
+```

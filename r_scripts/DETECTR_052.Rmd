@@ -1,0 +1,280 @@
+---
+title: "DETECTR 052 SpectraMax NANCI UMP Data"
+output:
+  html_document:
+    df_print: paged
+---
+
+```{r setup, include=FALSE}
+library(dplyr)
+library(data.table)
+library(ggplot2)
+```
+
+
+```{r include=FALSE}
+ggplotRegression <- function (fit) {
+
+require(ggplot2)
+
+ggplot(fit$model, aes_string(x = names(fit$model)[2], y = names(fit$model)[1])) + 
+  geom_point() +
+  stat_smooth(method = "lm", col = "red") +
+  labs(title = paste("Adj R2 = ",signif(summary(fit)$adj.r.squared, 5),
+                     "Intercept =",signif(fit$coef[[1]],5 ),
+                     " Slope =",signif(fit$coef[[2]], 5),
+                     " P =",signif(summary(fit)$coef[2,4], 5)))
+}
+```
+
+```{r include=FALSE}
+
+convertAMP <- function (fit, value) {
+
+intercept = signif(fit$coef[[1]],5 )
+slope = signif(fit$coef[[2]], 5)
+AMP = (value - intercept)/slope
+
+
+return(AMP)
+}
+```
+
+```{r include=FALSE}
+sumBelowTime <- function (DETECTR_037, hour) {
+
+DETECTR_037 = subset(DETECTR_037, (hours < hour) | (hours == hour & minutes == 0 & seconds == 0))
+DETECTR_037_sum = DETECTR_037 %>% group_by(standard_conc, replicate) %>% summarize (total_rfu=sum(rfu_value))
+return(DETECTR_037_sum)
+}
+```
+
+## UMP NEBuffer 4 + 2.1 Fresh Standard Curves for concentrations from 0.01uM to 10uM, including 0uM
++ 0hr and 1hr single time points are first two plots
++ Summation of all data points below 1hr and 11hr are the last two plots
+
+### Conclusion 
+As before, summing seems to improve the data points and brings them towards the mean. 1hr sum is better than 0hr or 1hr timepoint and 12hr sum is better than 1hr sum.
+
+```{r echo=FALSE}
+
+DETECTR_052 <- read.csv("../tidy_data/DETECTR_052_tidy_metadata.csv")
+standard_052 <- subset(DETECTR_052, !(is.na(DETECTR_052$standard_conc)) & DETECTR_052$sample_set == "NANCI_UMP_standard")
+standard_052$standard_conc <- as.numeric(as.character(standard_052$standard_conc))
+
+standard_052_0hr_single_point = subset(standard_052,time =="00:00:00")
+standard_052_1hr_single_point = subset(standard_052,time =="01:00:00")
+
+standard_052_1hr = sumBelowTime(standard_052,1)
+standard_052_12hr = sumBelowTime(standard_052,12)
+
+ggplotRegression(lm(standard_052_0hr_single_point$rfu_value~standard_052_0hr_single_point$standard_conc))
+ggplotRegression(lm(standard_052_1hr_single_point$rfu_value~standard_052_1hr_single_point$standard_conc))
+ggplotRegression(lm(standard_052_1hr$total_rfu~standard_052_1hr$standard_conc)) 
+ggplotRegression(lm(standard_052_12hr$total_rfu~standard_052_12hr$standard_conc)) 
+
+
+```
+
+## UMP NEBuffer 4+ 2.1 Fresh Standard Curves for concentrations from 0.01uM to 0.16uM, including 0uM
++ 0hr and 1hr single time points are first two plots
++ Summation of all data points below 1hr and 12hr are the last two plots
+
+### Conclusion 
+Standards look a little worse than usual. Zero is very high. I would only trust down to 0.08uM.
+
+```{r echo=FALSE}
+
+DETECTR_052 <- read.csv("../tidy_data/DETECTR_052_tidy_metadata.csv")
+standard_052 <- subset(DETECTR_052, !(is.na(DETECTR_052$standard_conc)) & DETECTR_052$sample_set == "NANCI_UMP_standard")
+standard_052$standard_conc <- as.numeric(as.character(standard_052$standard_conc))
+standard_052 = subset(standard_052,standard_conc<=0.2)
+
+standard_052_0hr_single_point = subset(standard_052,time =="00:00:00")
+standard_052_1hr_single_point = subset(standard_052,time =="01:00:00")
+standard_052_1hr = sumBelowTime(standard_052,1)
+standard_052_12hr = sumBelowTime(standard_052,12)
+
+
+ggplotRegression(lm(standard_052_0hr_single_point$rfu_value~standard_052_0hr_single_point$standard_conc))
+ggplotRegression(lm(standard_052_1hr_single_point$rfu_value~standard_052_1hr_single_point$standard_conc))
+ggplotRegression(lm(standard_052_1hr$total_rfu~standard_052_1hr$standard_conc)) 
+ggplotRegression(lm(standard_052_12hr$total_rfu~standard_052_12hr$standard_conc)) 
+
+
+```
+
+## NANCI UMP Timing
++ Used IDT cas12a and alt-R synthetic IS1081 gRNA with synthetic targets for all
++ The reporter was r17U-TTATT-phos
++ RFU values were converted to UMP uM concentrations using the 1hr summation regression
++ Mismatched target is for IS6110
+
+### Conclusions
+Longer times are better for the lowest detectable concentrations. We never quite hit a saturation of signal. It does work for highest concentration to only go for 30 minutes.
+
+```{r echo=FALSE}
+DETECTR_052 <- read.csv("../tidy_data/DETECTR_052_tidy_metadata.csv")
+samples_052_UMP <- subset(DETECTR_052, (DETECTR_052$sample_set=="NANCI_UMP_cas12a_timing") ) 
+samples_052_UMP = subset(samples_052_UMP, (hours < 1) | (hours == 1 & minutes == 0 & seconds == 0))
+samples_052_UMP = samples_052_UMP %>% group_by(gRNA, reporter, target_DNA, target_DNA_input_concentration, target_DNA_input_DNA_molecules, sample_set, replicate, cas12a_timing, cas12a_minutes) %>% summarize (total_rfu=sum(rfu_value))
+
+standard_052_UMP <- subset(DETECTR_052, !(is.na(DETECTR_052$standard_conc)) & DETECTR_052$sample_set == "NANCI_UMP_standard")
+
+standard_052_UMP_1hr = sumBelowTime(standard_052_UMP,1)
+
+standard_052_UMP_1hr$standard_conc <- as.numeric(as.character(standard_052_UMP_1hr$standard_conc))
+
+samples_052_UMP$UMP <- convertAMP(lm(standard_052_UMP_1hr$total_rfu~standard_052_UMP_1hr$standard_conc), samples_052_UMP$total_rfu)
+
+samples_052_UMP <- samples_052_UMP %>% group_by(gRNA, reporter, target_DNA, target_DNA_input_concentration, target_DNA_input_DNA_molecules,sample_set, cas12a_timing, cas12a_minutes) %>% summarize (mean_rfu_value = mean(total_rfu), sd_rfu_value = sd(total_rfu), mean_amp = mean(UMP), sd_amp = sd(UMP))
+
+samples_052_UMP$sample_name <- factor(paste(samples_052_UMP$target_DNA_input_concentration,"_",samples_052_UMP$target_DNA), levels = c("4nM _ IS6110_A7", "40pM _ IS1081_H6", "400pM _ IS1081_H6", "4nM _ IS1081_H6"))
+
+
+samples_052_UMP$cas12a_timing <- factor(samples_052_UMP$cas12a_timing, levels = c("30mins","1hr","2hr","3hr"))
+
+# samples_052_UMP$sample_name <- factor(c(format(samples_052_UMP$target_DNA_input_molecules[1:10], scientific = TRUE)
+# , "mismatched_target", "no_gRNA"), levels = c("no_gRNA", "mismatched_target", "0.0e+00","2.4e+04", "2.4e+05","2.4e+06","2.4e+07","2.4e+08","2.4e+09","2.4e+10","2.4e+11","2.4e+12"))
+
+#samples_052_UMP$sample_group <- c(replicate(10,"matched_target"), "mismatched_target", "no_gRNA")
+
+ggplot(samples_052_UMP, aes(x = sample_name, y = mean_amp, fill = cas12a_timing)) +
+  #facet_wrap(~gRNA)+
+  geom_bar(stat = 'identity', position = 'dodge', color = "black") +
+  geom_errorbar(aes(ymin=mean_amp-sd_amp, ymax=mean_amp+sd_amp), width=.2,
+                 position=position_dodge(.9)) +
+  scale_y_continuous(expand = c(0,0), breaks = seq(0,30,1))+
+  ggtitle("DETECTR 052, NANCI UMP GLO")+
+  scale_fill_manual(values = c("darkslategray3", "mediumpurple3","darkseagreen3","olivedrab4"))+
+  scale_x_discrete(labels = function(x) format(x, scientific = TRUE))+
+  ylab("average UMP (uM)") +
+  xlab("DNA concentration & target")+
+  theme(axis.text.x = element_text(angle = 60, hjust = 1), 
+        panel.background = element_rect(fill = "white"),
+        panel.grid = element_line(color = "grey"),
+        panel.border = element_rect(fill = NA, color = "black"),
+        title = element_text(face = "bold"),
+        strip.background = element_rect(fill = NA, color = "black"),
+        strip.text = element_text(size = 10)
+        )
+
+
+ggplot(subset(samples_052_UMP,(target_DNA_input_DNA_molecules < 5E8) | (target_DNA == "IS6110_A7") | (gRNA == "no_gRNA")), aes(x = sample_name, y = mean_amp, fill = cas12a_timing)) +
+  #facet_wrap(~gRNA)+
+  geom_bar(stat = 'identity', position = 'dodge', color = "black") +
+  geom_errorbar(aes(ymin=mean_amp-sd_amp, ymax=mean_amp+sd_amp), width=.2,
+                 position=position_dodge(.9)) +
+  scale_y_continuous(expand = c(0,0), breaks = seq(0,20,0.25))+
+  ggtitle("DETECTR 052, NANCI UMP GLO, low concentrations")+
+  scale_fill_manual(values = c("darkslategray3", "mediumpurple3","darkseagreen3","olivedrab4"))+
+  scale_x_discrete(labels = function(x) format(x, scientific = TRUE))+
+  ylab("average UMP (uM)") +
+  xlab("DNA concentration & target")+
+  theme(axis.text.x = element_text(angle = 60, hjust = 1), 
+        panel.background = element_rect(fill = "white"),
+        panel.grid = element_line(color = "grey"),
+        panel.border = element_rect(fill = NA, color = "black"),
+        title = element_text(face = "bold"),
+        strip.background = element_rect(fill = NA, color = "black"),
+        strip.text = element_text(size = 10)
+)
+
+
+ggplot(samples_052_UMP, aes(x = cas12a_minutes, y = mean_amp, color = sample_name)) +
+  #facet_wrap(~gRNA)+
+  geom_point( ) +
+  geom_errorbar(aes(ymin=mean_amp-sd_amp, ymax=mean_amp+sd_amp), width=1,
+                color = "black") +
+  scale_y_continuous(breaks = seq(0,30,1))+
+  ggtitle("DETECTR 052, NANCI UMP GLO")+
+  scale_fill_manual(values = c("darkslategray3", "mediumpurple3","darkseagreen3","olivedrab4"))+
+  scale_x_continuous(breaks = c(30,60,120,180))+
+  ylab("average UMP (uM)") +
+  xlab("cas12a minutes of incubation")+
+  theme(axis.text.x = element_text(angle = 60, hjust = 1), 
+        panel.background = element_rect(fill = "white"),
+        panel.grid = element_line(color = "grey"),
+        panel.border = element_rect(fill = NA, color = "black"),
+        title = element_text(face = "bold"),
+        strip.background = element_rect(fill = NA, color = "black"),
+        strip.text = element_text(size = 10)
+        )
+
+ggplot(subset(samples_052_UMP,(target_DNA_input_DNA_molecules < 5E8) | (target_DNA == "IS6110_A7") | (gRNA == "no_gRNA")), aes(x = cas12a_minutes, y = mean_amp, color = sample_name)) +
+  geom_point( ) +
+  geom_errorbar(aes(ymin=mean_amp-sd_amp, ymax=mean_amp+sd_amp), width=1,
+                color = "black") +
+  scale_y_continuous(breaks = seq(0,30,1))+
+  ggtitle("DETECTR 052, NANCI UMP GLO")+
+  scale_fill_manual(values = c("darkslategray3", "mediumpurple3","darkseagreen3","olivedrab4"))+
+  scale_x_continuous(breaks = c(30,60,120,180))+
+  ylab("average UMP (uM)") +
+  xlab("cas12a minutes of incubation")+
+  theme(axis.text.x = element_text(angle = 60, hjust = 1), 
+        panel.background = element_rect(fill = "white"),
+        panel.grid = element_line(color = "grey"),
+        panel.border = element_rect(fill = NA, color = "black"),
+        title = element_text(face = "bold"),
+        strip.background = element_rect(fill = NA, color = "black"),
+        strip.text = element_text(size = 10)
+        )
+
+
+```
+## NANCI UMP IVT gRNAs
++ Used IDT cas12a
++ The reporter was r17U-TTATT-phos
++ RFU values were converted to UMP uM concentrations using the 1hr summation regression
++ Mismatched target is for IS6110
++ Targets were either 4nM for IS or 100ng for h37rV
++ Note the axes are changing on this plot to allow visibility of all bars in a single graph - the differences are too high to be visible otherwise.
+
+### Conclusions
+IVT gRNAs give a really high signal for UMP assay, both for the individual gRNA and for the pool of gRNAs. There is no evidence that when TB isolate DNA is added that we see any signal from the pool of gRNAs. 
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+DETECTR_052 <- read.csv("../tidy_data/DETECTR_052_tidy_metadata.csv")
+samples_052_UMP <- subset(DETECTR_052, (DETECTR_052$sample_set %in% c("NANCI_UMP_sample","NANCI_UMP_cas12a_timing") & (DETECTR_052$cas12a_timing == "3hr") & (DETECTR_052$target_DNA_input_concentration %in% c("4nM","100ng","0nM","0ng" )) ))
+samples_052_UMP = subset(samples_052_UMP, (hours < 1) | (hours == 1 & minutes == 0 & seconds == 0))
+samples_052_UMP = samples_052_UMP %>% group_by(gRNA, reporter, target_DNA, target_DNA_input_concentration, target_DNA_input_DNA_molecules, sample_set, replicate, cas12a_timing) %>% summarize (total_rfu=sum(rfu_value))
+
+standard_052_UMP <- subset(DETECTR_052, !(is.na(DETECTR_052$standard_conc)) & DETECTR_052$sample_set == "NANCI_UMP_standard")
+
+standard_052_UMP_1hr = sumBelowTime(standard_052_UMP,1)
+
+standard_052_UMP_1hr$standard_conc <- as.numeric(as.character(standard_052_UMP_1hr$standard_conc))
+
+samples_052_UMP$UMP <- convertAMP(lm(standard_052_UMP_1hr$total_rfu~standard_052_UMP_1hr$standard_conc), samples_052_UMP$total_rfu)
+samples_052_UMP <- samples_052_UMP %>% group_by(gRNA, reporter, target_DNA, target_DNA_input_concentration, target_DNA_input_DNA_molecules,sample_set, cas12a_timing) %>% summarize (mean_rfu_value = mean(total_rfu), sd_rfu_value = sd(total_rfu), mean_amp = mean(UMP), sd_amp = sd(UMP))
+
+#samples_052_UMP$sample_name <- factor(paste(samples_052_UMP$target_DNA_input_concentration,"_",samples_052_UMP$target_DNA), levels = c("4nM _ IS6110_A7", "40pM _ IS1081_H6", "400pM _ IS1081_H6", "4nM _ IS1081_H6"))
+
+
+
+# samples_052_UMP$sample_name <- factor(c(format(samples_052_UMP$target_DNA_input_molecules[1:10], scientific = TRUE)
+# , "mismatched_target", "no_gRNA"), levels = c("no_gRNA", "mismatched_target", "0.0e+00","2.4e+04", "2.4e+05","2.4e+06","2.4e+07","2.4e+08","2.4e+09","2.4e+10","2.4e+11","2.4e+12"))
+
+#samples_052_UMP$sample_group <- c(replicate(10,"matched_target"), "mismatched_target", "no_gRNA")
+
+ggplot(samples_052_UMP, aes(x = target_DNA, y = mean_amp, fill = target_DNA)) +
+  facet_wrap(~gRNA, scales = "free", ncol = 4)+
+  geom_bar(stat = 'identity', position = 'dodge', color = "black") +
+  geom_errorbar(aes(ymin=mean_amp-sd_amp, ymax=mean_amp+sd_amp), width=.2,
+                 position=position_dodge(.9)) +
+  scale_y_continuous(expand = c(0,0))+
+  ggtitle("DETECTR 052, NANCI UMP GLO")+
+  scale_fill_manual(values = c("darkslategray3", "mediumpurple3","darkseagreen3","olivedrab4"))+
+  scale_x_discrete(labels = function(x) format(x, scientific = TRUE))+
+  ylab("average UMP (uM)") +
+  xlab("gRNA used")+
+  theme(axis.text.x = element_text(angle = 60, hjust = 1), 
+        panel.background = element_rect(fill = "white"),
+        panel.grid = element_line(color = "grey"),
+        panel.border = element_rect(fill = NA, color = "black"),
+        title = element_text(face = "bold"),
+        strip.background = element_rect(fill = NA, color = "black"),
+        strip.text = element_text(size = 10)
+        )
+```
+

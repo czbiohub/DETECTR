@@ -1,0 +1,357 @@
+---
+title: "DETECTR 051 SpectraMax DETECTR and NANCI UMP Data"
+output:
+  html_document:
+    df_print: paged
+---
+
+```{r setup, include=FALSE}
+library(dplyr)
+library(data.table)
+library(ggplot2)
+```
+
+
+```{r include=FALSE}
+ggplotRegression <- function (fit) {
+
+require(ggplot2)
+
+ggplot(fit$model, aes_string(x = names(fit$model)[2], y = names(fit$model)[1])) + 
+  geom_point() +
+  stat_smooth(method = "lm", col = "red") +
+  labs(title = paste("Adj R2 = ",signif(summary(fit)$adj.r.squared, 5),
+                     "Intercept =",signif(fit$coef[[1]],5 ),
+                     " Slope =",signif(fit$coef[[2]], 5),
+                     " P =",signif(summary(fit)$coef[2,4], 5)))
+}
+```
+
+```{r include=FALSE}
+
+convertAMP <- function (fit, value) {
+
+intercept = signif(fit$coef[[1]],5 )
+slope = signif(fit$coef[[2]], 5)
+AMP = (value - intercept)/slope
+
+
+return(AMP)
+}
+```
+
+```{r include=FALSE}
+sumBelowTime <- function (DETECTR_037, hour) {
+
+DETECTR_037 = subset(DETECTR_037, (hours < hour) | (hours == hour & minutes == 0 & seconds == 0))
+DETECTR_037_sum = DETECTR_037 %>% group_by(standard_conc, replicate) %>% summarize (total_rfu=sum(rfu_value))
+return(DETECTR_037_sum)
+}
+```
+
+## UMP NEBuffer 4 + 2.1 Fresh Standard Curves for concentrations from 0.01uM to 10uM, including 0uM
++ 0hr and 1hr single time points are first two plots
++ Summation of all data points below 1hr and 11hr are the last two plots
+
+### Conclusion 
+As before, summing seems to improve the data points and brings them towards the mean. 1hr sum is better than 0hr or 1hr timepoint and 11hr sum is better than 1hr sum.
+
+```{r echo=FALSE}
+
+DETECTR_051 <- read.csv("../tidy_data/DETECTR_051_tidy_metadata.csv")
+standard_051 <- subset(DETECTR_051, !(is.na(DETECTR_051$standard_conc)) & DETECTR_051$sample_set == "NANCI_UMP_standard")
+standard_051$standard_conc <- as.numeric(as.character(standard_051$standard_conc))
+
+standard_051_0hr_single_point = subset(standard_051,time =="00:00:00")
+standard_051_1hr_single_point = subset(standard_051,time =="01:00:00")
+
+standard_051_1hr = sumBelowTime(standard_051,1)
+standard_051_11hr = sumBelowTime(standard_051,11)
+
+ggplotRegression(lm(standard_051_0hr_single_point$rfu_value~standard_051_0hr_single_point$standard_conc))
+ggplotRegression(lm(standard_051_1hr_single_point$rfu_value~standard_051_1hr_single_point$standard_conc))
+ggplotRegression(lm(standard_051_1hr$total_rfu~standard_051_1hr$standard_conc)) 
+ggplotRegression(lm(standard_051_11hr$total_rfu~standard_051_11hr$standard_conc)) 
+
+
+```
+
+## UMP NEBuffer 4+ 2.1 Fresh Standard Curves for concentrations from 0.01uM to 0.16uM, including 0uM
++ 0hr and 1hr single time points are first two plots
++ Summation of all data points below 1hr and 11hr are the last two plots
+
+### Conclusion 
+Same as before - summing reduces noise quite a bit. Can detect down to 0.02 uM with summing of just 1hr.
+
+```{r echo=FALSE}
+
+DETECTR_051 <- read.csv("../tidy_data/DETECTR_051_tidy_metadata.csv")
+standard_051 <- subset(DETECTR_051, !(is.na(DETECTR_051$standard_conc)) & DETECTR_051$sample_set == "NANCI_UMP_standard")
+standard_051$standard_conc <- as.numeric(as.character(standard_051$standard_conc))
+standard_051 = subset(standard_051,standard_conc<=0.2)
+
+standard_051_0hr_single_point = subset(standard_051,time =="00:00:00")
+standard_051_1hr_single_point = subset(standard_051,time =="01:00:00")
+standard_051_1hr = sumBelowTime(standard_051,1)
+standard_051_11hr = sumBelowTime(standard_051,11)
+
+
+ggplotRegression(lm(standard_051_0hr_single_point$rfu_value~standard_051_0hr_single_point$standard_conc))
+ggplotRegression(lm(standard_051_1hr_single_point$rfu_value~standard_051_1hr_single_point$standard_conc))
+ggplotRegression(lm(standard_051_1hr$total_rfu~standard_051_1hr$standard_conc)) 
+ggplotRegression(lm(standard_051_11hr$total_rfu~standard_051_11hr$standard_conc)) 
+
+
+```
+
+## NANCI UMP
++ Used IDT cas12a and alt-R synthetic IS1081 gRNA with synthetic targets for all
++ The reporter was r17U-TTATT-phos
++ RFU values were converted to UMP uM concentrations using the 1hr summation regression
++ Mismatched target is for IS6110
+
+### Conclusions
+2uM of UMP in 10uL is 1.204×10^13 molecules of UMP. Thus, if we assume that the reporter is cleaved in half so roughly 10 UMPs are available, then we are seeing 1.204×10^12 reporters cleaved. This means that 2.4X10^8 molecules of cis cleavage ---> 1.204×10^12 molecules of trans cleavage, or four orders of magnitude of amplification from cas12a activity.
+
+```{r echo=FALSE}
+DETECTR_051 <- read.csv("../tidy_data/DETECTR_051_tidy_metadata.csv")
+samples_051_UMP <- subset(DETECTR_051, (DETECTR_051$kit=="NANCI_UMP") & !(is.na(DETECTR_051$gRNA))  & !(DETECTR_051$gRNA=="") )
+samples_051_UMP = subset(samples_051_UMP, (hours < 1) | (hours == 1 & minutes == 0 & seconds == 0))
+
+samples_051_UMP = samples_051_UMP %>% group_by(gRNA, reporter, target_DNA, target_DNA_input_concentration, target_DNA_input_molecules, sample_set, replicate, kit) %>% summarize (total_rfu=sum(rfu_value))
+
+t.test(subset(samples_051_UMP,target_DNA_input_molecules %in% c(0,2.4e7))$total_rfu~subset(samples_051_UMP,target_DNA_input_molecules %in%  c(0,2.4e7))$target_DNA_input_molecules)
+
+t.test(subset(samples_051_UMP,target_DNA_input_molecules %in% c(0,2.4e8))$total_rfu~subset(samples_051_UMP,target_DNA_input_molecules %in%  c(0,2.4e8))$target_DNA_input_molecules)
+
+standard_051_UMP <- subset(DETECTR_051, !(is.na(DETECTR_051$standard_conc)) & DETECTR_051$sample_set == "NANCI_UMP_standard")
+
+standard_051_UMP_1hr = sumBelowTime(standard_051_UMP,1)
+
+standard_051_UMP_1hr$standard_conc <- as.numeric(as.character(standard_051_UMP_1hr$standard_conc))
+
+samples_051_UMP$UMP <- convertAMP(lm(standard_051_UMP_1hr$total_rfu~standard_051_UMP_1hr$standard_conc), samples_051_UMP$total_rfu)
+
+samples_051_UMP <- samples_051_UMP %>% group_by(gRNA, reporter, target_DNA, target_DNA_input_concentration, target_DNA_input_molecules,sample_set, kit) %>% summarize (mean_rfu_value = mean(total_rfu), sd_rfu_value = sd(total_rfu), mean_amp = mean(UMP), sd_amp = sd(UMP))
+
+samples_051_UMP$sample_name <- factor(c(format(samples_051_UMP$target_DNA_input_molecules[1:10], scientific = TRUE)
+, "mismatched_target", "no_gRNA"), levels = c("no_gRNA", "mismatched_target", "0.0e+00","2.4e+04", "2.4e+05","2.4e+06","2.4e+07","2.4e+08","2.4e+09","2.4e+10","2.4e+11","2.4e+12"))
+
+samples_051_UMP$sample_group <- c(replicate(10,"matched_target"), "mismatched_target", "no_gRNA")
+
+ggplot(samples_051_UMP, aes(x = sample_name, y = mean_amp, fill = sample_group)) +
+  #facet_wrap(~gRNA)+
+  geom_bar(stat = 'identity', position = 'dodge', color = "black") +
+  geom_errorbar(aes(ymin=mean_amp-sd_amp, ymax=mean_amp+sd_amp), width=.2,
+                 position=position_dodge(.9)) +
+  scale_y_continuous(expand = c(0,0), breaks = seq(0,20,1),
+                     limits = c(0,20))+
+  ggtitle("DETECTR 051, NANCI UMP GLO")+
+  scale_fill_manual(values = c("darkslategray3", "mediumpurple3","darkseagreen3","olivedrab4"))+
+  scale_x_discrete(labels = function(x) format(x, scientific = TRUE))+
+  ylab("average UMP (uM)") +
+  #xlab("reporter used")+
+  theme(axis.text.x = element_text(angle = 60, hjust = 1), 
+        panel.background = element_rect(fill = "white"),
+        panel.grid = element_line(color = "grey"),
+        panel.border = element_rect(fill = NA, color = "black"),
+        title = element_text(face = "bold"),
+        strip.background = element_rect(fill = NA, color = "black"),
+        strip.text = element_text(size = 10),
+        legend.title = element_blank(),
+        axis.title.x = element_blank()
+)
+
+
+ggplot(subset(samples_051_UMP,(target_DNA_input_molecules < 5E7) | (target_DNA == "IS6110_A7") | (gRNA == "no_gRNA")), aes(x = sample_name, y = mean_amp, fill = sample_group)) +
+  #facet_wrap(~gRNA)+
+  geom_bar(stat = 'identity', position = 'dodge', color = "black") +
+  geom_errorbar(aes(ymin=mean_amp-sd_amp, ymax=mean_amp+sd_amp), width=.2,
+                 position=position_dodge(.9)) +
+  scale_y_continuous(expand = c(0,0), breaks = seq(0,20,0.25),
+                     limits = c(0,0.5))+
+  ggtitle("DETECTR 051, NANCI UMP GLO, low concentrations")+
+  scale_fill_manual(values = c("darkslategray3", "mediumpurple3","darkseagreen3","olivedrab4"))+
+  scale_x_discrete(labels = function(x) format(x, scientific = TRUE))+
+  ylab("average UMP (uM)") +
+  #xlab("reporter used")+
+  theme(axis.text.x = element_text(angle = 60, hjust = 1), 
+        panel.background = element_rect(fill = "white"),
+        panel.grid = element_line(color = "grey"),
+        panel.border = element_rect(fill = NA, color = "black"),
+        title = element_text(face = "bold"),
+        strip.background = element_rect(fill = NA, color = "black"),
+        strip.text = element_text(size = 10),
+        legend.title = element_blank(),
+        axis.title.x = element_blank()
+)
+
+
+
+```
+
+## DETECTR
++ Used IDT cas12a and alt-R synthetic IS1081 gRNA with synthetic targets for all
++ The reporter was FAM-TTATT-IowaBlk
++ RFU values were a sum of all points up to 1hr
++ Background is reporter MM + water (no cas12a, gRNA, etc)
++ Mismatched target is for IS6110
+
+```{r echo=FALSE}
+DETECTR_051 <- read.csv("../tidy_data/DETECTR_051_tidy_metadata.csv")
+samples_051 <- subset(DETECTR_051, (DETECTR_051$kit=="DETECTR"))
+
+samples_051 = subset(samples_051, (hours < 1) | (hours == 1 & minutes == 0 & seconds == 0))
+
+samples_051 = samples_051 %>% group_by(gRNA, reporter, target_DNA, target_DNA_input_concentration, target_DNA_input_molecules,sample_set, kit, replicate) %>% summarize (total_rfu=sum(rfu_value))
+
+
+t.test(subset(samples_051,target_DNA_input_molecules %in% c(0,2.4e7))$total_rfu~subset(samples_051,target_DNA_input_molecules %in%  c(0,2.4e7))$target_DNA_input_molecules)
+
+t.test(subset(samples_051,target_DNA_input_molecules %in% c(0,2.4e8))$total_rfu~subset(samples_051,target_DNA_input_molecules %in%  c(0,2.4e8))$target_DNA_input_molecules)
+
+
+samples_051 <- samples_051 %>% group_by(gRNA, reporter, target_DNA, target_DNA_input_concentration, target_DNA_input_molecules,sample_set, kit) %>% summarize (mean_rfu_value = mean(total_rfu), sd_rfu_value = sd(total_rfu))
+samples_051$sample_name <- 
+  factor(c("background",format(samples_051$target_DNA_input_molecules[2:11], scientific = TRUE), "mismatched_target", "no_gRNA"),
+         levels = c("background", "no_gRNA", "mismatched_target", "0.0e+00","2.4e+04", "2.4e+05","2.4e+06","2.4e+07","2.4e+08","2.4e+09","2.4e+10","2.4e+11","2.4e+12"))
+
+samples_051$sample_group <- c("background",replicate(10,"matched_target"), "mismatched_target", "no_gRNA")
+
+
+ggplot(samples_051, aes(x = sample_name, y = mean_rfu_value, fill = sample_group)) +
+  #facet_wrap(~gRNA)+
+  geom_bar(stat = 'identity', position = 'dodge', color = "black") +
+  geom_errorbar(aes(ymin=mean_rfu_value-sd_rfu_value, ymax=mean_rfu_value+sd_rfu_value), width=.2,
+                 position=position_dodge(.9), color = "black") +
+  scale_y_continuous(expand = c(0,0))+
+  ggtitle("DETECTR 051, DNA-FAM")+
+  scale_fill_manual(values = c("coral2", "goldenrod2","hotpink3", "seagreen3"
+                              ))+
+  ylab("average rfu value") +
+  #xlab("reporter used")+
+  theme(axis.text.x = element_text(angle = 60, hjust = 1), 
+        panel.background = element_rect(fill = "white"),
+        panel.grid = element_line(color = "grey"),
+        panel.border = element_rect(fill = NA, color = "black"),
+        title = element_text(face = "bold"),
+        strip.background = element_rect(fill = NA, color = "black"),
+        strip.text = element_text(size = 10),
+        legend.title = element_blank(),
+        axis.title.x = element_blank()
+          
+        
+)
+
+ggplot(subset(samples_051, (target_DNA_input_molecules<5E7) | (target_DNA == "IS6110_A7") | (gRNA == "no_gRNA") | (sample_name == "background")), 
+       aes(x = sample_name, y = mean_rfu_value, fill = sample_group)) +
+  geom_bar(stat = 'identity', position = 'dodge', color = "black") +
+  geom_errorbar(aes(ymin=mean_rfu_value-sd_rfu_value, ymax=mean_rfu_value+sd_rfu_value), width=.2,
+                 position=position_dodge(.9), color = "black") +
+  scale_y_continuous(expand = c(0,0))+
+  ggtitle("DETECTR 051, DNA-FAM, low concentrations")+
+  scale_fill_manual(values = c("coral2", "goldenrod2","hotpink3", "seagreen3"
+                              ))+
+  ylab("average rfu value") +
+  #xlab("reporter used")+
+  theme(axis.text.x = element_text(angle = 60, hjust = 1), 
+        panel.background = element_rect(fill = "white"),
+        panel.grid = element_line(color = "grey"),
+        panel.border = element_rect(fill = NA, color = "black"),
+        title = element_text(face = "bold"),
+        strip.background = element_rect(fill = NA, color = "black"),
+        strip.text = element_text(size = 10),
+        legend.title = element_blank(),
+        axis.title.x = element_blank()
+          
+        
+)
+
+
+```
+
+
+## Kinetics
+
+```{r echo=FALSE, warning=FALSE}
+
+DETECTR_051 <- read.csv("../tidy_data/DETECTR_051_tidy_metadata.csv")
+DETECTR_051$standard_conc <- as.numeric(as.character(DETECTR_051$standard_conc))
+DETECTR_051 <- subset(DETECTR_051,  DETECTR_051$sample_set %in% c("NANCI_UMP_standard") )
+DETECTR_051$standard_conc <- factor(DETECTR_051$standard_conc)
+
+ggplot(DETECTR_051, aes(x = time, y = rfu_value, color = standard_conc)) +
+  facet_wrap(~sample_set, scale = "free_y")+
+  #geom_line(stat = 'identity') +
+  geom_point(stat = 'identity', size = 0.5) +
+  scale_y_continuous(expand = c(0,0))+
+ # scale_x_continuous(breaks = seq(0,24,2))+
+  scale_color_manual(name = "concentration (uM)",values = c("darkslategray3", "mediumpurple3","darkseagreen3","olivedrab4","orange","yellow","blue","red","green","brown","black","purple","olivedrab2","grey","pink","orchid3"))+
+  ylab("rfu_value") +
+  xlab("time from 0 hr to 11 hr")+
+  theme(axis.text.x = element_blank(), 
+        panel.background = element_rect(fill = "white"),
+        panel.grid = element_line(color = "grey"),
+        panel.border = element_rect(fill = NA, color = "black"),
+        title = element_text(face = "bold"),
+        strip.background = element_rect(fill = NA, color = "black"),
+        strip.text = element_text(size = 10)
+          
+        
+)
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+DETECTR_051 <- read.csv("../tidy_data/DETECTR_051_tidy_metadata.csv")
+DETECTR_051$standard_conc <- as.numeric(as.character(DETECTR_051$standard_conc))
+DETECTR_051 <- subset(DETECTR_051,  DETECTR_051$sample_set %in% c("NANCI_UMP_sample") )
+DETECTR_051$standard_conc <- factor(DETECTR_051$standard_conc)
+
+ggplot(DETECTR_051, aes(x = time, y = rfu_value, color = factor(target_DNA_input_molecules))) +
+  facet_wrap(~sample_set, scale = "free_y")+
+  #geom_line(stat = 'identity') +
+  geom_point(stat = 'identity', size = 0.5) +
+  scale_y_continuous(expand = c(0,0))+
+ # scale_x_continuous(breaks = seq(0,24,2))+
+  scale_color_manual(name = "target DNA (molecules)",values = c("darkslategray3", "mediumpurple3","darkseagreen3","olivedrab4","orange","yellow","blue","red","green","brown","black","purple","olivedrab2","grey","pink","orchid3"))+
+  ylab("rfu_value") +
+  xlab("time from 0 hr to 11 hr")+
+  theme(axis.text.x = element_blank(), 
+        panel.background = element_rect(fill = "white"),
+        panel.grid = element_line(color = "grey"),
+        panel.border = element_rect(fill = NA, color = "black"),
+        title = element_text(face = "bold"),
+        strip.background = element_rect(fill = NA, color = "black"),
+        strip.text = element_text(size = 10)
+          
+        
+)
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+DETECTR_051 <- read.csv("../tidy_data/DETECTR_051_tidy_metadata.csv")
+DETECTR_051$standard_conc <- as.numeric(as.character(DETECTR_051$standard_conc))
+DETECTR_051 <- subset(DETECTR_051,  DETECTR_051$sample_set %in% c("DETECTR_sample") )
+DETECTR_051$standard_conc <- factor(DETECTR_051$standard_conc)
+
+ggplot(DETECTR_051, aes(x = time, y = rfu_value, color = factor(format(target_DNA_input_molecules, scientific = TRUE)))) +
+  facet_wrap(~sample_set, scale = "free_y")+
+  #geom_line(stat = 'identity') +
+  geom_point(stat = 'identity', size = 0.5) +
+  scale_y_continuous(expand = c(0,0))+
+ # scale_x_continuous(breaks = seq(0,24,2))+
+  scale_color_manual(name = "target DNA (molecules)",values = c("darkslategray3", "mediumpurple3","darkseagreen3","olivedrab4","orange","yellow","blue","red","green","brown","black","purple","olivedrab2","grey","pink","orchid3"))+
+  ylab("rfu_value") +
+  xlab("time from 0 hr to 4 hr")+
+  theme(axis.text.x = element_blank(), 
+        panel.background = element_rect(fill = "white"),
+        panel.grid = element_line(color = "grey"),
+        panel.border = element_rect(fill = NA, color = "black"),
+        title = element_text(face = "bold"),
+        strip.background = element_rect(fill = NA, color = "black"),
+        strip.text = element_text(size = 10)
+          
+        
+)
+```
+

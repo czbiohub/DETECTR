@@ -144,13 +144,17 @@ ggplot(data = standard_044, aes(x= read_number, y = rfu_value, color = factor(st
   ggtitle("ENLITEN Kinetic Standards, Log Scale Plot") + theme_bw()
 
 
+
+
 ggplot(data = standard_044, aes(x= read_number, y = rfu_value, color = factor(standard_044$concentration_moles))) + 
   #facet_wrap(~factor(standard_044$column))+
   geom_point(size = 0.5) +
   scale_x_continuous(breaks = seq(0,240,20)) +
   scale_y_continuous(limits = c(0,3e6))+
-  scale_color_discrete(name = "concentration_moles")+
+  scale_color_discrete(name = "moles")+
   ggtitle("ENLITEN Kinetic Standards, Linear Scale Plot") + theme_bw()
+
+ggsave("DETECTR_048_ENLITEN_Kinetic_Stds_Linear_Plot.pdf", width = 6, height = 4)
 
 # ggplot(data = standard_044, aes(x= concentration_moles, y = rfu_value, color = factor(standard_044$column))) + 
 #   geom_jitter(width = 0.3) +

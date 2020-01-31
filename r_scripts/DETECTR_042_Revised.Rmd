@@ -336,3 +336,33 @@ ggplot(DETECTR_042_1hr, aes(x = reagents, y = mean_total_rfu, fill = sample_set)
 )
 ```
 
+
+```{r echo=FALSE, warning=FALSE}
+
+DETECTR_042 <- read.csv("../tidy_data/DETECTR_042_tidy_metadata.csv")
+DETECTR_042$standard_conc <- as.numeric(as.character(DETECTR_042$standard_conc))
+DETECTR_042 <- subset(DETECTR_042,  DETECTR_042$sample_set %in% c("AMP_standard_no_ATP","AMP_standard"))
+DETECTR_042$standard_conc <- factor(DETECTR_042$standard_conc)
+
+ggplot(DETECTR_042, aes(x = time, y = rfu_value, color = standard_conc)) +
+  facet_wrap(~sample_set, scale = "free_y")+
+  #geom_line(stat = 'identity') +
+  geom_point(stat = 'identity', size = 0.5) +
+  scale_y_continuous(expand = c(0,0))+
+ # scale_x_continuous(breaks = seq(0,24,2))+
+  scale_color_manual(name = "concentration (uM)",values = c("darkslategray3", "mediumpurple3","darkseagreen3","olivedrab4","orange","yellow","blue","red","green","brown","black","purple","olivedrab2","grey","pink","orchid3"))+
+  ylab("rfu_value") +
+  xlab("time from 0 hr to 12 hr")+
+  theme(axis.text.x = element_blank(), 
+        panel.background = element_rect(fill = "white"),
+        panel.grid = element_line(color = "grey"),
+        panel.border = element_rect(fill = NA, color = "black"),
+        title = element_text(face = "bold"),
+        strip.background = element_rect(fill = NA, color = "black"),
+        strip.text = element_text(size = 10)
+          
+        
+)
+
+ggsave("DETECTR_042_AMP_Standards_w-w-o_ATP_Kinetic_Plot.pdf", width = 10, height = 6)
+```

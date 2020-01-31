@@ -1,0 +1,198 @@
+---
+title: "DETECTR 053 Luminometer Data"
+output:
+  html_document:
+    df_print: paged
+---
+
+All NANCI samples used UMP GLO kit, replacing the nucleotide detection reagent with 1X NEBuffer 2.1 like in DETECTR 048. 6 kinetic reads for 10s interval will equate to a 1 minute integration time, summed and displayed here. 
+
+# Experiments performed (in the following order)
+1. After bleach, after NANCI and after ATP standards ENLITEN injection on buffer
+2. NANCY DREW LOD with UMP no kinase and ENLITEN + UMP standards in buffer
+3. ATP Standards in buffer
+
+
+```{r setup, include=FALSE}
+library(dplyr)
+library(data.table)
+library(ggplot2)
+library(scales)
+```
+
+
+```{r include=FALSE}
+ggplotRegression <- function (fit) {
+
+require(ggplot2)
+
+p = ggplot(fit$model, aes_string(x = names(fit$model)[2], y = names(fit$model)[1])) + 
+  geom_point() +
+  stat_smooth(method = "lm", col = "red") +
+  labs(title = paste("Adj R2 = ",signif(summary(fit)$adj.r.squared, 5),
+                     "Intercept =",signif(fit$coef[[1]],5 ),
+                     " Slope =",signif(fit$coef[[2]], 5),
+                     " P =",signif(summary(fit)$coef[2,4], 5))) +
+  scale_x_log10(breaks = c(1e-10,1e-11,1e-12,1e-13,1e-14,1e-15,1e-16,1e-17))+
+  scale_y_log10()
+
+
+return (p)
+
+}
+
+```
+
+## ENLITEN Buffer Control
++ 6 reads, 2s delay after injection, 10s integration time, total of 1 minute
++ Recommended flush performed
++ 2% bleach loaded into injectors, then left for 1hr
++ H20 primed 10X
++ Recommended flush performed and then ENLITEN reagent primed
+
+### Conclusion 
+Seems like the background is increasing over time. Perhaps there is backsplash from the samples onto the injectors,causing contamination? Or the reagent has a higher background over time.
+
+```{r echo=FALSE}
+DETECTR_053 <- read.csv("../tidy_data/DETECTR_053_tidy.csv")
+standard_053 <- subset(DETECTR_053, DETECTR_053$experiment %in% c("after_ATP_standards", "after_NANCY_DREW","before_NANCY_DREW"))
+
+standard_053_sum = standard_053 %>% group_by(concentration, row,  column, well, experiment) %>% summarize (total_rfu=sum(rfu_value))
+
+standard_053_sum$experiment <- factor(standard_053_sum$experiment, levels = c("before_NANCY_DREW","after_NANCY_DREW","after_ATP_standards"))
+#add a small value to 0 plot to allow log-scale plotting
+
+ggplot(data = standard_053_sum, aes(x= experiment, y = total_rfu, fill = factor(column))) + 
+  geom_bar(stat = "identity", position = "dodge") +
+  scale_fill_discrete(name = "replicate")+
+  ggtitle("ENLITEN Buffer Reads around Experiments") + theme_bw()
+
+```
+
+
+## NANCY DREW ENLITEN UMP No Kinase Experiment (UMP standards from 1e-10 to 1e-16 moles)
+
+### Experimental Execution
++ UMP Detection Reagent was 1X NEBuffer 2.1 + the correct amount of UMP/CMP Enzyme
++ I remade the UMP MM every 8 minutes
++ I staggered the addition of UMP Detection Reagent 2 for each row, using a multichannel to add the correct reagent every 8 minutes.
++ Injection plate reader reads by row, so for a 1 minute read of 8 wells, it takes 8 minutes to do one row
++ Each concentration was done in triplicate
++ UMP standards are diluted in 0.8X NEBuffer 2.1 and 1X NEBuffer 4.
++ No reporter control was read first, followed by concentrations from high to low
+
+### Reads
++ 2s delay after injection, 10 s integration time, and 6 reads were taken
+
+### Plots
++ All 6 reads were summed for the total_rfu plotted in all three graphs
+
+### Conclusions
+Both NANCI and UMP standards failed to give any signal. Something went wrong with the UMP reaction, given that the ENLITEN reagent works on the ATP standards (see below). Previously UMP standards have given us a reaction. We are in of the range of UMP ENLITEN as demontrated by DETECTR 048 - I tested starting with 1uM in 100uL. The highest concentration here was 10uM in 10uL, which would be the equivalent.
+
+### Troubleshooting
++ 20uL UMP reaction was poorly executed. Maybe it shouldn't be placed in a 96 well plate and this caused improper mixing.
++ Injection of 80uL of NEBuffer 2.1 may have resulted in poor mixing. Maybe should mix prior to placing on plate reader for ENLITEN injection.
++ I made a mistake with the MM of UMP Enzyme and 1X NEBuffer 2.1
+
+```{r echo=FALSE, warning=FALSE}
+DETECTR_053 <- read.csv("../tidy_data/DETECTR_053_tidy.csv")
+nancydrew <- subset(DETECTR_053, DETECTR_053$experiment == "NANCY_DREW")
+nancydrew <- nancydrew %>% group_by(experiment, concentration,concentration_target_molecules, concentration_target_molecules_number, sample_set, well, row, column) %>% summarize (total_rfu = sum(rfu_value))
+
+nancydrew = nancydrew %>% group_by(experiment, concentration,concentration_target_molecules, concentration_target_molecules_number, sample_set) %>% summarize (mean_total_rfu = mean(total_rfu), stdev = sd(total_rfu))
+nancydrew$concentration_target_molecules <-factor(nancydrew$concentration_target_molecules, levels = c("no_reporter","2.4E10","2.4E9","2.4E8","2.4E7","2.4E6","2.4E5","2.4E10-mismatched-target","6E13","6E12","6E11","6E10","6E9","6E8","6E7","0"))
+
+
+ggplot(data = nancydrew, aes(x= concentration_target_molecules, y = mean_total_rfu, fill = sample_set)) + 
+  geom_bar(stat = "identity", position = "dodge", color = "black") +
+  geom_errorbar(aes(ymin=mean_total_rfu-stdev, ymax=mean_total_rfu+stdev), width=.2,
+                 color = "black") +
+  #scale_x_log10(breaks = c(1e-10,1e-11,1e-12,1e-13,1e-14,1e-15,1e-16,1e-17,1e-18,1e-19,1e-20))+
+  #scale_y_log10(breaks = c(1e4,2e4,3e4,4e4,5e4,6e4,7e4,8e4,9e4,1e5,2e5,3e5,4e5,5e5,1e6) )+ 
+  ggtitle("NANCY DREW no kinase ENLITEN with UMP Standards") + 
+  scale_color_discrete(name = "reagent")+
+  theme_bw()+
+  scale_y_log10()+ 
+  xlab("target molecules")+
+  theme (axis.text.x=element_text(angle=60, hjust=1))
+
+
+
+
+
+```
+
+## ENLITEN ATP Standards from 1E-11 to 1E-17 moles
++ 6 reads, 2s delay after injection, 10s integration time, total of 1 minute
++ Standards were diluted in a 1X NEBuffer 2.1 and 0.1X NEBuffer 4
+
+### Conclusion 
+ATP standards look the same as before. Signal is detectable down to 1E-16 moles or 6E7 molecules.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+DETECTR_053 <- read.csv("../tidy_data/DETECTR_053_tidy.csv")
+standard_053 <- subset(DETECTR_053, DETECTR_053$experiment == "ATP_standards")
+standard_053$concentration_target_molecules<- factor(standard_053$concentration_target_molecules, levels = c("buffer","6E6","6E7","6E8","6E9","6E10","6E11","6E12"))
+standard_053_sum = standard_053 %>% group_by(concentration, concentration_target_molecules,concentration_target_molecules_number, row, column, well, experiment) %>% summarize (total_rfu=sum(rfu_value))
+
+
+#add a small value to 0 plot to allow log-scale plotting
+
+ggplot(data = standard_053_sum, aes(x= concentration_target_molecules, y = total_rfu)) + 
+  geom_point(color = "blue") +
+  scale_y_log10() +
+  xlab("target molecules")+
+  ggtitle("ENLITEN ATP Standards, Log Scale Plot") + theme_bw()
+
+standard_053_sum_mean = standard_053_sum %>% group_by(concentration, concentration_target_molecules,concentration_target_molecules_number, experiment) %>% summarize (mean_total_rfu = mean(total_rfu), stdev = sd(total_rfu))
+
+
+
+ggplot(data = standard_053_sum_mean, aes(x= concentration_target_molecules, y = mean_total_rfu))+
+  geom_point(color = "blue") +
+  geom_errorbar(aes(ymin=mean_total_rfu-stdev, ymax=mean_total_rfu+stdev), width=.1,
+                 color = "black") +
+  #scale_x_log10(breaks = c(1e-11,1e-12,1e-13,1e-14,1e-15,1e-16,1e-17))+
+  ggtitle("ATP Standards, Log Scale Plot, Average") + 
+  theme_bw()+
+  scale_y_log10()+ 
+  xlab("target molecules")+
+  theme (axis.text.x=element_text(angle=60, hjust=1))
+
+standard_053_sum_small <- subset (standard_053_sum_mean, (concentration_target_molecules_number < 6e9) )
+
+ggplot(data = standard_053_sum_small, aes(x= concentration_target_molecules, y = mean_total_rfu))+
+  geom_point(color = "blue") +
+  geom_errorbar(aes(ymin=mean_total_rfu-stdev, ymax=mean_total_rfu+stdev), width=.1,
+                 color = "black") +
+  #scale_x_log10(breaks = c(1e-11,1e-12,1e-13,1e-14,1e-15,1e-16,1e-17))+
+  ggtitle("ATP Standards, Log Scale Plot, Average\nlow concentrations") + 
+  theme_bw()+
+  scale_y_log10()+ 
+  xlab("target molecules")+
+  theme (axis.text.x=element_text(angle=60, hjust=1))
+
+#calculate and plot regression without 0 on log scale
+standard_053_sum <- subset(standard_053_sum, concentration_target_molecules_number != 0)
+ggplotRegression(lm(standard_053_sum$total_rfu~standard_053_sum$concentration_target_molecules_number))
+
+
+ggplot(data = subset(standard_053, standard_053$concentration_target_molecules_number != 6E12), aes(x= read_number, y = rfu_value, color = factor(concentration_target_molecules_number))) + 
+  #facet_wrap(~factor(standard_053$column))+
+  geom_point(size = 0.5) +
+  scale_x_continuous(breaks = seq(0,240,20)) +
+  #scale_y_continuous(limits = c(0,5e6))+
+  scale_color_discrete(name = "target molecules")+
+  ggtitle("ENLITEN 1min Kinetic Standards, Linear Scale Plot") + theme_bw()
+
+
+ggplot(data = subset(standard_053, standard_053$concentration_target_molecules_number < 6E9), aes(x= read_number, y = rfu_value, color = factor(concentration_target_molecules_number))) + 
+  #facet_wrap(~factor(standard_053$column))+
+  geom_point(size = 0.5) +
+  scale_x_continuous(breaks = seq(0,240,20)) +
+  scale_y_continuous(breaks = seq(0,2000,100))+
+  scale_color_discrete(name = "target molecules")+
+  ggtitle("ENLITEN 1min Kinetic Standards, Linear Scale Plot\nLow Concentrations") + theme_bw()
+
+```
